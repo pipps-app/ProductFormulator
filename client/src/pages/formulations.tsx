@@ -1,0 +1,98 @@
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Plus, Search, Filter } from "lucide-react";
+import FormulationList from "@/components/formulations/formulation-list";
+import FormulationForm from "@/components/formulations/formulation-form";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { useFormulations } from "@/hooks/use-formulations";
+
+export default function Formulations() {
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [editingFormulation, setEditingFormulation] = useState(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  
+  const { data: formulations, isLoading } = useFormulations();
+
+  const filteredFormulations = formulations?.filter(formulation =>
+    formulation.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    formulation.description?.toLowerCase().includes(searchQuery.toLowerCase())
+  ) || [];
+
+  const handleEdit = (formulation: any) => {
+    setEditingFormulation(formulation);
+    setIsAddModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsAddModalOpen(false);
+    setEditingFormulation(null);
+  };
+
+  return (
+    <div className="space-y-6">
+      {/* Page Header */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-2xl font-bold text-slate-900">Product Formulations</h2>
+          <p className="text-slate-600 mt-1">Create and manage your product recipes</p>
+        </div>
+        <Button onClick={() => setIsAddModalOpen(true)}>
+          <Plus className="h-4 w-4 mr-2" />
+          New Formulation
+        </Button>
+      </div>
+
+      {/* Search and Filters */}
+      <Card>
+        <CardContent className="pt-6">
+          <div className="flex items-center space-x-4">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
+              <Input
+                placeholder="Search formulations..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-10"
+              />
+            </div>
+            <Button variant="outline">
+              <Filter className="h-4 w-4 mr-2" />
+              Filter
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Formulations List */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Active Formulations</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <FormulationList 
+            formulations={filteredFormulations}
+            isLoading={isLoading}
+            onEdit={handleEdit}
+          />
+        </CardContent>
+      </Card>
+
+      {/* Add/Edit Formulation Modal */}
+      <Dialog open={isAddModalOpen} onOpenChange={handleCloseModal}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>
+              {editingFormulation ? 'Edit Formulation' : 'New Formulation'}
+            </DialogTitle>
+          </DialogHeader>
+          <FormulationForm 
+            formulation={editingFormulation}
+            onSuccess={handleCloseModal}
+          />
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+}
