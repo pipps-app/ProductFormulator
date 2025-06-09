@@ -14,7 +14,7 @@ import {
 } from "@shared/schema";
 
 // Database connection
-const connectionString = process.env.DATABASE_URL!;
+const connectionString = `postgresql://${process.env.PGUSER}:${process.env.PGPASSWORD}@${process.env.PGHOST}:${process.env.PGPORT}/${process.env.PGDATABASE}?sslmode=require`;
 const client = postgres(connectionString);
 const db = drizzle(client);
 
