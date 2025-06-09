@@ -1,3 +1,6 @@
+import { drizzle } from "drizzle-orm/postgres-js";
+import postgres from "postgres";
+import { eq, desc } from "drizzle-orm";
 import { 
   users, vendors, materialCategories, rawMaterials, formulations, 
   formulationIngredients, materialFiles, auditLog,
@@ -9,6 +12,11 @@ import {
   type MaterialFile, type InsertMaterialFile,
   type AuditLog, type InsertAuditLog
 } from "@shared/schema";
+
+// Database connection
+const connectionString = process.env.DATABASE_URL!;
+const client = postgres(connectionString);
+const db = drizzle(client);
 
 export interface IStorage {
   // Users
@@ -60,308 +68,252 @@ export interface IStorage {
   getAuditLogs(userId: number, limit?: number): Promise<AuditLog[]>;
 }
 
-export class MemStorage implements IStorage {
-  private users: Map<number, User> = new Map();
-  private vendors: Map<number, Vendor> = new Map();
-  private materialCategories: Map<number, MaterialCategory> = new Map();
-  private rawMaterials: Map<number, RawMaterial> = new Map();
-  private formulations: Map<number, Formulation> = new Map();
-  private formulationIngredients: Map<number, FormulationIngredient> = new Map();
-  private materialFiles: Map<number, MaterialFile> = new Map();
-  private auditLogs: Map<number, AuditLog> = new Map();
-  
-  private currentUserId = 1;
-  private currentVendorId = 1;
-  private currentCategoryId = 1;
-  private currentMaterialId = 1;
-  private currentFormulationId = 1;
-  private currentIngredientId = 1;
-  private currentFileId = 1;
-  private currentAuditId = 1;
-
+export class DatabaseStorage implements IStorage {
   constructor() {
     this.initializeDefaultData();
   }
 
-  private initializeDefaultData() {
-    // Create default user
-    const defaultUser: User = {
-      id: this.currentUserId++,
-      username: "demo",
-      email: "demo@example.com",
-      password: "password",
-      company: "Artisan Soap Co.",
-      role: "admin",
-      createdAt: new Date(),
-    };
-    this.users.set(defaultUser.id, defaultUser);
+  async initializeDefaultData() {
+    try {
+      // Check if default user exists
+      const existingUser = await db.select().from(users).where(eq(users.username, "demo")).limit(1);
+      if (existingUser.length > 0) return; // Already initialized
 
-    // Create default categories
-    const categories = [
-      { name: "Base Oils", color: "#3b82f6" },
-      { name: "Essential Oils", color: "#8b5cf6" },
-      { name: "Butters", color: "#10b981" },
-      { name: "Waxes", color: "#f59e0b" },
-      { name: "Additives", color: "#ef4444" },
-    ];
+      // Create default user
+      const [defaultUser] = await db.insert(users).values({
+        username: "demo",
+        email: "demo@example.com", 
+        password: "password",
+        company: "Artisan Soap Co.",
+        role: "admin",
+      }).returning();
 
-    categories.forEach(cat => {
-      const category: MaterialCategory = {
-        id: this.currentCategoryId++,
-        ...cat,
-        userId: defaultUser.id,
-      };
-      this.materialCategories.set(category.id, category);
-    });
+      // Create default categories
+      const categories = [
+        { name: "Base Oils", color: "#3b82f6", userId: defaultUser.id },
+        { name: "Essential Oils", color: "#8b5cf6", userId: defaultUser.id },
+        { name: "Butters", color: "#10b981", userId: defaultUser.id },
+        { name: "Waxes", color: "#f59e0b", userId: defaultUser.id },
+        { name: "Additives", color: "#ef4444", userId: defaultUser.id },
+      ];
 
-    // Create default vendors
-    const defaultVendors = [
-      { name: "Natural Supplies Co.", contactEmail: "orders@naturalsupplies.com" },
-      { name: "Aromatherapy Plus", contactEmail: "sales@aromatherapyplus.com" },
-      { name: "Essential Elements", contactEmail: "info@essentialelements.com" },
-    ];
+      await db.insert(materialCategories).values(categories);
 
-    defaultVendors.forEach(vendor => {
-      const newVendor: Vendor = {
-        id: this.currentVendorId++,
-        ...vendor,
-        contactPhone: null,
-        address: null,
-        notes: null,
-        userId: defaultUser.id,
-        createdAt: new Date(),
-      };
-      this.vendors.set(newVendor.id, newVendor);
-    });
+      // Create default vendors
+      const defaultVendors = [
+        { 
+          name: "Natural Supplies Co.", 
+          contactEmail: "orders@naturalsupplies.com",
+          contactPhone: null,
+          address: null,
+          notes: null,
+          userId: defaultUser.id 
+        },
+        { 
+          name: "Aromatherapy Plus", 
+          contactEmail: "sales@aromatherapyplus.com",
+          contactPhone: null,
+          address: null,
+          notes: null,
+          userId: defaultUser.id 
+        },
+        { 
+          name: "Essential Elements", 
+          contactEmail: "info@essentialelements.com",
+          contactPhone: null,
+          address: null,
+          notes: null,
+          userId: defaultUser.id 
+        },
+      ];
+
+      await db.insert(vendors).values(defaultVendors);
+    } catch (error) {
+      console.log("Database initialization skipped or already exists");
+    }
   }
 
   // User methods
   async getUser(id: number): Promise<User | undefined> {
-    return this.users.get(id);
+    const result = await db.select().from(users).where(eq(users.id, id)).limit(1);
+    return result[0];
   }
 
   async getUserByUsername(username: string): Promise<User | undefined> {
-    return Array.from(this.users.values()).find(user => user.username === username);
+    const result = await db.select().from(users).where(eq(users.username, username)).limit(1);
+    return result[0];
   }
 
   async getUserByEmail(email: string): Promise<User | undefined> {
-    return Array.from(this.users.values()).find(user => user.email === email);
+    const result = await db.select().from(users).where(eq(users.email, email)).limit(1);
+    return result[0];
   }
 
   async createUser(insertUser: InsertUser): Promise<User> {
-    const user: User = {
-      ...insertUser,
-      id: this.currentUserId++,
-      createdAt: new Date(),
-    };
-    this.users.set(user.id, user);
+    const [user] = await db.insert(users).values(insertUser).returning();
     return user;
   }
 
   // Vendor methods
   async getVendors(userId: number): Promise<Vendor[]> {
-    return Array.from(this.vendors.values()).filter(vendor => vendor.userId === userId);
+    return await db.select().from(vendors).where(eq(vendors.userId, userId));
   }
 
   async getVendor(id: number): Promise<Vendor | undefined> {
-    return this.vendors.get(id);
+    const result = await db.select().from(vendors).where(eq(vendors.id, id)).limit(1);
+    return result[0];
   }
 
   async createVendor(insertVendor: InsertVendor): Promise<Vendor> {
-    const vendor: Vendor = {
-      ...insertVendor,
-      id: this.currentVendorId++,
-      createdAt: new Date(),
-    };
-    this.vendors.set(vendor.id, vendor);
+    const [vendor] = await db.insert(vendors).values(insertVendor).returning();
     return vendor;
   }
 
   async updateVendor(id: number, updates: Partial<InsertVendor>): Promise<Vendor | undefined> {
-    const vendor = this.vendors.get(id);
-    if (!vendor) return undefined;
-    
-    const updatedVendor = { ...vendor, ...updates };
-    this.vendors.set(id, updatedVendor);
-    return updatedVendor;
+    const result = await db.update(vendors).set(updates).where(eq(vendors.id, id)).returning();
+    return result[0];
   }
 
   async deleteVendor(id: number): Promise<boolean> {
-    return this.vendors.delete(id);
+    const result = await db.delete(vendors).where(eq(vendors.id, id)).returning();
+    return result.length > 0;
   }
 
   // Material Category methods
   async getMaterialCategories(userId: number): Promise<MaterialCategory[]> {
-    return Array.from(this.materialCategories.values()).filter(cat => cat.userId === userId);
+    return await db.select().from(materialCategories).where(eq(materialCategories.userId, userId));
   }
 
   async createMaterialCategory(insertCategory: InsertMaterialCategory): Promise<MaterialCategory> {
-    const category: MaterialCategory = {
-      ...insertCategory,
-      id: this.currentCategoryId++,
-    };
-    this.materialCategories.set(category.id, category);
+    const [category] = await db.insert(materialCategories).values(insertCategory).returning();
     return category;
   }
 
   async updateMaterialCategory(id: number, updates: Partial<InsertMaterialCategory>): Promise<MaterialCategory | undefined> {
-    const category = this.materialCategories.get(id);
-    if (!category) return undefined;
-    
-    const updatedCategory = { ...category, ...updates };
-    this.materialCategories.set(id, updatedCategory);
-    return updatedCategory;
+    const result = await db.update(materialCategories).set(updates).where(eq(materialCategories.id, id)).returning();
+    return result[0];
   }
 
   async deleteMaterialCategory(id: number): Promise<boolean> {
-    return this.materialCategories.delete(id);
+    const result = await db.delete(materialCategories).where(eq(materialCategories.id, id)).returning();
+    return result.length > 0;
   }
 
   // Raw Material methods
   async getRawMaterials(userId: number): Promise<RawMaterial[]> {
-    return Array.from(this.rawMaterials.values()).filter(material => material.userId === userId);
+    return await db.select().from(rawMaterials).where(eq(rawMaterials.userId, userId));
   }
 
   async getRawMaterial(id: number): Promise<RawMaterial | undefined> {
-    return this.rawMaterials.get(id);
+    const result = await db.select().from(rawMaterials).where(eq(rawMaterials.id, id)).limit(1);
+    return result[0];
   }
 
   async createRawMaterial(insertMaterial: InsertRawMaterial): Promise<RawMaterial> {
     const unitCost = Number(insertMaterial.totalCost) / Number(insertMaterial.quantity);
-    const material: RawMaterial = {
+    const materialWithUnitCost = {
       ...insertMaterial,
-      id: this.currentMaterialId++,
       unitCost: unitCost.toFixed(4),
-      createdAt: new Date(),
-      updatedAt: new Date(),
     };
-    this.rawMaterials.set(material.id, material);
+    const [material] = await db.insert(rawMaterials).values(materialWithUnitCost).returning();
     return material;
   }
 
   async updateRawMaterial(id: number, updates: Partial<InsertRawMaterial>): Promise<RawMaterial | undefined> {
-    const material = this.rawMaterials.get(id);
-    if (!material) return undefined;
-    
-    const updatedMaterial = { ...material, ...updates, updatedAt: new Date() };
+    // Get existing material to calculate unit cost if needed
+    const existing = await this.getRawMaterial(id);
+    if (!existing) return undefined;
+
+    let finalUpdates = { ...updates };
     
     // Recalculate unit cost if total cost or quantity changed
     if (updates.totalCost !== undefined || updates.quantity !== undefined) {
-      const totalCost = Number(updates.totalCost ?? material.totalCost);
-      const quantity = Number(updates.quantity ?? material.quantity);
-      updatedMaterial.unitCost = (totalCost / quantity).toFixed(4);
+      const totalCost = Number(updates.totalCost ?? existing.totalCost);
+      const quantity = Number(updates.quantity ?? existing.quantity);
+      finalUpdates.unitCost = (totalCost / quantity).toFixed(4);
     }
-    
-    this.rawMaterials.set(id, updatedMaterial);
-    return updatedMaterial;
+
+    const result = await db.update(rawMaterials).set(finalUpdates).where(eq(rawMaterials.id, id)).returning();
+    return result[0];
   }
 
   async deleteRawMaterial(id: number): Promise<boolean> {
-    return this.rawMaterials.delete(id);
+    const result = await db.delete(rawMaterials).where(eq(rawMaterials.id, id)).returning();
+    return result.length > 0;
   }
 
   // Formulation methods
   async getFormulations(userId: number): Promise<Formulation[]> {
-    return Array.from(this.formulations.values()).filter(formulation => formulation.userId === userId);
+    return await db.select().from(formulations).where(eq(formulations.userId, userId));
   }
 
   async getFormulation(id: number): Promise<Formulation | undefined> {
-    return this.formulations.get(id);
+    const result = await db.select().from(formulations).where(eq(formulations.id, id)).limit(1);
+    return result[0];
   }
 
   async createFormulation(insertFormulation: InsertFormulation): Promise<Formulation> {
-    const formulation: Formulation = {
-      ...insertFormulation,
-      id: this.currentFormulationId++,
-      totalCost: "0.00",
-      unitCost: "0.00",
-      profitMargin: "0.00",
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    };
-    this.formulations.set(formulation.id, formulation);
+    const [formulation] = await db.insert(formulations).values(insertFormulation).returning();
     return formulation;
   }
 
   async updateFormulation(id: number, updates: Partial<InsertFormulation>): Promise<Formulation | undefined> {
-    const formulation = this.formulations.get(id);
-    if (!formulation) return undefined;
-    
-    const updatedFormulation = { ...formulation, ...updates, updatedAt: new Date() };
-    this.formulations.set(id, updatedFormulation);
-    return updatedFormulation;
+    const result = await db.update(formulations).set(updates).where(eq(formulations.id, id)).returning();
+    return result[0];
   }
 
   async deleteFormulation(id: number): Promise<boolean> {
-    return this.formulations.delete(id);
+    const result = await db.delete(formulations).where(eq(formulations.id, id)).returning();
+    return result.length > 0;
   }
 
   // Formulation Ingredient methods
   async getFormulationIngredients(formulationId: number): Promise<FormulationIngredient[]> {
-    return Array.from(this.formulationIngredients.values())
-      .filter(ingredient => ingredient.formulationId === formulationId);
+    return await db.select().from(formulationIngredients).where(eq(formulationIngredients.formulationId, formulationId));
   }
 
   async createFormulationIngredient(insertIngredient: InsertFormulationIngredient): Promise<FormulationIngredient> {
-    const ingredient: FormulationIngredient = {
-      ...insertIngredient,
-      id: this.currentIngredientId++,
-      costContribution: "0.00",
-    };
-    this.formulationIngredients.set(ingredient.id, ingredient);
+    const [ingredient] = await db.insert(formulationIngredients).values(insertIngredient).returning();
     return ingredient;
   }
 
   async updateFormulationIngredient(id: number, updates: Partial<InsertFormulationIngredient>): Promise<FormulationIngredient | undefined> {
-    const ingredient = this.formulationIngredients.get(id);
-    if (!ingredient) return undefined;
-    
-    const updatedIngredient = { ...ingredient, ...updates };
-    this.formulationIngredients.set(id, updatedIngredient);
-    return updatedIngredient;
+    const result = await db.update(formulationIngredients).set(updates).where(eq(formulationIngredients.id, id)).returning();
+    return result[0];
   }
 
   async deleteFormulationIngredient(id: number): Promise<boolean> {
-    return this.formulationIngredients.delete(id);
+    const result = await db.delete(formulationIngredients).where(eq(formulationIngredients.id, id)).returning();
+    return result.length > 0;
   }
 
   // Material File methods
   async getMaterialFiles(materialId: number): Promise<MaterialFile[]> {
-    return Array.from(this.materialFiles.values())
-      .filter(file => file.materialId === materialId);
+    return await db.select().from(materialFiles).where(eq(materialFiles.materialId, materialId));
   }
 
   async createMaterialFile(insertFile: InsertMaterialFile): Promise<MaterialFile> {
-    const file: MaterialFile = {
-      ...insertFile,
-      id: this.currentFileId++,
-      uploadedAt: new Date(),
-    };
-    this.materialFiles.set(file.id, file);
+    const [file] = await db.insert(materialFiles).values(insertFile).returning();
     return file;
   }
 
   async deleteMaterialFile(id: number): Promise<boolean> {
-    return this.materialFiles.delete(id);
+    const result = await db.delete(materialFiles).where(eq(materialFiles.id, id)).returning();
+    return result.length > 0;
   }
 
   // Audit Log methods
   async createAuditLog(insertLog: InsertAuditLog): Promise<AuditLog> {
-    const log: AuditLog = {
-      ...insertLog,
-      id: this.currentAuditId++,
-      timestamp: new Date(),
-    };
-    this.auditLogs.set(log.id, log);
+    const [log] = await db.insert(auditLog).values(insertLog).returning();
     return log;
   }
 
   async getAuditLogs(userId: number, limit = 50): Promise<AuditLog[]> {
-    return Array.from(this.auditLogs.values())
-      .filter(log => log.userId === userId)
-      .sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime())
-      .slice(0, limit);
+    return await db.select().from(auditLog)
+      .where(eq(auditLog.userId, userId))
+      .orderBy(desc(auditLog.timestamp))
+      .limit(limit);
   }
 }
 
-export const storage = new MemStorage();
+export const storage = new DatabaseStorage();
