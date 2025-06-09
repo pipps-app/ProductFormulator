@@ -1,0 +1,106 @@
+Build a SaaS web application called Pipps Maker Calc – a product formulation and cost management tool for makers and manufacturers.
+Use React (with Vite), TypeScript, and TailwindCSS for the frontend.
+Integrate Supabase for backend services: authentication, database, file storage, and row-level security.
+
+📦 Features to Implement:
+1. Raw Materials Management
+Add/Edit/Delete raw materials with: name, vendor, total cost, quantity, unit cost
+
+Calculate unit cost in real time
+
+Categorize materials
+
+Attach files (e.g., specs or COAs) using Supabase Storage
+
+2. Product Formulation Engine
+Build formulations using multiple raw materials
+
+Support nested formulations (formulations within formulations)
+
+Automatically calculate batch cost, cost per unit, profit margin
+
+Allow setting markup percentage and target price
+
+Include/exclude materials from markup calculations
+
+3. Business Dashboard
+Show total number of materials, products, and vendors
+
+Include profit reports, cost breakdowns, and trends
+
+Track recent activity (changes, updates)
+
+4. User & Subscription Management
+Enable user sign-up/login with Supabase Auth
+
+Role-based access control (admin, regular user)
+
+Track usage and set feature limits (e.g., max materials, formulations)
+
+5. Data Management
+Import/export materials and formulations as JSON/CSV
+
+Filter, sort, and search materials and recipes
+
+Local storage caching with sync option
+
+Full audit trail of changes per user
+
+⚙️ Technical Requirements
+Frontend: React + Vite + TypeScript + TailwindCSS
+
+Backend: Supabase (PostgreSQL, Auth, Storage, RLS)
+
+Responsive mobile + desktop design
+
+Environment variables stored securely in .env:
+
+env
+Copy
+Edit
+VITE_SUPABASE_URL=your_supabase_project_url
+VITE_SUPABASE_ANON_KEY=your_anon_public_key
+🧪 User Experience
+Tabbed navigation for Materials / Formulations / Dashboard
+
+Toast notifications for actions (save, delete, error)
+
+Drag-and-drop file upload for documentation
+
+Unsaved changes warning before navigation
+
+Confirmation prompts for destructive actions
+
+✅ Getting Started on Replit
+Create a new React + Vite + TypeScript Replit project
+
+Install required packages:
+
+bash
+Copy
+Edit
+npm install @supabase/supabase-js tailwindcss postcss autoprefixer
+npx tailwindcss init -p
+Set up Tailwind in tailwind.config.js and index.css
+
+Create a supabaseClient.ts with your keys:
+
+ts
+Copy
+Edit
+import { createClient } from '@supabase/supabase-js';
+
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+
+export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+Start building pages:
+
+MaterialsPage.tsx
+
+FormulationsPage.tsx
+
+Dashboard.tsx
+
+Auth.tsx
+
