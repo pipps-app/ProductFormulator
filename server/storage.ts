@@ -224,7 +224,7 @@ export class DatabaseStorage implements IStorage {
     const existing = await this.getRawMaterial(id);
     if (!existing) return undefined;
 
-    let finalUpdates = { ...updates };
+    let finalUpdates: Partial<InsertRawMaterial> & { unitCost?: string } = { ...updates };
     
     // Recalculate unit cost if total cost or quantity changed
     if (updates.totalCost !== undefined || updates.quantity !== undefined) {
