@@ -13,9 +13,7 @@ export default function MaterialsPreview() {
   const recentMaterials = materials?.slice(0, 5) || [];
 
   const getCategoryInfo = (categoryId: number | null) => {
-    console.log('getCategoryInfo called with:', categoryId, 'categories:', categories);
     if (!categoryId || !categories || !Array.isArray(categories)) {
-      console.log('Returning uncategorized due to missing data');
       return {
         name: "Uncategorized",
         color: "bg-gray-100 text-gray-800"
@@ -23,7 +21,6 @@ export default function MaterialsPreview() {
     }
     
     const category = categories.find((cat: any) => cat.id === categoryId);
-    console.log('Found category:', category);
     if (!category) {
       return {
         name: "Uncategorized", 
