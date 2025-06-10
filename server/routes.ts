@@ -605,7 +605,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          amount: amount,
+          amount: amount.toString(),
           currency: currency,
           intent: "CAPTURE"
         })
