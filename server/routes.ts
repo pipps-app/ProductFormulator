@@ -784,6 +784,62 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Instant trial account creation
+  app.post("/api/users/create-trial", async (req, res) => {
+    try {
+      const { email } = req.body;
+      const trialEmail = email || `trial_${Date.now()}@trial.local`;
+      
+      // Check if user already exists
+      const existingUser = await storage.getUserByEmail(trialEmail);
+      if (existingUser) {
+        return res.json({ 
+          success: true, 
+          message: "Account exists, logging in",
+          userId: existingUser.id
+        });
+      }
+
+      // Create new trial user
+      const user = await storage.createUser({
+        username: trialEmail.split('@')[0],
+        email: trialEmail,
+        password: 'trial_password', // Simple password for trials
+        company: '',
+        role: 'user'
+      });
+
+      // Set free plan
+      await storage.updateUser(user.id, {
+        subscriptionStatus: 'active',
+        subscriptionPlan: 'free',
+        subscriptionStartDate: new Date(),
+        subscriptionEndDate: null
+      } as any);
+
+      // Create audit log
+      await storage.createAuditLog({
+        userId: user.id,
+        action: "create",
+        entityType: "vendor",
+        entityId: 0,
+        changes: JSON.stringify({
+          description: `Trial account created: ${trialEmail}`,
+          plan: 'free'
+        }),
+      });
+
+      res.json({ 
+        success: true, 
+        message: "Trial account created",
+        userId: user.id
+      });
+    } catch (error) {
+      console.error("Trial creation error:", error);
+      res.status(500).json({ error: "Failed to create trial account" });
+    }
+  });
+
   // User account creation endpoint for Shopify integration
   app.post("/api/users/create-from-shopify", async (req, res) => {
     try {

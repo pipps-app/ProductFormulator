@@ -12,12 +12,14 @@ import Categories from "@/pages/categories";
 import ImportExport from "@/pages/import-export";
 import Profile from "@/pages/profile";
 import Subscription from "@/pages/subscription";
+import Onboarding from "@/pages/onboarding";
 import AppLayout from "@/components/layout/app-layout";
 
 function Router() {
   return (
     <AppLayout>
       <Switch>
+        <Route path="/onboarding" component={Onboarding} />
         <Route path="/" component={Dashboard} />
         <Route path="/dashboard" component={Dashboard} />
         <Route path="/materials" component={Materials} />
