@@ -8,6 +8,7 @@ import Dashboard from "@/pages/dashboard";
 import Materials from "@/pages/materials";
 import Formulations from "@/pages/formulations";
 import Vendors from "@/pages/vendors";
+import Categories from "@/pages/categories";
 import ImportExport from "@/pages/import-export";
 import Profile from "@/pages/profile";
 import AppLayout from "@/components/layout/app-layout";
@@ -21,6 +22,7 @@ function Router() {
         <Route path="/materials" component={Materials} />
         <Route path="/formulations" component={Formulations} />
         <Route path="/vendors" component={Vendors} />
+        <Route path="/categories" component={Categories} />
         <Route path="/import-export" component={ImportExport} />
         <Route path="/profile" component={Profile} />
         <Route component={NotFound} />

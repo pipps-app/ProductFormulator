@@ -36,6 +36,7 @@ export interface IStorage {
 
   // Material Categories
   getMaterialCategories(userId: number): Promise<MaterialCategory[]>;
+  getMaterialCategory(id: number): Promise<MaterialCategory | undefined>;
   createMaterialCategory(category: InsertMaterialCategory): Promise<MaterialCategory>;
   updateMaterialCategory(id: number, category: Partial<InsertMaterialCategory>): Promise<MaterialCategory | undefined>;
   deleteMaterialCategory(id: number): Promise<boolean>;

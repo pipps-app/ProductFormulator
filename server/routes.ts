@@ -107,10 +107,82 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const categoryData = insertMaterialCategorySchema.parse({ ...req.body, userId: 1 });
       const category = await storage.createMaterialCategory(categoryData);
+      
+      // Create audit log
+      await storage.createAuditLog({
+        userId: 1,
+        action: "create",
+        entityType: "category",
+        entityId: category.id,
+        changes: JSON.stringify({
+          description: `Created new category "${category.name}" with ${category.color} color`,
+          data: category
+        }),
+      });
+      
       res.json(category);
     } catch (error) {
       res.status(400).json({ error: "Invalid category data" });
     }
+  });
+
+  app.put("/api/material-categories/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const originalCategory = await storage.getMaterialCategory(id);
+      if (!originalCategory) {
+        return res.status(404).json({ error: "Category not found" });
+      }
+
+      const categoryData = insertMaterialCategorySchema.partial().parse(req.body);
+      const category = await storage.updateMaterialCategory(id, categoryData);
+      
+      // Create audit log
+      if (category) {
+        const colorChange = originalCategory.color !== category.color 
+          ? ` (color changed to ${category.color})`
+          : '';
+        await storage.createAuditLog({
+          userId: 1,
+          action: "update",
+          entityType: "category",
+          entityId: id,
+          changes: JSON.stringify({
+            description: `Updated category "${category.name}"${colorChange}`,
+            before: originalCategory,
+            after: category
+          }),
+        });
+      }
+      
+      res.json(category);
+    } catch (error) {
+      res.status(400).json({ error: "Invalid category data" });
+    }
+  });
+
+  app.delete("/api/material-categories/:id", async (req, res) => {
+    const id = parseInt(req.params.id);
+    const category = await storage.getMaterialCategory(id);
+    if (!category) {
+      return res.status(404).json({ error: "Category not found" });
+    }
+
+    const deleted = await storage.deleteMaterialCategory(id);
+    
+    // Create audit log
+    await storage.createAuditLog({
+      userId: 1,
+      action: "delete",
+      entityType: "category",
+      entityId: id,
+      changes: JSON.stringify({
+        description: `Deleted category "${category.name}" (${category.color} color)`,
+        data: category
+      }),
+    });
+    
+    res.json({ success: true });
   });
 
   // Raw Materials
