@@ -28,18 +28,24 @@ export default function MaterialForm({ material, onSuccess }: MaterialFormProps)
     queryKey: ["/api/material-categories"],
   });
 
-  const formSchema = insertRawMaterialSchema.omit({ userId: true }).extend({
-    categoryId: insertRawMaterialSchema.shape.categoryId.optional(),
-    vendorId: insertRawMaterialSchema.shape.vendorId.optional(),
-  });
+  type FormData = {
+    name: string;
+    sku?: string;
+    categoryId?: number | null;
+    vendorId?: number | null;
+    totalCost: string;
+    quantity: string;
+    unit: string;
+    notes?: string;
+    isActive?: boolean;
+  };
 
-  const form = useForm({
-    resolver: zodResolver(formSchema),
+  const form = useForm<FormData>({
     defaultValues: {
       name: "",
       sku: "",
-      categoryId: undefined,
-      vendorId: undefined,
+      categoryId: null,
+      vendorId: null,
       totalCost: "",
       quantity: "",
       unit: "kg",
@@ -65,8 +71,8 @@ export default function MaterialForm({ material, onSuccess }: MaterialFormProps)
       form.reset({
         name: material.name,
         sku: material.sku || "",
-        categoryId: material.categoryId ?? undefined,
-        vendorId: material.vendorId ?? undefined,
+        categoryId: material.categoryId ?? null,
+        vendorId: material.vendorId ?? null,
         totalCost: material.totalCost,
         quantity: material.quantity,
         unit: material.unit,
@@ -157,7 +163,7 @@ export default function MaterialForm({ material, onSuccess }: MaterialFormProps)
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Category</FormLabel>
-                <Select onValueChange={(value) => field.onChange(Number(value))} value={field.value?.toString() || ""}>
+                <Select onValueChange={(value) => field.onChange(value ? Number(value) : null)} value={field.value?.toString() || ""}>
                   <FormControl>
                     <SelectTrigger>
                       <SelectValue placeholder="Select category" />
@@ -182,7 +188,7 @@ export default function MaterialForm({ material, onSuccess }: MaterialFormProps)
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Vendor</FormLabel>
-                <Select onValueChange={(value) => field.onChange(Number(value))} value={field.value?.toString() || ""}>
+                <Select onValueChange={(value) => field.onChange(value ? Number(value) : null)} value={field.value?.toString() || ""}>
                   <FormControl>
                     <SelectTrigger>
                       <SelectValue placeholder="Select vendor" />
