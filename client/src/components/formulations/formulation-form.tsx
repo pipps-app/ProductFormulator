@@ -60,7 +60,10 @@ export default function FormulationForm({ formulation, onSuccess }: FormulationF
   const suggestedPrice = unitCost * (1 + markupPercentage / 100);
   const actualSellingPrice = parseFloat(sellingPrice || "0");
   const profit = actualSellingPrice > 0 ? actualSellingPrice - unitCost : 0;
+  
+  // Calculate both profit margin (% of selling price) and markup (% of cost)
   const profitMargin = actualSellingPrice > 0 ? ((profit / actualSellingPrice) * 100) : 0;
+  const actualMarkup = unitCost > 0 && actualSellingPrice > 0 ? ((profit / unitCost) * 100) : 0;
 
   // Add ingredient
   const addIngredient = () => {
@@ -399,14 +402,20 @@ export default function FormulationForm({ formulation, onSuccess }: FormulationF
               </div>
 
               {actualSellingPrice > 0 && (
-                <div className="grid grid-cols-2 gap-4 p-4 bg-green-50 rounded-lg">
+                <div className="grid grid-cols-3 gap-4 p-4 bg-green-50 rounded-lg">
                   <div className="space-y-2">
                     <div className="text-sm text-green-600">Profit per {form.watch("batchUnit") || "unit"}</div>
                     <div className="text-xl font-bold text-green-700">${profit.toFixed(2)}</div>
                   </div>
                   <div className="space-y-2">
                     <div className="text-sm text-green-600">Profit Margin</div>
-                    <div className="text-xl font-bold text-green-700">{profitMargin.toFixed(1)}%</div>
+                    <div className="text-lg font-bold text-green-700">{profitMargin.toFixed(1)}%</div>
+                    <div className="text-xs text-green-600">% of selling price</div>
+                  </div>
+                  <div className="space-y-2">
+                    <div className="text-sm text-green-600">Markup</div>
+                    <div className="text-lg font-bold text-green-700">{actualMarkup.toFixed(1)}%</div>
+                    <div className="text-xs text-green-600">% of cost</div>
                   </div>
                 </div>
               )}
