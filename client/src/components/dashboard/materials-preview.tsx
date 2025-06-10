@@ -1,4 +1,4 @@
-import { useMaterials, useMaterialCategories } from "@/hooks/use-materials";
+import { useMaterials, useMaterialCategories, useVendors } from "@/hooks/use-materials";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Filter, Edit, Trash2, Package, FlaskRound } from "lucide-react";
@@ -8,12 +8,21 @@ import { Link } from "wouter";
 
 export default function MaterialsPreview() {
   const { data: materials, isLoading } = useMaterials();
-  const { data: categories } = useMaterialCategories();
+  const { data: categories = [] } = useMaterialCategories();
+  const { data: vendors = [] } = useVendors();
 
   const recentMaterials = materials?.slice(0, 5) || [];
 
-  const getCategoryInfo = (material: any) => {
-    if (!material.category) {
+  const getCategoryInfo = (categoryId: number | null) => {
+    if (!categoryId) {
+      return {
+        name: "Uncategorized",
+        color: "bg-gray-100 text-gray-800"
+      };
+    }
+
+    const category = categories.find(cat => cat.id === categoryId);
+    if (!category) {
       return {
         name: "Uncategorized",
         color: "bg-gray-100 text-gray-800"
@@ -38,9 +47,15 @@ export default function MaterialsPreview() {
     };
 
     return {
-      name: material.category.name,
-      color: colorMap[material.category.color] || "bg-gray-100 text-gray-800"
+      name: category.name,
+      color: colorMap[category.color] || "bg-gray-100 text-gray-800"
     };
+  };
+
+  const getVendorName = (vendorId: number | null) => {
+    if (!vendorId) return "No vendor";
+    const vendor = vendors.find(v => v.id === vendorId);
+    return vendor?.name || "No vendor";
   };
 
   if (isLoading) {
@@ -113,7 +128,8 @@ export default function MaterialsPreview() {
               <tbody className="divide-y divide-slate-200">
                 {recentMaterials.map((material, index) => {
                   const isLowStock = Number(material.quantity) < 5;
-                  const categoryInfo = getCategoryInfo(material);
+                  const categoryInfo = getCategoryInfo(material.categoryId);
+                  const vendorName = getVendorName(material.vendorId);
                   
                   return (
                     <tr key={material.id} className="hover:bg-slate-50">
@@ -147,7 +163,7 @@ export default function MaterialsPreview() {
                       </td>
                       <td className="p-4">
                         <p className="text-sm text-slate-900">
-                          {material.vendor?.name || "No vendor"}
+                          {vendorName}
                         </p>
                       </td>
                       <td className="p-4 text-right">

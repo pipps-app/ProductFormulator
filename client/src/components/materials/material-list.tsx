@@ -7,6 +7,7 @@ import { Edit, Trash2, Package, FlaskRound } from "lucide-react";
 import { type RawMaterial } from "@shared/schema";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
+import { useMaterialCategories, useVendors } from "@/hooks/use-materials";
 import ConfirmationModal from "@/components/common/confirmation-modal";
 
 interface MaterialListProps {
@@ -19,6 +20,8 @@ export default function MaterialList({ materials, isLoading, onEdit }: MaterialL
   const [deletingMaterial, setDeletingMaterial] = useState<RawMaterial | null>(null);
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const { data: categories = [] } = useMaterialCategories();
+  const { data: vendors = [] } = useVendors();
 
   const deleteMutation = useMutation({
     mutationFn: (id: number) => apiRequest("DELETE", `/api/raw-materials/${id}`),
@@ -33,26 +36,49 @@ export default function MaterialList({ materials, isLoading, onEdit }: MaterialL
     },
   });
 
-  const getCategoryColor = (categoryId: number | null) => {
-    const colors = {
-      1: "bg-blue-100 text-blue-800",
-      2: "bg-purple-100 text-purple-800",
-      3: "bg-green-100 text-green-800",
-      4: "bg-yellow-100 text-yellow-800",
-      5: "bg-red-100 text-red-800",
+  const getCategoryInfo = (categoryId: number | null) => {
+    if (!categoryId) {
+      return {
+        name: "Uncategorized",
+        color: "bg-gray-100 text-gray-800"
+      };
+    }
+
+    const category = categories.find(cat => cat.id === categoryId);
+    if (!category) {
+      return {
+        name: "Uncategorized",
+        color: "bg-gray-100 text-gray-800"
+      };
+    }
+
+    // Convert category color to Tailwind classes
+    const colorMap: Record<string, string> = {
+      "blue": "bg-blue-100 text-blue-800",
+      "#3b82f6": "bg-blue-100 text-blue-800",
+      "green": "bg-green-100 text-green-800", 
+      "#10b981": "bg-green-100 text-green-800",
+      "red": "bg-red-100 text-red-800",
+      "#ef4444": "bg-red-100 text-red-800",
+      "yellow": "bg-yellow-100 text-yellow-800",
+      "#f59e0b": "bg-yellow-100 text-yellow-800",
+      "purple": "bg-purple-100 text-purple-800",
+      "#8b5cf6": "bg-purple-100 text-purple-800",
+      "pink": "bg-pink-100 text-pink-800",
+      "indigo": "bg-indigo-100 text-indigo-800",
+      "gray": "bg-gray-100 text-gray-800",
     };
-    return colors[categoryId as keyof typeof colors] || "bg-gray-100 text-gray-800";
+
+    return {
+      name: category.name,
+      color: colorMap[category.color] || "bg-gray-100 text-gray-800"
+    };
   };
 
-  const getCategoryName = (categoryId: number | null) => {
-    const names = {
-      1: "Base Oils",
-      2: "Essential Oils", 
-      3: "Butters",
-      4: "Waxes",
-      5: "Additives",
-    };
-    return names[categoryId as keyof typeof names] || "Uncategorized";
+  const getVendorName = (vendorId: number | null) => {
+    if (!vendorId) return "No vendor";
+    const vendor = vendors.find(v => v.id === vendorId);
+    return vendor?.name || "No vendor";
   };
 
   const handleDelete = (material: RawMaterial) => {
@@ -115,8 +141,8 @@ export default function MaterialList({ materials, isLoading, onEdit }: MaterialL
           <tbody className="divide-y divide-slate-200">
             {materials.map((material) => {
               const isLowStock = Number(material.quantity) < 5;
-              const categoryColor = getCategoryColor(material.categoryId);
-              const categoryName = getCategoryName(material.categoryId);
+              const categoryInfo = getCategoryInfo(material.categoryId);
+              const vendorName = getVendorName(material.vendorId);
               
               return (
                 <tr key={material.id} className="hover:bg-slate-50">
@@ -144,13 +170,13 @@ export default function MaterialList({ materials, isLoading, onEdit }: MaterialL
                     </div>
                   </td>
                   <td className="p-4">
-                    <Badge className={categoryColor}>
-                      {categoryName}
+                    <Badge className={categoryInfo.color}>
+                      {categoryInfo.name}
                     </Badge>
                   </td>
                   <td className="p-4">
                     <p className="text-sm text-slate-900">
-                      {material.vendorId ? `Vendor ${material.vendorId}` : "No vendor"}
+                      {vendorName}
                     </p>
                   </td>
                   <td className="p-4 text-right">
