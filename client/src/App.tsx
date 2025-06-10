@@ -11,6 +11,7 @@ import Vendors from "@/pages/vendors";
 import Categories from "@/pages/categories";
 import ImportExport from "@/pages/import-export";
 import Profile from "@/pages/profile";
+import Subscription from "@/pages/subscription";
 import AppLayout from "@/components/layout/app-layout";
 
 function Router() {
@@ -25,6 +26,7 @@ function Router() {
         <Route path="/categories" component={Categories} />
         <Route path="/import-export" component={ImportExport} />
         <Route path="/profile" component={Profile} />
+        <Route path="/subscription" component={Subscription} />
         <Route component={NotFound} />
       </Switch>
     </AppLayout>
