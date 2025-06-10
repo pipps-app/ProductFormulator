@@ -92,7 +92,7 @@ export const auditLog = pgTable("audit_log", {
   action: text("action").notNull(), // "create", "update", "delete"
   entityType: text("entity_type").notNull(), // "material", "formulation", "vendor"
   entityId: integer("entity_id").notNull(),
-  changes: text("changes"), // JSON string of changes
+  changes: text("changes"), // JSON string with description and changes
   timestamp: timestamp("timestamp").defaultNow(),
 });
 

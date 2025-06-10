@@ -91,7 +91,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         action: "create",
         entityType: "material",
         entityId: material.id,
-        changes: JSON.stringify(material),
+        changes: JSON.stringify({
+          description: `Added new raw material "${material.name}" with a total cost of $${material.totalCost} for ${material.quantity} ${material.unit}`,
+          data: material
+        }),
       });
       
       res.json(material);
@@ -112,12 +115,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const material = await storage.updateRawMaterial(id, materialData);
       
       // Create audit log
+      const unitCostChange = originalMaterial.unitCost !== material.unitCost 
+        ? ` (unit cost changed from $${originalMaterial.unitCost} to $${material.unitCost})`
+        : '';
       await storage.createAuditLog({
         userId: 1,
         action: "update",
         entityType: "material",
         entityId: id,
-        changes: JSON.stringify({ before: originalMaterial, after: material }),
+        changes: JSON.stringify({
+          description: `Updated raw material "${material.name}" - total cost is now $${material.totalCost} for ${material.quantity} ${material.unit}${unitCostChange}`,
+          before: originalMaterial,
+          after: material
+        }),
       });
       
       res.json(material);
