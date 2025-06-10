@@ -14,8 +14,16 @@ export default function FormulationOverview() {
     sum + (f.targetPrice ? Number(f.targetPrice) : 0), 0
   );
   
+  // Calculate profit margin based on selling price: (Selling Price - Cost) / Selling Price * 100
   const avgProfitMargin = activeFormulations.length > 0 
-    ? activeFormulations.reduce((sum, f) => sum + Number(f.profitMargin), 0) / activeFormulations.length
+    ? activeFormulations.reduce((sum, f) => {
+        const targetPrice = f.targetPrice ? Number(f.targetPrice) : 0;
+        const cost = Number(f.totalCost);
+        if (targetPrice > 0) {
+          return sum + ((targetPrice - cost) / targetPrice * 100);
+        }
+        return sum;
+      }, 0) / activeFormulations.filter(f => f.targetPrice && Number(f.targetPrice) > 0).length
     : 0;
 
   const totalCost = activeFormulations.reduce((sum, f) => sum + Number(f.totalCost), 0);
@@ -85,20 +93,26 @@ export default function FormulationOverview() {
           <div className="mt-6 border-t pt-4">
             <h4 className="text-sm font-medium text-slate-700 mb-3">Active Formulations</h4>
             <div className="space-y-2">
-              {activeFormulations.slice(0, 3).map((formulation) => (
-                <div key={formulation.id} className="flex items-center justify-between p-2 bg-slate-50 rounded-lg">
-                  <div className="flex-1">
-                    <div className="font-medium text-sm">{formulation.name}</div>
-                    <div className="text-xs text-slate-600">
-                      Cost: ${Number(formulation.totalCost).toFixed(2)} | 
-                      Target: ${formulation.targetPrice ? Number(formulation.targetPrice).toFixed(2) : 'Not set'}
+              {activeFormulations.slice(0, 3).map((formulation) => {
+                const targetPrice = formulation.targetPrice ? Number(formulation.targetPrice) : 0;
+                const cost = Number(formulation.totalCost);
+                const actualProfitMargin = targetPrice > 0 ? ((targetPrice - cost) / targetPrice * 100) : 0;
+                
+                return (
+                  <div key={formulation.id} className="flex items-center justify-between p-2 bg-slate-50 rounded-lg">
+                    <div className="flex-1">
+                      <div className="font-medium text-sm">{formulation.name}</div>
+                      <div className="text-xs text-slate-600">
+                        Cost: ${cost.toFixed(2)} | 
+                        Target: ${targetPrice > 0 ? targetPrice.toFixed(2) : 'Not set'}
+                      </div>
                     </div>
+                    <Badge variant="outline" className="text-xs">
+                      {actualProfitMargin.toFixed(1)}% margin
+                    </Badge>
                   </div>
-                  <Badge variant="outline" className="text-xs">
-                    {Number(formulation.profitMargin).toFixed(1)}% margin
-                  </Badge>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         )}
