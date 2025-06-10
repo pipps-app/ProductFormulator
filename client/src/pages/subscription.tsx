@@ -78,7 +78,6 @@ const plans: SubscriptionPlan[] = [
 
 export default function Subscription() {
   const [selectedPlan, setSelectedPlan] = useState<SubscriptionPlan | null>(null);
-  const [showPayPal, setShowPayPal] = useState(false);
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -93,24 +92,24 @@ export default function Subscription() {
   const subscribeMutation = useMutation({
     mutationFn: async (plan: SubscriptionPlan) => {
       const response = await apiRequest("POST", "/api/subscribe", {
-        planId: plan.id,
-        amount: plan.price,
-        currency: "USD"
+        planId: plan.id
       });
       return response.json();
     },
     onSuccess: (data, plan) => {
-      setSelectedPlan(plan);
-      setShowPayPal(true);
-      toast({
-        title: "Subscription order created",
-        description: "Complete your payment with PayPal to activate your subscription"
-      });
+      // Redirect to Shopify store for payment
+      if (data.redirectUrl) {
+        window.open(data.redirectUrl, '_blank');
+        toast({
+          title: "Redirecting to Shopify",
+          description: "Complete your purchase in the new tab to activate your subscription"
+        });
+      }
     },
     onError: () => {
       toast({
         title: "Subscription failed",
-        description: "Failed to create subscription order",
+        description: "Failed to redirect to payment page",
         variant: "destructive"
       });
     }

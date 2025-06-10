@@ -593,38 +593,31 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/order", createPaypalOrder);
   app.post("/order/:orderID/capture", capturePaypalOrder);
 
-  // Subscription management routes (using mock user for now)
+  // Shopify subscription redirect (replaces PayPal integration)
   app.post("/api/subscribe", async (req, res) => {
-    const userId = 1; // Mock user ID - replace with proper auth later
-
     try {
-      const { planId, amount, currency = "USD" } = req.body;
+      const { planId } = req.body;
       
-      // Create subscription order
-      const orderResponse = await fetch(`${req.protocol}://${req.get('host')}/order`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          amount: amount.toString(),
-          currency: currency,
-          intent: "CAPTURE"
-        })
-      });
-
-      const orderData = await orderResponse.json();
+      // Return Shopify store URLs for each plan
+      const shopifyUrls = {
+        starter: process.env.SHOPIFY_STARTER_URL || 'https://your-store.myshopify.com/products/pipps-starter',
+        professional: process.env.SHOPIFY_PROFESSIONAL_URL || 'https://your-store.myshopify.com/products/pipps-professional'
+      };
       
-      if (orderData.id) {
-        // Store subscription intent in user record
-        await storage.updateUser(userId, {
-          subscriptionStatus: 'pending',
-          subscriptionPlan: planId
-        } as any);
+      const redirectUrl = shopifyUrls[planId];
+      if (!redirectUrl) {
+        return res.status(400).json({ error: "Invalid plan ID" });
       }
-
-      res.json(orderData);
+      
+      res.json({ 
+        success: true, 
+        message: "Redirecting to Shopify for secure payment",
+        redirectUrl: redirectUrl,
+        planId: planId
+      });
     } catch (error) {
-      console.error("Subscription creation failed:", error);
-      res.status(500).json({ error: "Failed to create subscription" });
+      console.error("Failed to create subscription redirect:", error);
+      res.status(500).json({ error: "Failed to process subscription request" });
     }
   });
 
