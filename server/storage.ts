@@ -197,6 +197,11 @@ export class DatabaseStorage implements IStorage {
     return await db.select().from(materialCategories).where(eq(materialCategories.userId, userId));
   }
 
+  async getMaterialCategory(id: number): Promise<MaterialCategory | undefined> {
+    const result = await db.select().from(materialCategories).where(eq(materialCategories.id, id)).limit(1);
+    return result[0];
+  }
+
   async createMaterialCategory(insertCategory: InsertMaterialCategory): Promise<MaterialCategory> {
     const [category] = await db.insert(materialCategories).values(insertCategory).returning();
     return category;
