@@ -2,6 +2,7 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { createPaypalOrder, capturePaypalOrder, loadPaypalDefault } from "./paypal";
+import { checkMaterialsLimit, checkFormulationsLimit, checkVendorsLimit, getUserSubscriptionInfo } from "./subscription-middleware";
 import { 
   insertVendorSchema, insertMaterialCategorySchema, insertRawMaterialSchema,
   insertFormulationSchema, insertFormulationIngredientSchema
@@ -15,7 +16,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json(vendors);
   });
 
-  app.post("/api/vendors", async (req, res) => {
+  app.post("/api/vendors", checkVendorsLimit, async (req, res) => {
     try {
       const vendorData = insertVendorSchema.parse({ ...req.body, userId: 1 });
       const vendor = await storage.createVendor(vendorData);
@@ -202,7 +203,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json(material);
   });
 
-  app.post("/api/raw-materials", async (req, res) => {
+  app.post("/api/raw-materials", checkMaterialsLimit, async (req, res) => {
     try {
       const materialData = insertRawMaterialSchema.parse({ ...req.body, userId: 1 });
       const material = await storage.createRawMaterial(materialData);
@@ -300,7 +301,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json(formulation);
   });
 
-  app.post("/api/formulations", async (req, res) => {
+  app.post("/api/formulations", checkFormulationsLimit, async (req, res) => {
     try {
       const { ingredients, ...formulationData } = req.body;
       const parsedFormulationData = insertFormulationSchema.parse({ ...formulationData, userId: 1 });
@@ -683,14 +684,30 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       res.json({
-        status: (user as any).subscriptionStatus || 'none',
-        plan: (user as any).subscriptionPlan || null,
+        status: (user as any).subscriptionStatus || 'free',
+        plan: (user as any).subscriptionPlan || 'free',
         startDate: (user as any).subscriptionStartDate,
         endDate: (user as any).subscriptionEndDate
       });
     } catch (error) {
       console.error("Failed to get subscription status:", error);
       res.status(500).json({ error: "Failed to get subscription status" });
+    }
+  });
+
+  app.get("/api/subscription/info", async (req, res) => {
+    const userId = 1; // Mock user ID - replace with proper auth later
+
+    try {
+      const subscriptionInfo = await getUserSubscriptionInfo(userId);
+      if (!subscriptionInfo) {
+        return res.status(404).json({ error: "User not found" });
+      }
+
+      res.json(subscriptionInfo);
+    } catch (error) {
+      console.error("Failed to get subscription info:", error);
+      res.status(500).json({ error: "Failed to get subscription info" });
     }
   });
 
