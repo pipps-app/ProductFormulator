@@ -1,4 +1,4 @@
-import { useMaterials } from "@/hooks/use-materials";
+import { useMaterials, useMaterialCategories } from "@/hooks/use-materials";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Filter, Edit, Trash2, Package, FlaskRound } from "lucide-react";
@@ -8,29 +8,42 @@ import { Link } from "wouter";
 
 export default function MaterialsPreview() {
   const { data: materials, isLoading } = useMaterials();
+  const { data: categories } = useMaterialCategories();
 
   const recentMaterials = materials?.slice(0, 5) || [];
 
-  const getCategoryColor = (categoryId: number | null) => {
-    const colors = {
-      1: "bg-blue-100 text-blue-800",
-      2: "bg-purple-100 text-purple-800",
-      3: "bg-green-100 text-green-800",
-      4: "bg-yellow-100 text-yellow-800",
-      5: "bg-red-100 text-red-800",
-    };
-    return colors[categoryId as keyof typeof colors] || "bg-gray-100 text-gray-800";
-  };
+  const getCategoryInfo = (categoryId: number | null) => {
+    if (!categoryId || !categories || !Array.isArray(categories)) {
+      return {
+        name: "Uncategorized",
+        color: "bg-gray-100 text-gray-800"
+      };
+    }
+    
+    const category = categories.find((cat: any) => cat.id === categoryId);
+    if (!category) {
+      return {
+        name: "Uncategorized", 
+        color: "bg-gray-100 text-gray-800"
+      };
+    }
 
-  const getCategoryName = (categoryId: number | null) => {
-    const names = {
-      1: "Base Oils",
-      2: "Essential Oils", 
-      3: "Butters",
-      4: "Waxes",
-      5: "Additives",
+    // Convert category color to Tailwind classes
+    const colorMap: Record<string, string> = {
+      "blue": "bg-blue-100 text-blue-800",
+      "green": "bg-green-100 text-green-800", 
+      "red": "bg-red-100 text-red-800",
+      "yellow": "bg-yellow-100 text-yellow-800",
+      "purple": "bg-purple-100 text-purple-800",
+      "pink": "bg-pink-100 text-pink-800",
+      "indigo": "bg-indigo-100 text-indigo-800",
+      "gray": "bg-gray-100 text-gray-800",
     };
-    return names[categoryId as keyof typeof names] || "Uncategorized";
+
+    return {
+      name: category.name,
+      color: colorMap[category.color] || "bg-gray-100 text-gray-800"
+    };
   };
 
   if (isLoading) {
@@ -103,8 +116,7 @@ export default function MaterialsPreview() {
               <tbody className="divide-y divide-slate-200">
                 {recentMaterials.map((material, index) => {
                   const isLowStock = Number(material.quantity) < 5;
-                  const categoryColor = getCategoryColor(material.categoryId);
-                  const categoryName = getCategoryName(material.categoryId);
+                  const categoryInfo = getCategoryInfo(material.categoryId);
                   
                   return (
                     <tr key={material.id} className="hover:bg-slate-50">
@@ -132,8 +144,8 @@ export default function MaterialsPreview() {
                         </div>
                       </td>
                       <td className="p-4">
-                        <Badge className={categoryColor}>
-                          {categoryName}
+                        <Badge className={categoryInfo.color}>
+                          {categoryInfo.name}
                         </Badge>
                       </td>
                       <td className="p-4">
