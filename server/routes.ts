@@ -1,6 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
+import { createPaypalOrder, capturePaypalOrder, loadPaypalDefault } from "./paypal";
 import { 
   insertVendorSchema, insertMaterialCategorySchema, insertRawMaterialSchema,
   insertFormulationSchema, insertFormulationIngredientSchema
@@ -583,6 +584,106 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json({ success: true });
     } catch (error) {
       res.status(400).json({ error: "Invalid password data" });
+    }
+  });
+
+  // PayPal routes
+  app.get("/setup", loadPaypalDefault);
+  app.post("/order", createPaypalOrder);
+  app.post("/order/:orderID/capture", capturePaypalOrder);
+
+  // Subscription management routes
+  app.post("/api/subscribe", async (req, res) => {
+    if (!req.isAuthenticated()) {
+      return res.sendStatus(401);
+    }
+
+    try {
+      const { planId, amount, currency = "USD" } = req.body;
+      
+      // Create subscription order
+      const orderResponse = await fetch(`${req.protocol}://${req.get('host')}/order`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          amount: amount,
+          currency: currency,
+          intent: "CAPTURE"
+        })
+      });
+
+      const orderData = await orderResponse.json();
+      
+      if (orderData.id) {
+        // Store subscription intent in user record
+        await storage.updateUser(req.user.id, {
+          subscriptionStatus: 'pending',
+          subscriptionPlan: planId
+        });
+      }
+
+      res.json(orderData);
+    } catch (error) {
+      console.error("Subscription creation failed:", error);
+      res.status(500).json({ error: "Failed to create subscription" });
+    }
+  });
+
+  app.post("/api/subscription/activate", async (req, res) => {
+    if (!req.isAuthenticated()) {
+      return res.sendStatus(401);
+    }
+
+    try {
+      const { orderId, planId } = req.body;
+      
+      // Capture the payment
+      const captureResponse = await fetch(`${req.protocol}://${req.get('host')}/order/${orderId}/capture`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' }
+      });
+
+      const captureData = await captureResponse.json();
+      
+      if (captureData.status === 'COMPLETED') {
+        // Activate subscription
+        await storage.updateUser(req.user.id, {
+          subscriptionStatus: 'active',
+          subscriptionPlan: planId,
+          subscriptionStartDate: new Date(),
+          subscriptionEndDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000) // 30 days
+        });
+
+        res.json({ success: true, subscription: { status: 'active', plan: planId } });
+      } else {
+        res.status(400).json({ error: "Payment not completed" });
+      }
+    } catch (error) {
+      console.error("Subscription activation failed:", error);
+      res.status(500).json({ error: "Failed to activate subscription" });
+    }
+  });
+
+  app.get("/api/subscription/status", async (req, res) => {
+    if (!req.isAuthenticated()) {
+      return res.sendStatus(401);
+    }
+
+    try {
+      const user = await storage.getUser(req.user.id);
+      if (!user) {
+        return res.status(404).json({ error: "User not found" });
+      }
+
+      res.json({
+        status: user.subscriptionStatus || 'none',
+        plan: user.subscriptionPlan || null,
+        startDate: user.subscriptionStartDate,
+        endDate: user.subscriptionEndDate
+      });
+    } catch (error) {
+      console.error("Failed to get subscription status:", error);
+      res.status(500).json({ error: "Failed to get subscription status" });
     }
   });
 

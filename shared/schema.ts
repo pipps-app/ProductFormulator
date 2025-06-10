@@ -9,6 +9,11 @@ export const users = pgTable("users", {
   password: text("password").notNull(),
   company: text("company"),
   role: text("role").notNull().default("user"), // "admin" or "user"
+  subscriptionStatus: text("subscription_status").default("none"),
+  subscriptionPlan: text("subscription_plan"),
+  subscriptionStartDate: timestamp("subscription_start_date"),
+  subscriptionEndDate: timestamp("subscription_end_date"),
+  paypalSubscriptionId: text("paypal_subscription_id"),
   createdAt: timestamp("created_at").defaultNow(),
 });
 
