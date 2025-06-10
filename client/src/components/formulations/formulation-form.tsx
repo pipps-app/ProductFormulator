@@ -104,8 +104,39 @@ export default function FormulationForm({ formulation, onSuccess }: FormulationF
         markupPercentage: formulation.markupPercentage || "30.00",
         isActive: formulation.isActive ?? true,
       });
+      
+      // Load existing ingredients
+      const loadIngredients = async () => {
+        try {
+          const response = await fetch(`/api/formulations/${formulation.id}/ingredients`);
+          if (response.ok) {
+            const existingIngredients = await response.json();
+            const formattedIngredients = existingIngredients.map((ing: any) => {
+              const material = materials?.find(m => m.id === ing.materialId);
+              return {
+                id: ing.id.toString(),
+                materialId: ing.materialId,
+                materialName: material?.name || `Material ${ing.materialId}`,
+                unitCost: parseFloat(material?.unitCost || "0"),
+                quantity: parseFloat(ing.quantity),
+                unit: ing.unit,
+                totalCost: parseFloat(ing.costContribution),
+              };
+            });
+            setIngredients(formattedIngredients);
+          }
+        } catch (error) {
+          console.error("Failed to load ingredients:", error);
+        }
+      };
+      
+      if (materials && materials.length > 0) {
+        loadIngredients();
+      }
+    } else {
+      setIngredients([]);
     }
-  }, [formulation, form]);
+  }, [formulation, form, materials]);
 
   const createMutation = useMutation({
     mutationFn: (data: any) => apiRequest("POST", "/api/formulations", data),
@@ -155,6 +186,8 @@ export default function FormulationForm({ formulation, onSuccess }: FormulationF
         includeInMarkup: true,
       })),
     };
+
+    console.log("Submitting formulation with ingredients:", formulationData);
 
     if (formulation) {
       updateMutation.mutate({ id: formulation.id, data: formulationData });

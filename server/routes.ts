@@ -348,6 +348,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       const { ingredients, ...formulationData } = req.body;
+      console.log("Updating formulation with ingredients:", ingredients);
       const parsedFormulationData = insertFormulationSchema.partial().parse(formulationData);
       const formulation = await storage.updateFormulation(id, parsedFormulationData);
       

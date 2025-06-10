@@ -321,8 +321,28 @@ export class DatabaseStorage implements IStorage {
   }
 
   // Formulation Ingredient methods
-  async getFormulationIngredients(formulationId: number): Promise<FormulationIngredient[]> {
-    return await db.select().from(formulationIngredients).where(eq(formulationIngredients.formulationId, formulationId));
+  async getFormulationIngredients(formulationId: number): Promise<any[]> {
+    return await db
+      .select({
+        id: formulationIngredients.id,
+        formulationId: formulationIngredients.formulationId,
+        materialId: formulationIngredients.materialId,
+        subFormulationId: formulationIngredients.subFormulationId,
+        quantity: formulationIngredients.quantity,
+        unit: formulationIngredients.unit,
+        costContribution: formulationIngredients.costContribution,
+        includeInMarkup: formulationIngredients.includeInMarkup,
+        notes: formulationIngredients.notes,
+        material: {
+          id: rawMaterials.id,
+          name: rawMaterials.name,
+          unitCost: rawMaterials.unitCost,
+          unit: rawMaterials.unit,
+        }
+      })
+      .from(formulationIngredients)
+      .leftJoin(rawMaterials, eq(formulationIngredients.materialId, rawMaterials.id))
+      .where(eq(formulationIngredients.formulationId, formulationId));
   }
 
   async createFormulationIngredient(insertIngredient: InsertFormulationIngredient): Promise<FormulationIngredient> {
