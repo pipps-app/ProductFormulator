@@ -99,8 +99,6 @@ export default function FormulationForm({ formulation, onSuccess }: FormulationF
       form.reset({
         name: formulation.name,
         description: formulation.description || "",
-        batchSize: formulation.batchSize,
-        batchUnit: formulation.batchUnit,
         markupPercentage: formulation.markupPercentage || "30.00",
         isActive: formulation.isActive ?? true,
       });
@@ -180,6 +178,8 @@ export default function FormulationForm({ formulation, onSuccess }: FormulationF
 
     const formulationData = {
       ...data,
+      batchSize: "1.000", // Default batch size since we removed the field
+      batchUnit: "unit", // Default unit since we removed the field
       targetPrice: sellingPrice || undefined,
       totalCost: totalMaterialCost.toString(),
       unitCost: unitCost.toString(),
@@ -240,48 +240,7 @@ export default function FormulationForm({ formulation, onSuccess }: FormulationF
                 )}
               />
 
-              <div className="grid grid-cols-2 gap-4">
-                <FormField
-                  control={form.control}
-                  name="batchSize"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Batch Size</FormLabel>
-                      <FormControl>
-                        <Input {...field} type="number" step="0.001" placeholder="1.000" />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
 
-                <FormField
-                  control={form.control}
-                  name="batchUnit"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Batch Unit</FormLabel>
-                      <Select onValueChange={field.onChange} value={field.value}>
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectItem value="kg">kg</SelectItem>
-                          <SelectItem value="g">g</SelectItem>
-                          <SelectItem value="L">L</SelectItem>
-                          <SelectItem value="ml">ml</SelectItem>
-                          <SelectItem value="oz">oz</SelectItem>
-                          <SelectItem value="lb">lb</SelectItem>
-                          <SelectItem value="pcs">pcs</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
             </CardContent>
           </Card>
 
@@ -366,7 +325,7 @@ export default function FormulationForm({ formulation, onSuccess }: FormulationF
                   <div className="text-2xl font-bold text-slate-900">${totalMaterialCost.toFixed(2)}</div>
                 </div>
                 <div className="space-y-2">
-                  <div className="text-sm text-slate-600">Cost per {form.watch("batchUnit") || "unit"}</div>
+                  <div className="text-sm text-slate-600">Cost per unit</div>
                   <div className="text-2xl font-bold text-slate-900">${unitCost.toFixed(4)}</div>
                 </div>
               </div>
@@ -407,7 +366,7 @@ export default function FormulationForm({ formulation, onSuccess }: FormulationF
               {actualSellingPrice > 0 && (
                 <div className="grid grid-cols-3 gap-4 p-4 bg-green-50 rounded-lg">
                   <div className="space-y-2">
-                    <div className="text-sm text-green-600">Profit per {form.watch("batchUnit") || "unit"}</div>
+                    <div className="text-sm text-green-600">Profit per unit</div>
                     <div className="text-xl font-bold text-green-700">${profit.toFixed(2)}</div>
                   </div>
                   <div className="space-y-2">
