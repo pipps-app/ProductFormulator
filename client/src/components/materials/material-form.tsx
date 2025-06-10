@@ -89,7 +89,9 @@ export default function MaterialForm({ material, onSuccess }: MaterialFormProps)
       apiRequest("PUT", `/api/raw-materials/${id}`, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/raw-materials"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/material-categories"] });
       queryClient.invalidateQueries({ queryKey: ["/api/dashboard/stats"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/dashboard/recent-activity"] });
       toast({ title: "Material updated successfully" });
       onSuccess();
     },

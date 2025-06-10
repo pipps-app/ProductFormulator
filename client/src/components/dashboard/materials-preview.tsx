@@ -13,7 +13,9 @@ export default function MaterialsPreview() {
   const recentMaterials = materials?.slice(0, 5) || [];
 
   const getCategoryInfo = (categoryId: number | null) => {
+    console.log('getCategoryInfo called with:', categoryId, 'categories:', categories);
     if (!categoryId || !categories || !Array.isArray(categories)) {
+      console.log('Returning uncategorized due to missing data');
       return {
         name: "Uncategorized",
         color: "bg-gray-100 text-gray-800"
@@ -21,6 +23,7 @@ export default function MaterialsPreview() {
     }
     
     const category = categories.find((cat: any) => cat.id === categoryId);
+    console.log('Found category:', category);
     if (!category) {
       return {
         name: "Uncategorized", 
@@ -31,10 +34,15 @@ export default function MaterialsPreview() {
     // Convert category color to Tailwind classes
     const colorMap: Record<string, string> = {
       "blue": "bg-blue-100 text-blue-800",
+      "#3b82f6": "bg-blue-100 text-blue-800",
       "green": "bg-green-100 text-green-800", 
+      "#10b981": "bg-green-100 text-green-800",
       "red": "bg-red-100 text-red-800",
+      "#ef4444": "bg-red-100 text-red-800",
       "yellow": "bg-yellow-100 text-yellow-800",
+      "#f59e0b": "bg-yellow-100 text-yellow-800",
       "purple": "bg-purple-100 text-purple-800",
+      "#8b5cf6": "bg-purple-100 text-purple-800",
       "pink": "bg-pink-100 text-pink-800",
       "indigo": "bg-indigo-100 text-indigo-800",
       "gray": "bg-gray-100 text-gray-800",
