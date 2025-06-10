@@ -41,12 +41,10 @@ export default function FormulationForm({ formulation, onSuccess }: FormulationF
   const [sellingPrice, setSellingPrice] = useState<string>("");
 
   const form = useForm({
-    resolver: zodResolver(insertFormulationSchema.omit({ userId: true })),
+    resolver: zodResolver(insertFormulationSchema.omit({ userId: true, batchSize: true, batchUnit: true })),
     defaultValues: {
       name: "",
       description: "",
-      batchSize: "1.000",
-      batchUnit: "kg",
       markupPercentage: "30.00",
       isActive: true,
     },
@@ -54,8 +52,7 @@ export default function FormulationForm({ formulation, onSuccess }: FormulationF
 
   // Cost calculations
   const totalMaterialCost = ingredients.reduce((sum, ing) => sum + ing.totalCost, 0);
-  const batchSize = parseFloat(form.watch("batchSize") || "1");
-  const unitCost = batchSize > 0 ? totalMaterialCost / batchSize : 0;
+  const unitCost = totalMaterialCost; // Direct cost since we removed batch sizing
   const markupPercentage = parseFloat(form.watch("markupPercentage") || "30");
   const suggestedPrice = unitCost * (1 + markupPercentage / 100);
   const actualSellingPrice = parseFloat(sellingPrice || "0");

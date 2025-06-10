@@ -109,7 +109,12 @@ export default function FormulationList({ formulations, isLoading, onEdit }: For
           <tbody className="divide-y divide-slate-200">
             {formulations.map((formulation) => {
               const hasTargetPrice = formulation.targetPrice && Number(formulation.targetPrice) > 0;
-              const profitMarginColor = getProfitMarginColor(formulation.profitMargin || "0");
+              const targetPrice = Number(formulation.targetPrice || 0);
+              const totalCost = Number(formulation.totalCost || 0);
+              const actualProfitMargin = hasTargetPrice && targetPrice > 0 
+                ? ((targetPrice - totalCost) / targetPrice * 100) 
+                : 0;
+              const profitMarginColor = getProfitMarginColor(actualProfitMargin.toString());
               
               return (
                 <tr key={formulation.id} className="hover:bg-slate-50">
@@ -145,7 +150,7 @@ export default function FormulationList({ formulations, isLoading, onEdit }: For
                   </td>
                   <td className="p-4 text-right">
                     <p className={`text-sm font-medium ${profitMarginColor}`}>
-                      {Number(formulation.profitMargin).toFixed(1)}%
+                      {hasTargetPrice ? actualProfitMargin.toFixed(1) : "0.0"}%
                     </p>
                   </td>
                   <td className="p-4 text-right">

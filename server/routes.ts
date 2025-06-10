@@ -564,6 +564,29 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.put("/api/user/subscription", async (req, res) => {
+    try {
+      const userId = 1; // Mock user ID for demo
+      const { plan, status } = req.body;
+      
+      const updates = { 
+        subscriptionPlan: plan, 
+        subscriptionStatus: status,
+        subscriptionStartDate: new Date(),
+        subscriptionEndDate: plan === 'unlimited' ? null : new Date(Date.now() + 365 * 24 * 60 * 60 * 1000)
+      };
+      const user = await storage.updateUser(userId, updates);
+      
+      if (!user) {
+        return res.status(404).json({ error: "User not found" });
+      }
+      
+      res.json({ success: true, message: "Subscription updated successfully" });
+    } catch (error) {
+      res.status(400).json({ error: "Invalid subscription data" });
+    }
+  });
+
   app.put("/api/user/password", async (req, res) => {
     try {
       const userId = 1; // Mock user ID
