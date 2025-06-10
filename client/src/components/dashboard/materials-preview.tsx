@@ -120,7 +120,7 @@ export default function MaterialsPreview() {
                   <th className="text-left p-4 text-sm font-medium text-slate-600">Category</th>
                   <th className="text-left p-4 text-sm font-medium text-slate-600">Vendor</th>
                   <th className="text-right p-4 text-sm font-medium text-slate-600">Unit Cost</th>
-                  <th className="text-right p-4 text-sm font-medium text-slate-600">Stock</th>
+                  <th className="text-right p-4 text-sm font-medium text-slate-600">Total Quantity</th>
                   <th className="text-right p-4 text-sm font-medium text-slate-600">Value</th>
                   <th className="text-center p-4 text-sm font-medium text-slate-600">Actions</th>
                 </tr>

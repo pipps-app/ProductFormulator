@@ -39,18 +39,12 @@ export default function MetricsGrid({ stats, isLoading }: MetricsGridProps) {
       icon: TrendingUp,
       color: "green",
     },
-    {
-      title: "Inventory Value",
-      value: stats?.inventoryValue ? `$${stats.inventoryValue}` : "$0.00",
-      icon: DollarSign,
-      color: "orange",
-    },
   ];
 
   if (isLoading) {
     return (
-      <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
-        {Array.from({ length: 5 }).map((_, i) => (
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+        {Array.from({ length: 4 }).map((_, i) => (
           <Card key={i}>
             <CardContent className="p-6">
               <div className="space-y-3">
@@ -65,7 +59,7 @@ export default function MetricsGrid({ stats, isLoading }: MetricsGridProps) {
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+    <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
       {metrics.map((metric) => {
         const Icon = metric.icon;
         const colorClasses = {

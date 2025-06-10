@@ -36,7 +36,7 @@ export default function Materials() {
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-2xl font-bold text-slate-900">Raw Materials</h2>
-          <p className="text-slate-600 mt-1">Manage your inventory and material costs</p>
+          <p className="text-slate-600 mt-1">Manage your materials and material costs</p>
         </div>
         <Button onClick={() => setIsAddModalOpen(true)}>
           <Plus className="h-4 w-4 mr-2" />
@@ -68,7 +68,7 @@ export default function Materials() {
       {/* Materials List */}
       <Card>
         <CardHeader>
-          <CardTitle>Materials Inventory</CardTitle>
+          <CardTitle>Materials Library</CardTitle>
         </CardHeader>
         <CardContent>
           <MaterialList 
