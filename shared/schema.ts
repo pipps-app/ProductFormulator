@@ -129,7 +129,6 @@ export const insertFormulationSchema = createInsertSchema(formulations).omit({
 
 export const insertFormulationIngredientSchema = createInsertSchema(formulationIngredients).omit({
   id: true,
-  costContribution: true,
 });
 
 export const insertMaterialFileSchema = createInsertSchema(materialFiles).omit({

@@ -147,6 +147,13 @@ export default function FormulationForm({ formulation, onSuccess }: FormulationF
       totalCost: totalMaterialCost.toString(),
       unitCost: unitCost.toString(),
       profitMargin: profitMargin.toString(),
+      ingredients: ingredients.map(ing => ({
+        materialId: ing.materialId,
+        quantity: ing.quantity.toString(),
+        unit: ing.unit,
+        costContribution: ing.totalCost.toString(),
+        includeInMarkup: true,
+      })),
     };
 
     if (formulation) {

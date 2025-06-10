@@ -301,8 +301,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/formulations", async (req, res) => {
     try {
-      const formulationData = insertFormulationSchema.parse({ ...req.body, userId: 1 });
-      const formulation = await storage.createFormulation(formulationData);
+      const { ingredients, ...formulationData } = req.body;
+      const parsedFormulationData = insertFormulationSchema.parse({ ...formulationData, userId: 1 });
+      const formulation = await storage.createFormulation(parsedFormulationData);
+      
+      // Create formulation ingredients if provided
+      if (ingredients && Array.isArray(ingredients)) {
+        for (const ingredient of ingredients) {
+          await storage.createFormulationIngredient({
+            formulationId: formulation.id,
+            materialId: ingredient.materialId,
+            quantity: ingredient.quantity,
+            unit: ingredient.unit,
+            costContribution: ingredient.costContribution,
+            includeInMarkup: ingredient.includeInMarkup || true,
+          });
+        }
+      }
       
       // Create audit log
       await storage.createAuditLog({
@@ -312,12 +327,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
         entityId: formulation.id,
         changes: JSON.stringify({
           description: `Created new formulation "${formulation.name}" with batch size of ${formulation.batchSize} ${formulation.batchUnit} and ${formulation.markupPercentage}% markup`,
-          data: formulation
+          data: formulation,
+          ingredients: ingredients
         }),
       });
       
       res.json(formulation);
     } catch (error) {
+      console.error("Error creating formulation:", error);
       res.status(400).json({ error: "Invalid formulation data" });
     }
   });
@@ -330,8 +347,32 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ error: "Formulation not found" });
       }
 
-      const formulationData = insertFormulationSchema.partial().parse(req.body);
-      const formulation = await storage.updateFormulation(id, formulationData);
+      const { ingredients, ...formulationData } = req.body;
+      const parsedFormulationData = insertFormulationSchema.partial().parse(formulationData);
+      const formulation = await storage.updateFormulation(id, parsedFormulationData);
+      
+      // Update formulation ingredients if provided
+      if (ingredients && Array.isArray(ingredients)) {
+        // Get existing ingredients
+        const existingIngredients = await storage.getFormulationIngredients(id);
+        
+        // Delete existing ingredients
+        for (const existingIngredient of existingIngredients) {
+          await storage.deleteFormulationIngredient(existingIngredient.id);
+        }
+        
+        // Create new ingredients
+        for (const ingredient of ingredients) {
+          await storage.createFormulationIngredient({
+            formulationId: id,
+            materialId: ingredient.materialId,
+            quantity: ingredient.quantity,
+            unit: ingredient.unit,
+            costContribution: ingredient.costContribution,
+            includeInMarkup: ingredient.includeInMarkup || true,
+          });
+        }
+      }
       
       // Create audit log
       if (formulation) {
@@ -346,13 +387,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
           changes: JSON.stringify({
             description: `Updated formulation "${formulation.name}" - batch size is now ${formulation.batchSize} ${formulation.batchUnit} with ${formulation.markupPercentage}% markup${costChange}`,
             before: originalFormulation,
-            after: formulation
+            after: formulation,
+            ingredients: ingredients
           }),
         });
       }
       
       res.json(formulation);
     } catch (error) {
+      console.error("Error updating formulation:", error);
       res.status(400).json({ error: "Invalid formulation data" });
     }
   });
