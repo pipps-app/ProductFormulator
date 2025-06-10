@@ -224,8 +224,37 @@ export class DatabaseStorage implements IStorage {
   }
 
   // Raw Material methods
-  async getRawMaterials(userId: number): Promise<RawMaterial[]> {
-    return await db.select().from(rawMaterials).where(eq(rawMaterials.userId, userId));
+  async getRawMaterials(userId: number): Promise<any[]> {
+    return await db
+      .select({
+        id: rawMaterials.id,
+        name: rawMaterials.name,
+        sku: rawMaterials.sku,
+        categoryId: rawMaterials.categoryId,
+        vendorId: rawMaterials.vendorId,
+        totalCost: rawMaterials.totalCost,
+        quantity: rawMaterials.quantity,
+        unit: rawMaterials.unit,
+        unitCost: rawMaterials.unitCost,
+        notes: rawMaterials.notes,
+        isActive: rawMaterials.isActive,
+        userId: rawMaterials.userId,
+        createdAt: rawMaterials.createdAt,
+        category: {
+          id: materialCategories.id,
+          name: materialCategories.name,
+          color: materialCategories.color,
+        },
+        vendor: {
+          id: vendors.id,
+          name: vendors.name,
+          contactEmail: vendors.contactEmail,
+        }
+      })
+      .from(rawMaterials)
+      .leftJoin(materialCategories, eq(rawMaterials.categoryId, materialCategories.id))
+      .leftJoin(vendors, eq(rawMaterials.vendorId, vendors.id))
+      .where(eq(rawMaterials.userId, userId));
   }
 
   async getRawMaterial(id: number): Promise<RawMaterial | undefined> {

@@ -12,18 +12,10 @@ export default function MaterialsPreview() {
 
   const recentMaterials = materials?.slice(0, 5) || [];
 
-  const getCategoryInfo = (categoryId: number | null) => {
-    if (!categoryId || !categories || !Array.isArray(categories)) {
+  const getCategoryInfo = (material: any) => {
+    if (!material.category) {
       return {
         name: "Uncategorized",
-        color: "bg-gray-100 text-gray-800"
-      };
-    }
-    
-    const category = categories.find((cat: any) => cat.id === categoryId);
-    if (!category) {
-      return {
-        name: "Uncategorized", 
         color: "bg-gray-100 text-gray-800"
       };
     }
@@ -46,8 +38,8 @@ export default function MaterialsPreview() {
     };
 
     return {
-      name: category.name,
-      color: colorMap[category.color] || "bg-gray-100 text-gray-800"
+      name: material.category.name,
+      color: colorMap[material.category.color] || "bg-gray-100 text-gray-800"
     };
   };
 
@@ -121,7 +113,7 @@ export default function MaterialsPreview() {
               <tbody className="divide-y divide-slate-200">
                 {recentMaterials.map((material, index) => {
                   const isLowStock = Number(material.quantity) < 5;
-                  const categoryInfo = getCategoryInfo(material.categoryId);
+                  const categoryInfo = getCategoryInfo(material);
                   
                   return (
                     <tr key={material.id} className="hover:bg-slate-50">
@@ -155,7 +147,7 @@ export default function MaterialsPreview() {
                       </td>
                       <td className="p-4">
                         <p className="text-sm text-slate-900">
-                          {material.vendorId ? `Vendor ${material.vendorId}` : "No vendor"}
+                          {material.vendor?.name || "No vendor"}
                         </p>
                       </td>
                       <td className="p-4 text-right">
