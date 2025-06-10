@@ -499,10 +499,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
     const activeFormulations = formulations.filter(f => f.isActive).length;
     const totalInventoryValue = materials.reduce((sum, m) => sum + Number(m.totalCost), 0);
     
-    // Calculate average profit margin
-    const activeFormulationsWithMargin = formulations.filter(f => f.isActive && Number(f.profitMargin) > 0);
-    const avgProfitMargin = activeFormulationsWithMargin.length > 0 
-      ? activeFormulationsWithMargin.reduce((sum, f) => sum + Number(f.profitMargin), 0) / activeFormulationsWithMargin.length
+    // Calculate average profit margin based on selling price: (Selling Price - Cost) / Selling Price * 100
+    const activeFormulationsWithTarget = formulations.filter(f => f.isActive && f.targetPrice && Number(f.targetPrice) > 0);
+    const avgProfitMargin = activeFormulationsWithTarget.length > 0 
+      ? activeFormulationsWithTarget.reduce((sum, f) => {
+          const targetPrice = Number(f.targetPrice);
+          const cost = Number(f.totalCost);
+          return sum + ((targetPrice - cost) / targetPrice * 100);
+        }, 0) / activeFormulationsWithTarget.length
       : 0;
 
     // Add cache control headers to prevent stale data
