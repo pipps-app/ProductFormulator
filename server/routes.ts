@@ -633,7 +633,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { orderId, planId } = req.body;
       
-      // Capture the payment
+      // Handle free tier activation
+      if (orderId === "free") {
+        await storage.updateUser(userId, {
+          subscriptionStatus: 'active',
+          subscriptionPlan: planId,
+          subscriptionStartDate: new Date(),
+          subscriptionEndDate: null // Free tier doesn't expire
+        } as any);
+
+        res.json({ success: true, subscription: { status: 'active', plan: planId } });
+        return;
+      }
+      
+      // Capture the payment for paid plans
       const captureResponse = await fetch(`${req.protocol}://${req.get('host')}/order/${orderId}/capture`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' }

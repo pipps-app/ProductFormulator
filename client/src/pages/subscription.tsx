@@ -22,19 +22,36 @@ interface SubscriptionPlan {
 
 const plans: SubscriptionPlan[] = [
   {
+    id: "free",
+    name: "Free",
+    price: 0,
+    interval: "forever",
+    maxMaterials: 5,
+    maxFormulations: 2,
+    support: "Community support",
+    features: [
+      "Up to 5 raw materials",
+      "Up to 2 formulations",
+      "Basic cost calculations",
+      "1 vendor",
+      "Material categories",
+      "Community support"
+    ]
+  },
+  {
     id: "starter",
     name: "Starter",
-    price: 29,
+    price: 19,
     interval: "month",
-    maxMaterials: 100,
-    maxFormulations: 20,
+    popular: true,
+    maxMaterials: 50,
+    maxFormulations: 10,
     support: "Email support",
     features: [
-      "Up to 100 raw materials",
-      "Up to 20 formulations",
+      "Up to 50 raw materials",
+      "Up to 10 formulations",
+      "Unlimited vendors & categories",
       "Basic cost calculations",
-      "Material categories",
-      "Vendor management",
       "Export to CSV",
       "Email support"
     ]
@@ -42,40 +59,19 @@ const plans: SubscriptionPlan[] = [
   {
     id: "professional",
     name: "Professional", 
-    price: 69,
-    interval: "month",
-    popular: true,
-    maxMaterials: 500,
-    maxFormulations: 100,
-    support: "Priority email support",
-    features: [
-      "Up to 500 raw materials",
-      "Up to 100 formulations",
-      "Advanced cost calculations",
-      "Profit margin analysis",
-      "Batch cost optimization",
-      "Advanced reporting",
-      "API access",
-      "Priority email support"
-    ]
-  },
-  {
-    id: "enterprise",
-    name: "Enterprise",
-    price: 149,
+    price: 49,
     interval: "month",
     maxMaterials: -1, // Unlimited
     maxFormulations: -1, // Unlimited
-    support: "Phone & email support",
+    support: "Priority email support",
     features: [
       "Unlimited materials",
       "Unlimited formulations",
-      "Multi-user accounts",
-      "Advanced analytics",
-      "Custom integrations",
-      "White-label options",
-      "Dedicated account manager",
-      "Phone & email support"
+      "Advanced reporting & analytics",
+      "Batch cost optimization",
+      "Profit margin analysis",
+      "Priority email support",
+      "Advanced export options"
     ]
   }
 ];
@@ -147,7 +143,12 @@ export default function Subscription() {
   });
 
   const handleSubscribe = (plan: SubscriptionPlan) => {
-    subscribeMutation.mutate(plan);
+    if (plan.price === 0) {
+      // Handle free tier activation
+      activateSubscription.mutate({ orderId: "free", planId: plan.id });
+    } else {
+      subscribeMutation.mutate(plan);
+    }
   };
 
   const getCurrentPlan = () => {
@@ -282,10 +283,19 @@ export default function Subscription() {
                     className="w-full"
                     variant={plan.popular ? "default" : "outline"}
                     onClick={() => handleSubscribe(plan)}
-                    disabled={subscribeMutation.isPending}
+                    disabled={subscribeMutation.isPending || activateSubscription.isPending}
                   >
-                    <CreditCard className="h-4 w-4 mr-2" />
-                    {subscribeMutation.isPending ? "Processing..." : "Subscribe Now"}
+                    {plan.price === 0 ? (
+                      <>
+                        <Check className="h-4 w-4 mr-2" />
+                        {activateSubscription.isPending ? "Activating..." : "Start Free"}
+                      </>
+                    ) : (
+                      <>
+                        <CreditCard className="h-4 w-4 mr-2" />
+                        {subscribeMutation.isPending ? "Processing..." : "Subscribe Now"}
+                      </>
+                    )}
                   </Button>
                 )}
               </div>

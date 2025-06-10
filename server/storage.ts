@@ -1,6 +1,6 @@
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
-import { eq, desc } from "drizzle-orm";
+import { eq, desc, sql } from "drizzle-orm";
 import { 
   users, vendors, materialCategories, rawMaterials, formulations, 
   formulationIngredients, materialFiles, auditLog,
@@ -85,6 +85,17 @@ export class DatabaseStorage implements IStorage {
 
   async initializeDefaultData() {
     try {
+      // Add subscription columns if they don't exist
+      try {
+        await db.execute(sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS subscription_status TEXT DEFAULT 'none'`);
+        await db.execute(sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS subscription_plan TEXT`);
+        await db.execute(sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS subscription_start_date TIMESTAMP`);
+        await db.execute(sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS subscription_end_date TIMESTAMP`);
+        await db.execute(sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS paypal_subscription_id TEXT`);
+      } catch (error) {
+        console.log("Subscription columns may already exist:", error);
+      }
+
       // Check if default user exists
       const existingUser = await db.select().from(users).where(eq(users.username, "demo")).limit(1);
       if (existingUser.length > 0) return; // Already initialized
