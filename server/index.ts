@@ -6,6 +6,15 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
+// Disable ETag caching for dashboard stats to ensure real-time updates
+app.use('/api/dashboard/stats', (req, res, next) => {
+  res.set('Cache-Control', 'no-cache, no-store, must-revalidate');
+  res.set('Pragma', 'no-cache');
+  res.set('Expires', '0');
+  res.set('ETag', ''); // Disable ETag
+  next();
+});
+
 app.use((req, res, next) => {
   const start = Date.now();
   const path = req.path;
