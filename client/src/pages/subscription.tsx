@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Check, CreditCard, Calendar, Building, Users, Zap } from "lucide-react";
-import PayPalButton from "@/components/PayPalButton";
+
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 
@@ -125,7 +125,6 @@ export default function Subscription() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/subscription/status"] });
-      setShowPayPal(false);
       setSelectedPlan(null);
       toast({
         title: "Subscription activated!",
@@ -210,23 +209,26 @@ export default function Subscription() {
         </Card>
       )}
 
-      {/* PayPal Payment */}
-      {showPayPal && selectedPlan && (
+      {/* Shopify Purchase Instructions */}
+      {selectedPlan && selectedPlan.price > 0 && (
         <Card className="border-blue-200 bg-blue-50">
           <CardHeader>
-            <CardTitle className="text-blue-900">Complete Your Subscription</CardTitle>
+            <CardTitle className="text-blue-900">Complete Your Purchase</CardTitle>
             <p className="text-blue-700">
-              Complete your payment for the {selectedPlan.name} plan (${selectedPlan.price}/month)
+              After purchasing the {selectedPlan.name} plan in our store, your subscription will be automatically activated.
             </p>
           </CardHeader>
-          <CardContent>
-            <div className="max-w-md mx-auto">
-              <PayPalButton
-                amount={selectedPlan.price.toString()}
-                currency="USD"
-                intent="CAPTURE"
-              />
-            </div>
+          <CardContent className="text-center">
+            <p className="text-sm text-gray-600 mb-4">
+              A new tab has opened with your selected plan. Complete your purchase there and return here to see your updated subscription status.
+            </p>
+            <Button 
+              variant="outline" 
+              onClick={() => window.location.reload()}
+              className="mt-2"
+            >
+              Refresh Subscription Status
+            </Button>
           </CardContent>
         </Card>
       )}
