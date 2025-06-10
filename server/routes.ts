@@ -711,6 +711,131 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Shopify webhook endpoints for subscription management
+  app.post("/webhooks/shopify/subscription/created", async (req, res) => {
+    try {
+      const { customer_email, line_items, id: order_id } = req.body;
+      
+      // Find user by email or create new user
+      let user = await storage.getUserByEmail(customer_email);
+      if (!user) {
+        // Create new user account
+        user = await storage.createUser({
+          username: customer_email.split('@')[0],
+          email: customer_email,
+          password: 'temp_password', // User will need to set password on first login
+          company: '',
+          role: 'user'
+        });
+      }
+
+      // Determine subscription plan based on Shopify product
+      let planId = 'free';
+      const productTitle = line_items[0]?.title?.toLowerCase() || '';
+      
+      if (productTitle.includes('starter')) {
+        planId = 'starter';
+      } else if (productTitle.includes('professional')) {
+        planId = 'professional';
+      }
+
+      // Activate subscription
+      await storage.updateUser(user.id, {
+        subscriptionStatus: 'active',
+        subscriptionPlan: planId,
+        subscriptionStartDate: new Date(),
+        subscriptionEndDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days
+        paypalSubscriptionId: order_id.toString()
+      } as any);
+
+      // Create audit log
+      await storage.createAuditLog({
+        userId: user.id,
+        action: "create",
+        entityType: "vendor",
+        entityId: 0,
+        changes: JSON.stringify({
+          description: `Subscription activated via Shopify: ${planId} plan for ${customer_email}`,
+          shopifyOrderId: order_id,
+          plan: planId
+        }),
+      });
+
+      res.json({ success: true, message: `${planId} subscription activated for ${customer_email}` });
+    } catch (error) {
+      console.error("Shopify webhook error:", error);
+      res.status(500).json({ error: "Failed to process subscription" });
+    }
+  });
+
+  app.post("/webhooks/shopify/subscription/cancelled", async (req, res) => {
+    try {
+      const { customer_email } = req.body;
+      
+      const user = await storage.getUserByEmail(customer_email);
+      if (!user) {
+        return res.status(404).json({ error: "User not found" });
+      }
+
+      // Downgrade to free plan
+      await storage.updateUser(user.id, {
+        subscriptionStatus: 'active',
+        subscriptionPlan: 'free',
+        subscriptionEndDate: null
+      } as any);
+
+      res.json({ success: true, message: `Subscription cancelled for ${customer_email}, downgraded to free plan` });
+    } catch (error) {
+      console.error("Shopify webhook error:", error);
+      res.status(500).json({ error: "Failed to cancel subscription" });
+    }
+  });
+
+  // User account creation endpoint for Shopify integration
+  app.post("/api/users/create-from-shopify", async (req, res) => {
+    try {
+      const { email, planId = 'free' } = req.body;
+      
+      // Check if user already exists
+      const existingUser = await storage.getUserByEmail(email);
+      if (existingUser) {
+        return res.json({ 
+          success: true, 
+          message: "User already exists",
+          userId: existingUser.id,
+          loginUrl: `${req.protocol}://${req.get('host')}/login?email=${email}`
+        });
+      }
+
+      // Create new user
+      const user = await storage.createUser({
+        username: email.split('@')[0],
+        email: email,
+        password: 'temp_password', // User will set password on first login
+        company: '',
+        role: 'user'
+      });
+
+      // Set subscription plan
+      await storage.updateUser(user.id, {
+        subscriptionStatus: 'active',
+        subscriptionPlan: planId,
+        subscriptionStartDate: new Date(),
+        subscriptionEndDate: planId === 'free' ? null : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
+      } as any);
+
+      res.json({ 
+        success: true, 
+        message: "User account created",
+        userId: user.id,
+        loginUrl: `${req.protocol}://${req.get('host')}/login?email=${email}`
+      });
+    } catch (error) {
+      console.error("User creation error:", error);
+      res.status(500).json({ error: "Failed to create user account" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }
