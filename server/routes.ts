@@ -18,6 +18,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const vendorData = insertVendorSchema.parse({ ...req.body, userId: 1 });
       const vendor = await storage.createVendor(vendorData);
+      
+      // Create audit log
+      await storage.createAuditLog({
+        userId: 1,
+        action: "create",
+        entityType: "vendor",
+        entityId: vendor.id,
+        changes: JSON.stringify({
+          description: `Added new vendor "${vendor.name}"${vendor.contactEmail ? ` with email ${vendor.contactEmail}` : ''}`,
+          data: vendor
+        }),
+      });
+      
       res.json(vendor);
     } catch (error) {
       res.status(400).json({ error: "Invalid vendor data" });
@@ -27,11 +40,32 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.put("/api/vendors/:id", async (req, res) => {
     try {
       const id = parseInt(req.params.id);
-      const vendorData = insertVendorSchema.partial().parse(req.body);
-      const vendor = await storage.updateVendor(id, vendorData);
-      if (!vendor) {
+      const originalVendor = await storage.getVendor(id);
+      if (!originalVendor) {
         return res.status(404).json({ error: "Vendor not found" });
       }
+
+      const vendorData = insertVendorSchema.partial().parse(req.body);
+      const vendor = await storage.updateVendor(id, vendorData);
+      
+      // Create audit log
+      if (vendor) {
+        const emailChange = originalVendor.contactEmail !== vendor.contactEmail 
+          ? ` (email changed to ${vendor.contactEmail || 'none'})`
+          : '';
+        await storage.createAuditLog({
+          userId: 1,
+          action: "update",
+          entityType: "vendor",
+          entityId: id,
+          changes: JSON.stringify({
+            description: `Updated vendor "${vendor.name}"${emailChange}`,
+            before: originalVendor,
+            after: vendor
+          }),
+        });
+      }
+      
       res.json(vendor);
     } catch (error) {
       res.status(400).json({ error: "Invalid vendor data" });
@@ -40,10 +74,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.delete("/api/vendors/:id", async (req, res) => {
     const id = parseInt(req.params.id);
-    const deleted = await storage.deleteVendor(id);
-    if (!deleted) {
+    const vendor = await storage.getVendor(id);
+    if (!vendor) {
       return res.status(404).json({ error: "Vendor not found" });
     }
+
+    const deleted = await storage.deleteVendor(id);
+    
+    // Create audit log
+    await storage.createAuditLog({
+      userId: 1,
+      action: "delete",
+      entityType: "vendor",
+      entityId: id,
+      changes: JSON.stringify({
+        description: `Deleted vendor "${vendor.name}"${vendor.contactEmail ? ` (${vendor.contactEmail})` : ''}`,
+        data: vendor
+      }),
+    });
+    
     res.json({ success: true });
   });
 
@@ -115,20 +164,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const material = await storage.updateRawMaterial(id, materialData);
       
       // Create audit log
-      const unitCostChange = originalMaterial.unitCost !== material.unitCost 
-        ? ` (unit cost changed from $${originalMaterial.unitCost} to $${material.unitCost})`
-        : '';
-      await storage.createAuditLog({
-        userId: 1,
-        action: "update",
-        entityType: "material",
-        entityId: id,
-        changes: JSON.stringify({
-          description: `Updated raw material "${material.name}" - total cost is now $${material.totalCost} for ${material.quantity} ${material.unit}${unitCostChange}`,
-          before: originalMaterial,
-          after: material
-        }),
-      });
+      if (material) {
+        const unitCostChange = originalMaterial.unitCost !== material.unitCost 
+          ? ` (unit cost changed from $${originalMaterial.unitCost} to $${material.unitCost})`
+          : '';
+        await storage.createAuditLog({
+          userId: 1,
+          action: "update",
+          entityType: "material",
+          entityId: id,
+          changes: JSON.stringify({
+            description: `Updated raw material "${material.name}" - total cost is now $${material.totalCost} for ${material.quantity} ${material.unit}${unitCostChange}`,
+            before: originalMaterial,
+            after: material
+          }),
+        });
+      }
       
       res.json(material);
     } catch (error) {
@@ -151,7 +202,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       action: "delete",
       entityType: "material",
       entityId: id,
-      changes: JSON.stringify(material),
+      changes: JSON.stringify({
+        description: `Deleted raw material "${material.name}" (was $${material.totalCost} total cost for ${material.quantity} ${material.unit})`,
+        data: material
+      }),
     });
     
     res.json({ success: true });
@@ -184,7 +238,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         action: "create",
         entityType: "formulation",
         entityId: formulation.id,
-        changes: JSON.stringify(formulation),
+        changes: JSON.stringify({
+          description: `Created new formulation "${formulation.name}" with batch size of ${formulation.batchSize} ${formulation.batchUnit} and ${formulation.markupPercentage}% markup`,
+          data: formulation
+        }),
       });
       
       res.json(formulation);
@@ -205,13 +262,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const formulation = await storage.updateFormulation(id, formulationData);
       
       // Create audit log
-      await storage.createAuditLog({
-        userId: 1,
-        action: "update",
-        entityType: "formulation",
-        entityId: id,
-        changes: JSON.stringify({ before: originalFormulation, after: formulation }),
-      });
+      if (formulation) {
+        const costChange = originalFormulation.totalCost !== formulation.totalCost 
+          ? ` (total cost changed from $${originalFormulation.totalCost} to $${formulation.totalCost})`
+          : '';
+        await storage.createAuditLog({
+          userId: 1,
+          action: "update",
+          entityType: "formulation",
+          entityId: id,
+          changes: JSON.stringify({
+            description: `Updated formulation "${formulation.name}" - batch size is now ${formulation.batchSize} ${formulation.batchUnit} with ${formulation.markupPercentage}% markup${costChange}`,
+            before: originalFormulation,
+            after: formulation
+          }),
+        });
+      }
       
       res.json(formulation);
     } catch (error) {
@@ -234,7 +300,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       action: "delete",
       entityType: "formulation",
       entityId: id,
-      changes: JSON.stringify(formulation),
+      changes: JSON.stringify({
+        description: `Deleted formulation "${formulation.name}" (was ${formulation.batchSize} ${formulation.batchUnit} batch with $${formulation.totalCost} total cost)`,
+        data: formulation
+      }),
     });
     
     res.json({ success: true });
