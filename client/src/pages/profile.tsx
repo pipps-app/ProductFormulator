@@ -42,7 +42,7 @@ export default function Profile() {
 
   const profileForm = useForm<ProfileForm>({
     resolver: zodResolver(profileSchema),
-    defaultValues: {
+    values: {
       username: user?.username || "",
       email: user?.email || "",
       company: user?.company || "",
@@ -61,10 +61,15 @@ export default function Profile() {
   // Update profile mutation
   const updateProfileMutation = useMutation({
     mutationFn: async (data: ProfileForm) => {
-      return apiRequest('/api/user/profile', {
+      const response = await fetch('/api/user/profile', {
         method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
         body: JSON.stringify(data),
       });
+      if (!response.ok) throw new Error('Failed to update profile');
+      return response.json();
     },
     onSuccess: () => {
       toast({
@@ -85,10 +90,15 @@ export default function Profile() {
   // Update password mutation
   const updatePasswordMutation = useMutation({
     mutationFn: async (data: PasswordForm) => {
-      return apiRequest('/api/user/password', {
+      const response = await fetch('/api/user/password', {
         method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
         body: JSON.stringify(data),
       });
+      if (!response.ok) throw new Error('Failed to update password');
+      return response.json();
     },
     onSuccess: () => {
       toast({

@@ -1,6 +1,7 @@
-import { Bell, FlaskRound, User } from "lucide-react";
+import { Bell, FlaskRound, User, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Link } from "wouter";
 
 export default function Header() {
   return (
@@ -20,6 +21,12 @@ export default function Header() {
             <Bell className="h-5 w-5" />
             <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full"></span>
           </Button>
+          
+          <Link href="/profile">
+            <Button variant="ghost" size="icon">
+              <Settings className="h-5 w-5" />
+            </Button>
+          </Link>
           
           <div className="flex items-center space-x-3">
             <div className="text-right">

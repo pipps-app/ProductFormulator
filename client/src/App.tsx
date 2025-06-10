@@ -9,6 +9,7 @@ import Materials from "@/pages/materials";
 import Formulations from "@/pages/formulations";
 import Vendors from "@/pages/vendors";
 import ImportExport from "@/pages/import-export";
+import Profile from "@/pages/profile";
 import AppLayout from "@/components/layout/app-layout";
 
 function Router() {
@@ -21,6 +22,7 @@ function Router() {
         <Route path="/formulations" component={Formulations} />
         <Route path="/vendors" component={Vendors} />
         <Route path="/import-export" component={ImportExport} />
+        <Route path="/profile" component={Profile} />
         <Route component={NotFound} />
       </Switch>
     </AppLayout>
