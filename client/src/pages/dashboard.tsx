@@ -4,6 +4,7 @@ import { RefreshCw, Plus } from "lucide-react";
 import MetricsGrid from "@/components/dashboard/metrics-grid";
 import RecentFormulations from "@/components/dashboard/recent-formulations";
 import MaterialsPreview from "@/components/dashboard/materials-preview";
+import FormulationOverview from "@/components/dashboard/formulation-overview";
 import { useDashboardStats, useRecentActivity } from "@/hooks/use-formulations";
 
 export default function Dashboard() {
@@ -40,6 +41,9 @@ export default function Dashboard() {
 
       {/* Metrics Grid */}
       <MetricsGrid stats={stats as any} isLoading={statsLoading} />
+
+      {/* Formulation Performance Overview */}
+      <FormulationOverview />
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Recent Formulations */}
