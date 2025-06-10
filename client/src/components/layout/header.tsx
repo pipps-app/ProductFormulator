@@ -2,13 +2,11 @@ import { Bell, FlaskRound, User, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Link } from "wouter";
-import { useQuery } from "@tanstack/react-query";
+import { useUser } from "@/hooks/use-user";
 import logoPath from "@assets/pipps-app-logo_1749571716445.jpg";
 
 export default function Header() {
-  const { data: user } = useQuery({
-    queryKey: ['/api/user/profile'],
-  });
+  const { data: user } = useUser();
 
   return (
     <header className="bg-white border-b border-slate-200 px-6 py-4">

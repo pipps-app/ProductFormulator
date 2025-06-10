@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { type RawMaterial } from "@shared/schema";
+import { type RawMaterial, type MaterialCategory, type Vendor } from "@shared/schema";
 
 export function useMaterials() {
   return useQuery<RawMaterial[]>({
@@ -15,13 +15,13 @@ export function useMaterial(id: number) {
 }
 
 export function useMaterialCategories() {
-  return useQuery({
+  return useQuery<MaterialCategory[]>({
     queryKey: ["/api/material-categories"],
   });
 }
 
 export function useVendors() {
-  return useQuery({
+  return useQuery<Vendor[]>({
     queryKey: ["/api/vendors"],
   });
 }

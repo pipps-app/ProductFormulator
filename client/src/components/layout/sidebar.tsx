@@ -2,15 +2,13 @@ import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { BarChart3, Package, FlaskRound, Truck, Tag, FileText, Plus } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { useQuery } from "@tanstack/react-query";
+import { useDashboardStats } from "@/hooks/use-formulations";
 
 export default function Sidebar() {
   const [location] = useLocation();
 
   // Fetch dashboard stats to show real counts
-  const { data: stats } = useQuery({
-    queryKey: ['/api/dashboard/stats'],
-  });
+  const { data: stats } = useDashboardStats();
 
   const navigation = [
     { name: "Dashboard", href: "/", icon: BarChart3, count: null },
