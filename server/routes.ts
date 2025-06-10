@@ -295,8 +295,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
       totalMaterials,
       activeFormulations,
       vendorsCount: vendors.length,
-      avgProfitMargin: avgProfitMargin.toFixed(1),
-      inventoryValue: totalInventoryValue.toFixed(2),
     });
   });
 

@@ -2,8 +2,13 @@ import { Bell, FlaskRound, User, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Link } from "wouter";
+import { useQuery } from "@tanstack/react-query";
 
 export default function Header() {
+  const { data: user } = useQuery({
+    queryKey: ['/api/user/profile'],
+  });
+
   return (
     <header className="bg-white border-b border-slate-200 px-6 py-4">
       <div className="flex items-center justify-between max-w-7xl mx-auto">
@@ -17,11 +22,6 @@ export default function Header() {
         </div>
         
         <div className="flex items-center space-x-4">
-          <Button variant="ghost" size="icon" className="relative">
-            <Bell className="h-5 w-5" />
-            <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full"></span>
-          </Button>
-          
           <Link href="/profile">
             <Button variant="ghost" size="icon">
               <Settings className="h-5 w-5" />
@@ -30,8 +30,12 @@ export default function Header() {
           
           <div className="flex items-center space-x-3">
             <div className="text-right">
-              <p className="text-sm font-medium text-slate-900">Sarah Wilson</p>
-              <p className="text-xs text-slate-500">Artisan Soap Co.</p>
+              <p className="text-sm font-medium text-slate-900">
+                {user?.username || 'User'}
+              </p>
+              <p className="text-xs text-slate-500">
+                {user?.company || user?.email || ''}
+              </p>
             </div>
             <Avatar>
               <AvatarFallback>
