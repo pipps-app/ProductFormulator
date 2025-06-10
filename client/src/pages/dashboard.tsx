@@ -1,19 +1,14 @@
-import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { RefreshCw, Plus } from "lucide-react";
 import MetricsGrid from "@/components/dashboard/metrics-grid";
 import RecentFormulations from "@/components/dashboard/recent-formulations";
 import MaterialsPreview from "@/components/dashboard/materials-preview";
+import { useDashboardStats, useRecentActivity } from "@/hooks/use-formulations";
 
 export default function Dashboard() {
-  const { data: stats, isLoading: statsLoading, refetch } = useQuery({
-    queryKey: ["/api/dashboard/stats"],
-  });
-
-  const { data: recentActivity, isLoading: activityLoading } = useQuery({
-    queryKey: ["/api/dashboard/recent-activity"],
-  });
+  const { data: stats, isLoading: statsLoading, refetch } = useDashboardStats();
+  const { data: recentActivity, isLoading: activityLoading } = useRecentActivity();
 
   const handleRefresh = () => {
     refetch();
@@ -44,7 +39,7 @@ export default function Dashboard() {
       </div>
 
       {/* Metrics Grid */}
-      <MetricsGrid stats={stats} isLoading={statsLoading} />
+      <MetricsGrid stats={stats as any} isLoading={statsLoading} />
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Recent Formulations */}

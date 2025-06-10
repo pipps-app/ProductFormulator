@@ -60,13 +60,13 @@ export default function MaterialForm({ material, onSuccess }: MaterialFormProps)
       form.reset({
         name: material.name,
         sku: material.sku || "",
-        categoryId: material.categoryId || undefined,
-        vendorId: material.vendorId || undefined,
+        categoryId: material.categoryId || null,
+        vendorId: material.vendorId || null,
         totalCost: material.totalCost,
         quantity: material.quantity,
         unit: material.unit,
         notes: material.notes || "",
-        isActive: material.isActive,
+        isActive: material.isActive ?? true,
       });
     }
   }, [material, form]);

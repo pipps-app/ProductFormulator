@@ -37,9 +37,7 @@ export default function Profile() {
   const [activeTab, setActiveTab] = useState<"profile" | "password">("profile");
 
   // Fetch current user data
-  const { data: user, isLoading } = useQuery({
-    queryKey: ['/api/user/profile'],
-  });
+  const { data: user, isLoading } = useUser();
 
   const profileForm = useForm<ProfileForm>({
     resolver: zodResolver(profileSchema),
