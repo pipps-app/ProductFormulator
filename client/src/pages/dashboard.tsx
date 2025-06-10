@@ -52,60 +52,37 @@ export default function Dashboard() {
           <RecentFormulations />
         </div>
 
-        {/* Quick Stats */}
-        <div className="space-y-6">
+        {/* Recent Activity */}
+        <div>
           <Card>
             <CardHeader>
-              <CardTitle className="text-lg">Cost Breakdown</CardTitle>
+              <CardTitle className="text-lg">Recent Activity</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-3">
-                    <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
-                    <span className="text-sm text-slate-600">Base Materials</span>
-                  </div>
-                  <span className="text-sm font-medium text-slate-900">68%</span>
+              {activityLoading ? (
+                <div className="space-y-3">
+                  <div className="h-4 bg-slate-200 rounded animate-pulse"></div>
+                  <div className="h-4 bg-slate-200 rounded animate-pulse"></div>
+                  <div className="h-4 bg-slate-200 rounded animate-pulse"></div>
                 </div>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-3">
-                    <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-                    <span className="text-sm text-slate-600">Essential Oils</span>
-                  </div>
-                  <span className="text-sm font-medium text-slate-900">18%</span>
+              ) : recentActivity && recentActivity.length > 0 ? (
+                <div className="space-y-3">
+                  {recentActivity.slice(0, 5).map((activity: any, index: number) => (
+                    <div key={index} className="flex items-center justify-between py-2 border-b border-slate-100 last:border-0">
+                      <div>
+                        <p className="text-sm font-medium text-slate-900 capitalize">
+                          {activity.action} {activity.entityType}
+                        </p>
+                        <p className="text-xs text-slate-500">
+                          {new Date(activity.timestamp).toLocaleDateString()}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
                 </div>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-3">
-                    <div className="w-3 h-3 bg-purple-500 rounded-full"></div>
-                    <span className="text-sm text-slate-600">Packaging</span>
-                  </div>
-                  <span className="text-sm font-medium text-slate-900">14%</span>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg">Low Stock Alert</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                <div className="flex items-center justify-between p-3 bg-amber-50 rounded-lg border border-amber-200">
-                  <div>
-                    <p className="text-sm font-medium text-amber-900">Shea Butter</p>
-                    <p className="text-xs text-amber-700">2.3kg remaining</p>
-                  </div>
-                  <div className="text-amber-600">⚠️</div>
-                </div>
-                <div className="flex items-center justify-between p-3 bg-red-50 rounded-lg border border-red-200">
-                  <div>
-                    <p className="text-sm font-medium text-red-900">Lavender EO</p>
-                    <p className="text-xs text-red-700">45ml remaining</p>
-                  </div>
-                  <div className="text-red-600">⚠️</div>
-                </div>
-              </div>
+              ) : (
+                <p className="text-sm text-slate-500">No recent activity</p>
+              )}
             </CardContent>
           </Card>
         </div>

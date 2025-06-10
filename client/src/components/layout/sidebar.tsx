@@ -2,15 +2,21 @@ import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { BarChart3, Package, FlaskRound, Truck, FileText, Plus } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { useQuery } from "@tanstack/react-query";
 
 export default function Sidebar() {
   const [location] = useLocation();
 
+  // Fetch dashboard stats to show real counts
+  const { data: stats } = useQuery({
+    queryKey: ['/api/dashboard/stats'],
+  });
+
   const navigation = [
     { name: "Dashboard", href: "/", icon: BarChart3, count: null },
-    { name: "Raw Materials", href: "/materials", icon: Package, count: 142 },
-    { name: "Formulations", href: "/formulations", icon: FlaskRound, count: 28 },
-    { name: "Vendors", href: "/vendors", icon: Truck, count: 12 },
+    { name: "Raw Materials", href: "/materials", icon: Package, count: stats?.totalMaterials },
+    { name: "Formulations", href: "/formulations", icon: FlaskRound, count: stats?.activeFormulations },
+    { name: "Vendors", href: "/vendors", icon: Truck, count: stats?.vendorsCount },
     { name: "Import/Export", href: "/import-export", icon: FileText, count: null },
   ];
 

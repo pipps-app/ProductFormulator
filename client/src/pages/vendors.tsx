@@ -31,6 +31,7 @@ export default function Vendors() {
     mutationFn: (data: any) => apiRequest("POST", "/api/vendors", data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/vendors"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/dashboard/stats"] });
       toast({ title: "Vendor created successfully" });
       handleCloseModal();
     },
@@ -44,6 +45,7 @@ export default function Vendors() {
       apiRequest("PUT", `/api/vendors/${id}`, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/vendors"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/dashboard/stats"] });
       toast({ title: "Vendor updated successfully" });
       handleCloseModal();
     },
@@ -56,6 +58,7 @@ export default function Vendors() {
     mutationFn: (id: number) => apiRequest("DELETE", `/api/vendors/${id}`),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/vendors"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/dashboard/stats"] });
       toast({ title: "Vendor deleted successfully" });
       setDeletingVendor(null);
     },
