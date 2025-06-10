@@ -59,6 +59,7 @@ export interface IStorage {
   getFormulation(id: number): Promise<Formulation | undefined>;
   createFormulation(formulation: InsertFormulation): Promise<Formulation>;
   updateFormulation(id: number, formulation: Partial<InsertFormulation>): Promise<Formulation | undefined>;
+  updateFormulationCosts(id: number, costs: { totalCost: string; unitCost: string; profitMargin: string; }): Promise<boolean>;
   deleteFormulation(id: number): Promise<boolean>;
 
   // Formulation Ingredients
@@ -313,6 +314,18 @@ export class DatabaseStorage implements IStorage {
   async updateFormulation(id: number, updates: Partial<InsertFormulation>): Promise<Formulation | undefined> {
     const result = await db.update(formulations).set(updates).where(eq(formulations.id, id)).returning();
     return result[0];
+  }
+
+  async updateFormulationCosts(id: number, costs: { totalCost: string; unitCost: string; profitMargin: string; }): Promise<boolean> {
+    const result = await db.update(formulations)
+      .set({
+        totalCost: costs.totalCost,
+        unitCost: costs.unitCost,
+        profitMargin: costs.profitMargin,
+      })
+      .where(eq(formulations.id, id))
+      .returning();
+    return result.length > 0;
   }
 
   async deleteFormulation(id: number): Promise<boolean> {

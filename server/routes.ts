@@ -350,7 +350,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const { ingredients, ...formulationData } = req.body;
       console.log("Updating formulation with ingredients:", ingredients);
       const parsedFormulationData = insertFormulationSchema.partial().parse(formulationData);
-      const formulation = await storage.updateFormulation(id, parsedFormulationData);
+      let formulation = await storage.updateFormulation(id, parsedFormulationData);
       
       // Update formulation ingredients if provided
       if (ingredients && Array.isArray(ingredients)) {
@@ -373,6 +373,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
             includeInMarkup: ingredient.includeInMarkup || true,
           });
         }
+        
+        // Recalculate formulation costs based on new ingredients
+        const totalMaterialCost = ingredients.reduce((total, ing) => 
+          total + Number(ing.costContribution || 0), 0);
+        
+        const batchSize = Number(formulation?.batchSize || 1);
+        const unitCost = batchSize > 0 ? totalMaterialCost / batchSize : 0;
+        const markupPercentage = Number(formulation?.markupPercentage || 30);
+        const profitMargin = (markupPercentage / 100) * totalMaterialCost;
+        
+        // Update formulation with calculated costs using storage updateFormulationCosts method
+        await storage.updateFormulationCosts(id, {
+          totalCost: totalMaterialCost.toFixed(2),
+          unitCost: unitCost.toFixed(4),
+          profitMargin: profitMargin.toFixed(2),
+        });
+        
+        // Refresh formulation data
+        formulation = await storage.getFormulation(id);
       }
       
       // Create audit log
