@@ -66,9 +66,9 @@ export const formulations = pgTable("formulations", {
 
 export const formulationIngredients = pgTable("formulation_ingredients", {
   id: serial("id").primaryKey(),
-  formulationId: integer("formulation_id").notNull().references(() => formulations.id),
-  materialId: integer("material_id").references(() => rawMaterials.id),
-  subFormulationId: integer("sub_formulation_id").references(() => formulations.id),
+  formulationId: integer("formulation_id").notNull().references(() => formulations.id, { onDelete: "cascade" }),
+  materialId: integer("material_id").references(() => rawMaterials.id, { onDelete: "set null" }),
+  subFormulationId: integer("sub_formulation_id").references(() => formulations.id, { onDelete: "set null" }),
   quantity: decimal("quantity", { precision: 10, scale: 3 }).notNull(),
   unit: text("unit").notNull(),
   costContribution: decimal("cost_contribution", { precision: 10, scale: 4 }).notNull().default("0.00"),

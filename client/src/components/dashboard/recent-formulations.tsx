@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Package, FlaskRound, Building2, Clock } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { formatDistanceToNow } from "date-fns";
+import { Link } from "wouter";
 
 export default function RecentFormulations() {
   const { data: activities, isLoading } = useRecentActivity();

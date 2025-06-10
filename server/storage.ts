@@ -316,6 +316,10 @@ export class DatabaseStorage implements IStorage {
   }
 
   async deleteFormulation(id: number): Promise<boolean> {
+    // First delete all dependent formulation ingredients
+    await db.delete(formulationIngredients).where(eq(formulationIngredients.formulationId, id));
+    
+    // Then delete the formulation
     const result = await db.delete(formulations).where(eq(formulations.id, id)).returning();
     return result.length > 0;
   }

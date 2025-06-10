@@ -60,8 +60,8 @@ export default function MaterialForm({ material, onSuccess }: MaterialFormProps)
       form.reset({
         name: material.name,
         sku: material.sku || "",
-        categoryId: material.categoryId || null,
-        vendorId: material.vendorId || null,
+        categoryId: material.categoryId || undefined,
+        vendorId: material.vendorId || undefined,
         totalCost: material.totalCost,
         quantity: material.quantity,
         unit: material.unit,
