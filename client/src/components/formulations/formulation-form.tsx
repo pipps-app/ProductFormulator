@@ -108,6 +108,11 @@ export default function FormulationForm({ formulation, onSuccess }: FormulationF
         isActive: formulation.isActive ?? true,
       });
       
+      // Set selling price if it exists
+      if (formulation.targetPrice) {
+        setSellingPrice(formulation.targetPrice);
+      }
+      
       // Load existing ingredients
       const loadIngredients = async () => {
         try {
@@ -178,6 +183,7 @@ export default function FormulationForm({ formulation, onSuccess }: FormulationF
 
     const formulationData = {
       ...data,
+      targetPrice: sellingPrice || undefined,
       totalCost: totalMaterialCost.toString(),
       unitCost: unitCost.toString(),
       profitMargin: profitMargin.toString(),
