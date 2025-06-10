@@ -30,6 +30,8 @@ export function useDashboardStats() {
     inventoryValue: string;
   }>({
     queryKey: ["/api/dashboard/stats"],
+    staleTime: 0, // Always refetch to get latest data
+    cacheTime: 0, // Don't cache the result
   });
 }
 

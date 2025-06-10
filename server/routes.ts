@@ -505,10 +505,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
       ? activeFormulationsWithMargin.reduce((sum, f) => sum + Number(f.profitMargin), 0) / activeFormulationsWithMargin.length
       : 0;
 
+    // Add cache control headers to prevent stale data
+    res.set('Cache-Control', 'no-cache, no-store, must-revalidate');
+    res.set('Pragma', 'no-cache');
+    res.set('Expires', '0');
+
     res.json({
       totalMaterials,
       activeFormulations,
       vendorsCount: vendors.length,
+      avgProfitMargin: avgProfitMargin.toFixed(1),
+      inventoryValue: totalInventoryValue.toFixed(2),
     });
   });
 
