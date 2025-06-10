@@ -28,8 +28,13 @@ export default function MaterialForm({ material, onSuccess }: MaterialFormProps)
     queryKey: ["/api/material-categories"],
   });
 
+  const formSchema = insertRawMaterialSchema.omit({ userId: true }).extend({
+    categoryId: insertRawMaterialSchema.shape.categoryId.optional(),
+    vendorId: insertRawMaterialSchema.shape.vendorId.optional(),
+  });
+
   const form = useForm({
-    resolver: zodResolver(insertRawMaterialSchema.omit({ userId: true })),
+    resolver: zodResolver(formSchema),
     defaultValues: {
       name: "",
       sku: "",
@@ -60,8 +65,8 @@ export default function MaterialForm({ material, onSuccess }: MaterialFormProps)
       form.reset({
         name: material.name,
         sku: material.sku || "",
-        categoryId: material.categoryId || undefined,
-        vendorId: material.vendorId || undefined,
+        categoryId: material.categoryId ?? undefined,
+        vendorId: material.vendorId ?? undefined,
         totalCost: material.totalCost,
         quantity: material.quantity,
         unit: material.unit,
@@ -152,7 +157,7 @@ export default function MaterialForm({ material, onSuccess }: MaterialFormProps)
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Category</FormLabel>
-                <Select onValueChange={(value) => field.onChange(Number(value))} value={field.value?.toString()}>
+                <Select onValueChange={(value) => field.onChange(Number(value))} value={field.value?.toString() || ""}>
                   <FormControl>
                     <SelectTrigger>
                       <SelectValue placeholder="Select category" />
@@ -177,7 +182,7 @@ export default function MaterialForm({ material, onSuccess }: MaterialFormProps)
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Vendor</FormLabel>
-                <Select onValueChange={(value) => field.onChange(Number(value))} value={field.value?.toString()}>
+                <Select onValueChange={(value) => field.onChange(Number(value))} value={field.value?.toString() || ""}>
                   <FormControl>
                     <SelectTrigger>
                       <SelectValue placeholder="Select vendor" />

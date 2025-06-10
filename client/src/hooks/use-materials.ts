@@ -1,8 +1,21 @@
 import { useQuery } from "@tanstack/react-query";
 import { type RawMaterial, type MaterialCategory, type Vendor } from "@shared/schema";
 
+interface MaterialWithDetails extends RawMaterial {
+  category?: {
+    id: number;
+    name: string;
+    color: string;
+  };
+  vendor?: {
+    id: number;
+    name: string;
+    contactEmail?: string;
+  };
+}
+
 export function useMaterials() {
-  return useQuery<RawMaterial[]>({
+  return useQuery<MaterialWithDetails[]>({
     queryKey: ["/api/raw-materials"],
   });
 }
