@@ -22,13 +22,27 @@ export function useFormulationIngredients(formulationId: number) {
 }
 
 export function useDashboardStats() {
-  return useQuery({
+  return useQuery<{
+    totalMaterials: number;
+    activeFormulations: number;
+    vendorsCount: number;
+    avgProfitMargin: string;
+    inventoryValue: string;
+  }>({
     queryKey: ["/api/dashboard/stats"],
   });
 }
 
 export function useRecentActivity() {
-  return useQuery({
+  return useQuery<Array<{
+    id: number;
+    userId: number;
+    action: 'create' | 'update' | 'delete';
+    entityType: 'material' | 'formulation' | 'vendor';
+    entityId: number;
+    changes?: string;
+    timestamp: Date;
+  }>>({
     queryKey: ["/api/dashboard/recent-activity"],
   });
 }

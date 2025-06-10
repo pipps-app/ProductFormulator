@@ -13,9 +13,15 @@ import {
   type AuditLog, type InsertAuditLog
 } from "@shared/schema";
 
-// Database connection
+// Database connection - construct from individual env vars since DATABASE_URL is malformed
 const connectionString = `postgresql://${process.env.PGUSER}:${process.env.PGPASSWORD}@${process.env.PGHOST}:${process.env.PGPORT}/${process.env.PGDATABASE}?sslmode=require`;
-const client = postgres(connectionString);
+
+// Add timeout and connection pool settings
+const client = postgres(connectionString, {
+  connect_timeout: 30,
+  idle_timeout: 30,
+  max_lifetime: 60 * 30,
+});
 const db = drizzle(client);
 
 export interface IStorage {
