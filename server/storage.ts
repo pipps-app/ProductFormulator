@@ -24,6 +24,8 @@ export interface IStorage {
   getUserByUsername(username: string): Promise<User | undefined>;
   getUserByEmail(email: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
+  updateUser(id: number, user: Partial<InsertUser>): Promise<User | undefined>;
+  updateUserPassword(id: number, newPassword: string): Promise<boolean>;
 
   // Vendors
   getVendors(userId: number): Promise<Vendor[]>;
@@ -152,6 +154,16 @@ export class DatabaseStorage implements IStorage {
   async createUser(insertUser: InsertUser): Promise<User> {
     const [user] = await db.insert(users).values(insertUser).returning();
     return user;
+  }
+
+  async updateUser(id: number, updates: Partial<InsertUser>): Promise<User | undefined> {
+    const result = await db.update(users).set(updates).where(eq(users.id, id)).returning();
+    return result[0];
+  }
+
+  async updateUserPassword(id: number, newPassword: string): Promise<boolean> {
+    const result = await db.update(users).set({ password: newPassword }).where(eq(users.id, id)).returning();
+    return result.length > 0;
   }
 
   // Vendor methods
