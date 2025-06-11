@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Link } from "wouter";
 import { useUser } from "@/hooks/use-user";
+import { HelpButton } from "@/components/onboarding/help-button";
 import logoPath from "@assets/pipps-app-logo_1749571716445.jpg";
 
 export default function Header() {
@@ -23,6 +24,7 @@ export default function Header() {
         </div>
         
         <div className="flex items-center space-x-4">
+          <HelpButton />
           <Link href="/profile">
             <Button variant="ghost" size="icon">
               <Settings className="h-5 w-5" />

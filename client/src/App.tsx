@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { TourProvider } from "@/components/onboarding/tour-provider";
 import { TourTooltip } from "@/components/onboarding/tour-tooltip";
+import { FirstTimeGuide } from "@/components/onboarding/first-time-guide";
 import NotFound from "@/pages/not-found";
 import Dashboard from "@/pages/dashboard";
 import Materials from "@/pages/materials";
@@ -45,6 +46,7 @@ function App() {
           <Toaster />
           <Router />
           <TourTooltip />
+          <FirstTimeGuide />
         </TourProvider>
       </TooltipProvider>
     </QueryClientProvider>
