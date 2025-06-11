@@ -140,7 +140,6 @@ export default function MaterialList({ materials, isLoading, onEdit }: MaterialL
           </thead>
           <tbody className="divide-y divide-slate-200">
             {materials.map((material) => {
-              const isLowStock = Number(material.quantity) < 5;
               const categoryInfo = getCategoryInfo(material.categoryId);
               const vendorName = getVendorName(material.vendorId);
               
@@ -185,7 +184,7 @@ export default function MaterialList({ materials, isLoading, onEdit }: MaterialL
                     </p>
                   </td>
                   <td className="p-4 text-right">
-                    <p className={`text-sm ${isLowStock ? "text-amber-600 font-medium" : "text-slate-900"}`}>
+                    <p className="text-sm text-slate-900">
                       {material.quantity}{material.unit}
                     </p>
                   </td>

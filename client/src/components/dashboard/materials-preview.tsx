@@ -127,7 +127,6 @@ export default function MaterialsPreview() {
               </thead>
               <tbody className="divide-y divide-slate-200">
                 {recentMaterials.map((material, index) => {
-                  const isLowStock = Number(material.quantity) < 5;
                   const categoryInfo = getCategoryInfo(material.categoryId);
                   const vendorName = getVendorName(material.vendorId);
                   
@@ -172,7 +171,7 @@ export default function MaterialsPreview() {
                         </p>
                       </td>
                       <td className="p-4 text-right">
-                        <p className={`text-sm ${isLowStock ? "text-amber-600 font-medium" : "text-slate-900"}`}>
+                        <p className="text-sm text-slate-900">
                           {material.quantity}{material.unit}
                         </p>
                       </td>
