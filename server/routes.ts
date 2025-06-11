@@ -977,6 +977,151 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Export routes
+  app.get("/api/export/materials", async (req, res) => {
+    try {
+      const format = req.query.format as string || 'json';
+      const materials = await storage.getRawMaterials(1);
+      const categories = await storage.getMaterialCategories(1);
+      const vendors = await storage.getVendors(1);
+
+      // Create comprehensive export data
+      const exportData = materials.map(material => ({
+        ...material,
+        categoryName: categories.find(c => c.id === material.categoryId)?.name || '',
+        vendorName: vendors.find(v => v.id === material.vendorId)?.name || ''
+      }));
+
+      if (format === 'csv') {
+        // Convert to CSV format
+        const headers = ['Name', 'SKU', 'Category', 'Vendor', 'Total Cost', 'Quantity', 'Unit', 'Unit Cost', 'Notes', 'Active'];
+        const csvData = [
+          headers.join(','),
+          ...exportData.map(material => [
+            `"${material.name}"`,
+            `"${material.sku || ''}"`,
+            `"${material.categoryName}"`,
+            `"${material.vendorName}"`,
+            material.totalCost,
+            material.quantity,
+            `"${material.unit}"`,
+            material.unitCost,
+            `"${material.notes || ''}"`,
+            material.isActive
+          ].join(','))
+        ].join('\n');
+
+        res.setHeader('Content-Type', 'text/csv');
+        res.setHeader('Content-Disposition', 'attachment; filename="materials.csv"');
+        res.send(csvData);
+      } else {
+        res.setHeader('Content-Type', 'application/json');
+        res.setHeader('Content-Disposition', 'attachment; filename="materials.json"');
+        res.json(exportData);
+      }
+    } catch (error) {
+      console.error("Export materials error:", error);
+      res.status(500).json({ error: "Failed to export materials" });
+    }
+  });
+
+  app.get("/api/export/formulations", async (req, res) => {
+    try {
+      const formulations = await storage.getFormulations(1);
+      
+      // Get detailed formulation data with ingredients
+      const exportData = await Promise.all(
+        formulations.map(async (formulation) => {
+          const ingredients = await storage.getFormulationIngredients(formulation.id);
+          return {
+            ...formulation,
+            ingredients
+          };
+        })
+      );
+
+      res.setHeader('Content-Type', 'application/json');
+      res.setHeader('Content-Disposition', 'attachment; filename="formulations.json"');
+      res.json(exportData);
+    } catch (error) {
+      console.error("Export formulations error:", error);
+      res.status(500).json({ error: "Failed to export formulations" });
+    }
+  });
+
+  app.get("/api/export/backup", async (req, res) => {
+    try {
+      const materials = await storage.getRawMaterials(1);
+      const formulations = await storage.getFormulations(1);
+      const vendors = await storage.getVendors(1);
+      const categories = await storage.getMaterialCategories(1);
+
+      // Get detailed formulation data with ingredients
+      const formulationsWithIngredients = await Promise.all(
+        formulations.map(async (formulation) => {
+          const ingredients = await storage.getFormulationIngredients(formulation.id);
+          return {
+            ...formulation,
+            ingredients
+          };
+        })
+      );
+
+      const backupData = {
+        exportDate: new Date().toISOString(),
+        materials,
+        formulations: formulationsWithIngredients,
+        vendors,
+        categories
+      };
+
+      res.setHeader('Content-Type', 'application/json');
+      res.setHeader('Content-Disposition', 'attachment; filename="pipps-backup.json"');
+      res.json(backupData);
+    } catch (error) {
+      console.error("Export backup error:", error);
+      res.status(500).json({ error: "Failed to create backup" });
+    }
+  });
+
+  // Import routes
+  app.post("/api/import/materials", async (req, res) => {
+    try {
+      const { materials } = req.body;
+      
+      if (!Array.isArray(materials)) {
+        return res.status(400).json({ error: "Invalid materials data format" });
+      }
+
+      const importResults = {
+        success: 0,
+        errors: [] as string[]
+      };
+
+      for (const materialData of materials) {
+        try {
+          const materialToCreate = insertRawMaterialSchema.parse({
+            ...materialData,
+            userId: 1
+          });
+          
+          await storage.createRawMaterial(materialToCreate);
+          importResults.success++;
+        } catch (error) {
+          importResults.errors.push(`Failed to import material "${materialData.name}": ${error}`);
+        }
+      }
+
+      res.json({
+        message: `Import completed: ${importResults.success} materials imported successfully`,
+        ...importResults
+      });
+    } catch (error) {
+      console.error("Import materials error:", error);
+      res.status(500).json({ error: "Failed to import materials" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }
