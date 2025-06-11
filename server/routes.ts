@@ -16,7 +16,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json(vendors);
   });
 
-  app.post("/api/vendors", checkVendorsLimit, async (req, res) => {
+  app.post("/api/vendors", async (req, res) => {
     try {
       const vendorData = insertVendorSchema.parse({ ...req.body, userId: 1 });
       const vendor = await storage.createVendor(vendorData);
@@ -203,7 +203,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json(material);
   });
 
-  app.post("/api/raw-materials", checkMaterialsLimit, async (req, res) => {
+  app.post("/api/raw-materials", async (req, res) => {
     try {
       const materialData = insertRawMaterialSchema.parse({ ...req.body, userId: 1 });
       const material = await storage.createRawMaterial(materialData);
@@ -301,7 +301,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json(formulation);
   });
 
-  app.post("/api/formulations", checkFormulationsLimit, async (req, res) => {
+  app.post("/api/formulations", async (req, res) => {
     try {
       const { ingredients, ...formulationData } = req.body;
       const parsedFormulationData = insertFormulationSchema.parse({ ...formulationData, userId: 1 });
