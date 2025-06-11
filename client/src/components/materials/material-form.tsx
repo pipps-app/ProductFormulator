@@ -99,10 +99,19 @@ export default function MaterialForm({ material, onSuccess }: MaterialFormProps)
     mutationFn: ({ id, data }: { id: number; data: any }) => 
       apiRequest("PUT", `/api/raw-materials/${id}`, data),
     onSuccess: () => {
+      // Invalidate all related caches when material is updated
       queryClient.invalidateQueries({ queryKey: ["/api/raw-materials"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/formulations"] });
       queryClient.invalidateQueries({ queryKey: ["/api/material-categories"] });
       queryClient.invalidateQueries({ queryKey: ["/api/dashboard/stats"] });
       queryClient.invalidateQueries({ queryKey: ["/api/dashboard/recent-activity"] });
+      // Also invalidate any formulation ingredients queries
+      queryClient.invalidateQueries({ 
+        predicate: (query) => {
+          const key = query.queryKey[0] as string;
+          return key?.includes('/api/formulations') && key?.includes('/ingredients');
+        }
+      });
       toast({ title: "Material updated successfully" });
       onSuccess();
     },
