@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Plus, Search, Edit, Trash2 } from "lucide-react";
+import { Plus, Search, Edit, Trash2, RefreshCw } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea";
@@ -23,7 +23,7 @@ export default function Vendors() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  const { data: vendors, isLoading } = useQuery<Vendor[]>({
+  const { data: vendors, isLoading, refetch } = useQuery<Vendor[]>({
     queryKey: ["/api/vendors"],
   });
 
@@ -119,6 +119,10 @@ export default function Vendors() {
     }
   };
 
+  const handleRefresh = () => {
+    refetch();
+  };
+
   return (
     <div className="space-y-6">
       {/* Page Header */}
@@ -127,10 +131,20 @@ export default function Vendors() {
           <h2 className="text-2xl font-bold text-slate-900">Vendors</h2>
           <p className="text-slate-600 mt-1">Manage your supplier relationships</p>
         </div>
-        <Button onClick={() => setIsAddModalOpen(true)}>
-          <Plus className="h-4 w-4 mr-2" />
-          Add Vendor
-        </Button>
+        <div className="flex items-center space-x-3">
+          <Button 
+            variant="outline" 
+            onClick={handleRefresh}
+            disabled={isLoading}
+          >
+            <RefreshCw className={`h-4 w-4 mr-2 ${isLoading ? 'animate-spin' : ''}`} />
+            Refresh
+          </Button>
+          <Button onClick={() => setIsAddModalOpen(true)}>
+            <Plus className="h-4 w-4 mr-2" />
+            Add Vendor
+          </Button>
+        </div>
       </div>
 
       {/* Search */}

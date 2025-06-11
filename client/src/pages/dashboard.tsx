@@ -6,13 +6,21 @@ import RecentFormulations from "@/components/dashboard/recent-formulations";
 import MaterialsPreview from "@/components/dashboard/materials-preview";
 import FormulationOverview from "@/components/dashboard/formulation-overview";
 import { useDashboardStats, useRecentActivity } from "@/hooks/use-formulations";
+import { useQueryClient } from "@tanstack/react-query";
 
 export default function Dashboard() {
   const { data: stats, isLoading: statsLoading, refetch } = useDashboardStats();
-  const { data: recentActivity, isLoading: activityLoading } = useRecentActivity();
+  const { data: recentActivity, isLoading: activityLoading, refetch: refetchActivity } = useRecentActivity();
+  const queryClient = useQueryClient();
 
   const handleRefresh = () => {
     refetch();
+    refetchActivity();
+    // Invalidate all dashboard-related queries to ensure fresh data
+    queryClient.invalidateQueries({ queryKey: ["/api/raw-materials"] });
+    queryClient.invalidateQueries({ queryKey: ["/api/formulations"] });
+    queryClient.invalidateQueries({ queryKey: ["/api/vendors"] });
+    queryClient.invalidateQueries({ queryKey: ["/api/material-categories"] });
   };
 
   return (

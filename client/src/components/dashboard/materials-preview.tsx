@@ -1,15 +1,19 @@
 import { useMaterials, useMaterialCategories, useVendors } from "@/hooks/use-materials";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Filter, Edit, Trash2, Package, FlaskRound } from "lucide-react";
+import { Filter, Edit, Trash2, Package, FlaskRound, RefreshCw } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
 import { Link } from "wouter";
 
 export default function MaterialsPreview() {
-  const { data: materials, isLoading } = useMaterials();
+  const { data: materials, isLoading, refetch } = useMaterials();
   const { data: categories = [] } = useMaterialCategories();
   const { data: vendors = [] } = useVendors();
+
+  const handleRefresh = () => {
+    refetch();
+  };
 
   const recentMaterials = materials?.slice(0, 5) || [];
 
@@ -96,9 +100,14 @@ export default function MaterialsPreview() {
         <div className="flex items-center justify-between">
           <CardTitle>Recent Materials</CardTitle>
           <div className="flex items-center space-x-3">
-            <Button variant="outline" size="sm">
-              <Filter className="h-4 w-4 mr-2" />
-              Filter
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={handleRefresh}
+              disabled={isLoading}
+            >
+              <RefreshCw className={`h-4 w-4 mr-2 ${isLoading ? 'animate-spin' : ''}`} />
+              Refresh
             </Button>
             <Link href="/materials" className="text-sm text-primary-600 hover:text-primary-700 font-medium">
               View all materials
