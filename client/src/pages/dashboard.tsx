@@ -14,13 +14,21 @@ export default function Dashboard() {
   const queryClient = useQueryClient();
 
   const handleRefresh = () => {
+    // Force refetch all dashboard queries
     refetch();
     refetchActivity();
-    // Invalidate all dashboard-related queries to ensure fresh data
+    // Invalidate all related queries to ensure fresh data
     queryClient.invalidateQueries({ queryKey: ["/api/raw-materials"] });
     queryClient.invalidateQueries({ queryKey: ["/api/formulations"] });
     queryClient.invalidateQueries({ queryKey: ["/api/vendors"] });
     queryClient.invalidateQueries({ queryKey: ["/api/material-categories"] });
+    // Also invalidate formulation ingredients
+    queryClient.invalidateQueries({ 
+      predicate: (query) => {
+        const key = query.queryKey[0] as string;
+        return key?.includes('/api/formulations') && key?.includes('/ingredients');
+      }
+    });
   };
 
   return (

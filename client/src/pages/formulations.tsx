@@ -7,6 +7,7 @@ import FormulationList from "@/components/formulations/formulation-list";
 import FormulationForm from "@/components/formulations/formulation-form";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useFormulations } from "@/hooks/use-formulations";
+import { useQueryClient } from "@tanstack/react-query";
 
 export default function Formulations() {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -14,6 +15,7 @@ export default function Formulations() {
   const [searchQuery, setSearchQuery] = useState("");
   
   const { data: formulations, isLoading, refetch } = useFormulations();
+  const queryClient = useQueryClient();
 
   const filteredFormulations = formulations?.filter(formulation =>
     formulation.name.toLowerCase().includes(searchQuery.toLowerCase()) ||

@@ -7,6 +7,7 @@ import MaterialList from "@/components/materials/material-list";
 import MaterialForm from "@/components/materials/material-form";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useMaterials } from "@/hooks/use-materials";
+import { useQueryClient } from "@tanstack/react-query";
 
 export default function Materials() {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -14,6 +15,7 @@ export default function Materials() {
   const [searchQuery, setSearchQuery] = useState("");
   
   const { data: materials, isLoading, refetch } = useMaterials();
+  const queryClient = useQueryClient();
 
   const filteredMaterials = materials?.filter(material =>
     material.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -32,6 +34,10 @@ export default function Materials() {
 
   const handleRefresh = () => {
     refetch();
+    // Invalidate related caches to ensure fresh data
+    queryClient.invalidateQueries({ queryKey: ["/api/material-categories"] });
+    queryClient.invalidateQueries({ queryKey: ["/api/vendors"] });
+    queryClient.invalidateQueries({ queryKey: ["/api/dashboard/stats"] });
   };
 
   return (
