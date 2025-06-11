@@ -194,9 +194,13 @@ export default function ImportExport() {
               />
               
               <div className="flex space-x-3">
-                <Button variant="outline" size="sm">
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => handleDownloadTemplate('materials')}
+                >
                   <FileText className="h-4 w-4 mr-2" />
-                  Download Template
+                  Download Materials Template
                 </Button>
               </div>
             </CardContent>
@@ -225,9 +229,13 @@ export default function ImportExport() {
               />
               
               <div className="flex space-x-3">
-                <Button variant="outline" size="sm">
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => handleDownloadTemplate('formulations')}
+                >
                   <FileText className="h-4 w-4 mr-2" />
-                  Download Template
+                  Download Formulations Template
                 </Button>
               </div>
             </CardContent>
