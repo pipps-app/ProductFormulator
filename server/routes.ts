@@ -9,6 +9,70 @@ import {
 } from "@shared/schema";
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Helper function to recalculate formulation costs when material prices change
+  async function updateFormulationsUsingMaterial(materialId: number) {
+    try {
+      // Get all formulations for user (using mock user ID 1)
+      const formulations = await storage.getFormulations(1);
+      
+      for (const formulation of formulations) {
+        // Get ingredients for this formulation
+        const ingredients = await storage.getFormulationIngredients(formulation.id);
+        
+        // Check if this formulation uses the updated material
+        const usesUpdatedMaterial = ingredients.some(ing => ing.materialId === materialId);
+        
+        if (usesUpdatedMaterial) {
+          // Recalculate costs for this formulation
+          let totalMaterialCost = 0;
+          
+          for (const ingredient of ingredients) {
+            if (ingredient.materialId) {
+              const material = await storage.getRawMaterial(ingredient.materialId);
+              if (material) {
+                const costContribution = Number(ingredient.quantity) * Number(material.unitCost);
+                totalMaterialCost += costContribution;
+                
+                // Update the ingredient's cost contribution
+                await storage.updateFormulationIngredient(ingredient.id, {
+                  costContribution: costContribution.toFixed(2)
+                });
+              }
+            }
+          }
+          
+          // Calculate new formulation costs
+          const batchSize = Number(formulation.batchSize || 1);
+          const unitCost = batchSize > 0 ? totalMaterialCost / batchSize : 0;
+          const markupPercentage = Number(formulation.markupPercentage || 30);
+          const profitMargin = (markupPercentage / 100) * totalMaterialCost;
+          
+          // Update formulation with new calculated costs
+          await storage.updateFormulationCosts(formulation.id, {
+            totalCost: totalMaterialCost.toFixed(2),
+            unitCost: unitCost.toFixed(4),
+            profitMargin: profitMargin.toFixed(2),
+          });
+          
+          // Create audit log for the automatic update
+          await storage.createAuditLog({
+            userId: 1,
+            action: "update",
+            entityType: "formulation",
+            entityId: formulation.id,
+            changes: JSON.stringify({
+              description: `Automatically updated formulation "${formulation.name}" costs due to material price change. New total cost: $${totalMaterialCost.toFixed(2)}`,
+              reason: "Material price change",
+              materialId: materialId
+            }),
+          });
+        }
+      }
+    } catch (error) {
+      console.error("Error updating formulations after material price change:", error);
+    }
+  }
+
   // Vendors
   app.get("/api/vendors", async (req, res) => {
     const userId = 1; // Mock user ID for now
@@ -236,6 +300,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       const materialData = insertRawMaterialSchema.partial().parse(req.body);
       const material = await storage.updateRawMaterial(id, materialData);
+      
+      // If unit cost changed, update all formulations that use this material
+      if (material && originalMaterial.unitCost !== material.unitCost) {
+        await updateFormulationsUsingMaterial(id);
+      }
       
       // Create audit log
       if (material) {
