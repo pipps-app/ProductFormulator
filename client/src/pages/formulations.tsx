@@ -13,6 +13,7 @@ export default function Formulations() {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [editingFormulation, setEditingFormulation] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const [isRefreshing, setIsRefreshing] = useState(false);
   
   const { data: formulations, isLoading, refetch } = useFormulations();
   const queryClient = useQueryClient();
@@ -32,17 +33,22 @@ export default function Formulations() {
     setEditingFormulation(null);
   };
 
-  const handleRefresh = () => {
-    refetch();
-    // Invalidate related caches to ensure fresh data
-    queryClient.invalidateQueries({ queryKey: ["/api/raw-materials"] });
-    queryClient.invalidateQueries({ queryKey: ["/api/dashboard/stats"] });
-    queryClient.invalidateQueries({ 
-      predicate: (query) => {
-        const key = query.queryKey[0] as string;
-        return key?.includes('/api/formulations') && key?.includes('/ingredients');
-      }
-    });
+  const handleRefresh = async () => {
+    setIsRefreshing(true);
+    try {
+      await refetch();
+      // Invalidate related caches to ensure fresh data
+      queryClient.invalidateQueries({ queryKey: ["/api/raw-materials"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/dashboard/stats"] });
+      queryClient.invalidateQueries({ 
+        predicate: (query) => {
+          const key = query.queryKey[0] as string;
+          return key?.includes('/api/formulations') && key?.includes('/ingredients');
+        }
+      });
+    } finally {
+      setTimeout(() => setIsRefreshing(false), 500);
+    }
   };
 
   return (
@@ -57,9 +63,9 @@ export default function Formulations() {
           <Button 
             variant="outline" 
             onClick={handleRefresh}
-            disabled={isLoading}
+            disabled={isRefreshing || isLoading}
           >
-            <RefreshCw className={`h-4 w-4 mr-2 ${isLoading ? 'animate-spin' : ''}`} />
+            <RefreshCw className={`h-4 w-4 mr-2 ${isRefreshing || isLoading ? 'animate-spin' : ''}`} />
             Refresh
           </Button>
           <Button onClick={() => setIsAddModalOpen(true)}>

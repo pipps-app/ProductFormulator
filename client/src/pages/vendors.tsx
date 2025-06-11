@@ -19,6 +19,7 @@ export default function Vendors() {
   const [editingVendor, setEditingVendor] = useState<Vendor | null>(null);
   const [deletingVendor, setDeletingVendor] = useState<Vendor | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const [isRefreshing, setIsRefreshing] = useState(false);
   
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -119,11 +120,16 @@ export default function Vendors() {
     }
   };
 
-  const handleRefresh = () => {
-    refetch();
-    // Invalidate related caches to ensure fresh data
-    queryClient.invalidateQueries({ queryKey: ["/api/raw-materials"] });
-    queryClient.invalidateQueries({ queryKey: ["/api/dashboard/stats"] });
+  const handleRefresh = async () => {
+    setIsRefreshing(true);
+    try {
+      await refetch();
+      // Invalidate related caches to ensure fresh data
+      queryClient.invalidateQueries({ queryKey: ["/api/raw-materials"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/dashboard/stats"] });
+    } finally {
+      setTimeout(() => setIsRefreshing(false), 500);
+    }
   };
 
   return (
@@ -138,9 +144,9 @@ export default function Vendors() {
           <Button 
             variant="outline" 
             onClick={handleRefresh}
-            disabled={isLoading}
+            disabled={isRefreshing || isLoading}
           >
-            <RefreshCw className={`h-4 w-4 mr-2 ${isLoading ? 'animate-spin' : ''}`} />
+            <RefreshCw className={`h-4 w-4 mr-2 ${isRefreshing || isLoading ? 'animate-spin' : ''}`} />
             Refresh
           </Button>
           <Button onClick={() => setIsAddModalOpen(true)}>
