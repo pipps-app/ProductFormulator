@@ -11,7 +11,9 @@ export default function AppLayout({ children }: AppLayoutProps) {
     <div className="min-h-screen flex flex-col bg-slate-50">
       <Header />
       <div className="flex-1 flex">
-        <Sidebar />
+        <div data-tour="navigation">
+          <Sidebar />
+        </div>
         <main className="flex-1 p-6">
           <div className="max-w-7xl mx-auto">
             {children}

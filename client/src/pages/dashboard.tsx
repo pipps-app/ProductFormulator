@@ -44,6 +44,7 @@ export default function Dashboard() {
             variant="outline" 
             onClick={handleRefresh}
             disabled={statsLoading}
+            data-tour="refresh-button"
           >
             <RefreshCw className={`h-4 w-4 mr-2 ${statsLoading ? 'animate-spin' : ''}`} />
             Refresh
@@ -56,7 +57,9 @@ export default function Dashboard() {
       </div>
 
       {/* Metrics Grid */}
-      <MetricsGrid stats={stats as any} isLoading={statsLoading} />
+      <div data-tour="dashboard-stats">
+        <MetricsGrid stats={stats as any} isLoading={statsLoading} />
+      </div>
 
       {/* Formulation Performance Overview */}
       <FormulationOverview />
@@ -104,7 +107,9 @@ export default function Dashboard() {
       </div>
 
       {/* Materials Preview */}
-      <MaterialsPreview />
+      <div data-tour="materials-preview">
+        <MaterialsPreview />
+      </div>
     </div>
   );
 }
