@@ -34,6 +34,15 @@ export default function Formulations() {
 
   const handleRefresh = () => {
     refetch();
+    // Invalidate related caches to ensure fresh data
+    queryClient.invalidateQueries({ queryKey: ["/api/raw-materials"] });
+    queryClient.invalidateQueries({ queryKey: ["/api/dashboard/stats"] });
+    queryClient.invalidateQueries({ 
+      predicate: (query) => {
+        const key = query.queryKey[0] as string;
+        return key?.includes('/api/formulations') && key?.includes('/ingredients');
+      }
+    });
   };
 
   return (

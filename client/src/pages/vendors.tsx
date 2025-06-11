@@ -121,6 +121,9 @@ export default function Vendors() {
 
   const handleRefresh = () => {
     refetch();
+    // Invalidate related caches to ensure fresh data
+    queryClient.invalidateQueries({ queryKey: ["/api/raw-materials"] });
+    queryClient.invalidateQueries({ queryKey: ["/api/dashboard/stats"] });
   };
 
   return (
