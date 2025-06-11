@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Plus, Search, Filter } from "lucide-react";
+import { Plus, Search, Filter, RefreshCw } from "lucide-react";
 import FormulationList from "@/components/formulations/formulation-list";
 import FormulationForm from "@/components/formulations/formulation-form";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -13,7 +13,7 @@ export default function Formulations() {
   const [editingFormulation, setEditingFormulation] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   
-  const { data: formulations, isLoading } = useFormulations();
+  const { data: formulations, isLoading, refetch } = useFormulations();
 
   const filteredFormulations = formulations?.filter(formulation =>
     formulation.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -30,6 +30,10 @@ export default function Formulations() {
     setEditingFormulation(null);
   };
 
+  const handleRefresh = () => {
+    refetch();
+  };
+
   return (
     <div className="space-y-6">
       {/* Page Header */}
@@ -38,10 +42,20 @@ export default function Formulations() {
           <h2 className="text-2xl font-bold text-slate-900">Product Formulations</h2>
           <p className="text-slate-600 mt-1">Create and manage your product recipes</p>
         </div>
-        <Button onClick={() => setIsAddModalOpen(true)}>
-          <Plus className="h-4 w-4 mr-2" />
-          New Formulation
-        </Button>
+        <div className="flex items-center space-x-3">
+          <Button 
+            variant="outline" 
+            onClick={handleRefresh}
+            disabled={isLoading}
+          >
+            <RefreshCw className={`h-4 w-4 mr-2 ${isLoading ? 'animate-spin' : ''}`} />
+            Refresh
+          </Button>
+          <Button onClick={() => setIsAddModalOpen(true)}>
+            <Plus className="h-4 w-4 mr-2" />
+            New Formulation
+          </Button>
+        </div>
       </div>
 
       {/* Search and Filters */}
