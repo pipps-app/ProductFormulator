@@ -691,12 +691,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const { planId } = req.body;
       
       // Return Shopify store URLs for each plan
-      const shopifyUrls = {
+      const shopifyUrls: Record<string, string> = {
         starter: process.env.SHOPIFY_STARTER_URL || 'https://your-store.myshopify.com/products/pipps-starter',
         professional: process.env.SHOPIFY_PROFESSIONAL_URL || 'https://your-store.myshopify.com/products/pipps-professional'
       };
       
-      const redirectUrl = shopifyUrls[planId];
+      const redirectUrl = shopifyUrls[planId as string];
       if (!redirectUrl) {
         return res.status(400).json({ error: "Invalid plan ID" });
       }

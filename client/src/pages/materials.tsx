@@ -13,6 +13,7 @@ export default function Materials() {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [editingMaterial, setEditingMaterial] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const [isRefreshing, setIsRefreshing] = useState(false);
   
   const { data: materials, isLoading, refetch } = useMaterials();
   const queryClient = useQueryClient();
@@ -32,12 +33,17 @@ export default function Materials() {
     setEditingMaterial(null);
   };
 
-  const handleRefresh = () => {
-    refetch();
-    // Invalidate related caches to ensure fresh data
-    queryClient.invalidateQueries({ queryKey: ["/api/material-categories"] });
-    queryClient.invalidateQueries({ queryKey: ["/api/vendors"] });
-    queryClient.invalidateQueries({ queryKey: ["/api/dashboard/stats"] });
+  const handleRefresh = async () => {
+    setIsRefreshing(true);
+    try {
+      await refetch();
+      // Invalidate related caches to ensure fresh data
+      queryClient.invalidateQueries({ queryKey: ["/api/material-categories"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/vendors"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/dashboard/stats"] });
+    } finally {
+      setTimeout(() => setIsRefreshing(false), 500);
+    }
   };
 
   return (
@@ -52,9 +58,9 @@ export default function Materials() {
           <Button 
             variant="outline" 
             onClick={handleRefresh}
-            disabled={isLoading}
+            disabled={isRefreshing || isLoading}
           >
-            <RefreshCw className={`h-4 w-4 mr-2 ${isLoading ? 'animate-spin' : ''}`} />
+            <RefreshCw className={`h-4 w-4 mr-2 ${isRefreshing || isLoading ? 'animate-spin' : ''}`} />
             Refresh
           </Button>
           <Button onClick={() => setIsAddModalOpen(true)}>

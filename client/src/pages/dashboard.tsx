@@ -1,6 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { RefreshCw, Plus } from "lucide-react";
+import { useState } from "react";
 import MetricsGrid from "@/components/dashboard/metrics-grid";
 import RecentFormulations from "@/components/dashboard/recent-formulations";
 import MaterialsPreview from "@/components/dashboard/materials-preview";
@@ -12,23 +13,32 @@ export default function Dashboard() {
   const { data: stats, isLoading: statsLoading, refetch } = useDashboardStats();
   const { data: recentActivity, isLoading: activityLoading, refetch: refetchActivity } = useRecentActivity();
   const queryClient = useQueryClient();
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
-  const handleRefresh = () => {
-    // Force refetch all dashboard queries
-    refetch();
-    refetchActivity();
-    // Invalidate all related queries to ensure fresh data
-    queryClient.invalidateQueries({ queryKey: ["/api/raw-materials"] });
-    queryClient.invalidateQueries({ queryKey: ["/api/formulations"] });
-    queryClient.invalidateQueries({ queryKey: ["/api/vendors"] });
-    queryClient.invalidateQueries({ queryKey: ["/api/material-categories"] });
-    // Also invalidate formulation ingredients
-    queryClient.invalidateQueries({ 
-      predicate: (query) => {
-        const key = query.queryKey[0] as string;
-        return key?.includes('/api/formulations') && key?.includes('/ingredients');
-      }
-    });
+  const handleRefresh = async () => {
+    setIsRefreshing(true);
+    try {
+      // Force refetch all dashboard queries
+      await Promise.all([
+        refetch(),
+        refetchActivity()
+      ]);
+      // Invalidate all related queries to ensure fresh data
+      queryClient.invalidateQueries({ queryKey: ["/api/raw-materials"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/formulations"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/vendors"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/material-categories"] });
+      // Also invalidate formulation ingredients
+      queryClient.invalidateQueries({ 
+        predicate: (query) => {
+          const key = query.queryKey[0] as string;
+          return key?.includes('/api/formulations') && key?.includes('/ingredients');
+        }
+      });
+    } finally {
+      // Add a small delay to ensure the animation is visible
+      setTimeout(() => setIsRefreshing(false), 500);
+    }
   };
 
   return (
@@ -43,10 +53,10 @@ export default function Dashboard() {
           <Button 
             variant="outline" 
             onClick={handleRefresh}
-            disabled={statsLoading}
+            disabled={isRefreshing || statsLoading}
             data-tour="refresh-button"
           >
-            <RefreshCw className={`h-4 w-4 mr-2 ${statsLoading ? 'animate-spin' : ''}`} />
+            <RefreshCw className={`h-4 w-4 mr-2 ${isRefreshing || statsLoading ? 'animate-spin' : ''}`} />
             Refresh
           </Button>
           <Button>
