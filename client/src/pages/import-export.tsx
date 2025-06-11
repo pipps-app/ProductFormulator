@@ -131,6 +131,31 @@ export default function ImportExport() {
     }
   };
 
+  const handleDownloadTemplate = async (type: 'materials' | 'formulations') => {
+    try {
+      const response = await fetch(`/api/templates/${type}`);
+      if (!response.ok) throw new Error('Template download failed');
+      
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${type}-template.json`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+      
+      toast({ title: `${type.charAt(0).toUpperCase() + type.slice(1)} template downloaded` });
+    } catch (error) {
+      toast({ 
+        title: "Download failed", 
+        description: "Failed to download template",
+        variant: "destructive"
+      });
+    }
+  };
+
   return (
     <div className="space-y-6">
       {/* Page Header */}

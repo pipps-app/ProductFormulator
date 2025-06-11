@@ -1084,6 +1084,97 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Template download routes
+  app.get("/api/templates/materials", async (req, res) => {
+    try {
+      const categories = await storage.getMaterialCategories(1);
+      const vendors = await storage.getVendors(1);
+
+      const template = {
+        materials: [
+          {
+            name: "Example Material",
+            sku: "EX001",
+            categoryId: categories[0]?.id || 1,
+            vendorId: vendors[0]?.id || null,
+            totalCost: "100.00",
+            quantity: "50.000",
+            unit: "kg",
+            notes: "Example material for import template",
+            isActive: true
+          }
+        ],
+        instructions: {
+          name: "Material name (required)",
+          sku: "Stock keeping unit (optional)",
+          categoryId: `Category ID - Available options: ${categories.map(c => `${c.id}="${c.name}"`).join(', ')}`,
+          vendorId: `Vendor ID - Available options: ${vendors.map(v => `${v.id}="${v.name}"`).join(', ')} or null`,
+          totalCost: "Total cost as decimal string",
+          quantity: "Quantity as decimal string",
+          unit: "Unit of measurement (kg, g, L, ml, pcs, etc.)",
+          notes: "Optional notes",
+          isActive: "Boolean - true or false"
+        }
+      };
+
+      res.setHeader('Content-Type', 'application/json');
+      res.setHeader('Content-Disposition', 'attachment; filename="materials-template.json"');
+      res.json(template);
+    } catch (error) {
+      console.error("Template download error:", error);
+      res.status(500).json({ error: "Failed to generate template" });
+    }
+  });
+
+  app.get("/api/templates/formulations", async (req, res) => {
+    try {
+      const materials = await storage.getRawMaterials(1);
+
+      const template = {
+        formulations: [
+          {
+            name: "Example Formulation",
+            description: "Sample product formulation",
+            batchSize: "1.000",
+            batchUnit: "unit",
+            targetPrice: "100.00",
+            markupPercentage: "30.00",
+            ingredients: [
+              {
+                materialId: materials[0]?.id || 1,
+                quantity: "10.000",
+                unit: "g",
+                includeInMarkup: true,
+                notes: "Main ingredient"
+              }
+            ]
+          }
+        ],
+        instructions: {
+          name: "Formulation name (required)",
+          description: "Product description (optional)",
+          batchSize: "Batch size as decimal string",
+          batchUnit: "Batch unit (unit, kg, L, etc.)",
+          targetPrice: "Target selling price",
+          markupPercentage: "Markup percentage for profit calculation",
+          ingredients: "Array of ingredients",
+          materialId: `Material ID - Available options: ${materials.slice(0, 5).map(m => `${m.id}="${m.name}"`).join(', ')}`,
+          quantity: "Ingredient quantity as decimal string",
+          unit: "Ingredient unit of measurement",
+          includeInMarkup: "Boolean - whether to include in markup calculation",
+          notes: "Optional ingredient notes"
+        }
+      };
+
+      res.setHeader('Content-Type', 'application/json');
+      res.setHeader('Content-Disposition', 'attachment; filename="formulations-template.json"');
+      res.json(template);
+    } catch (error) {
+      console.error("Template download error:", error);
+      res.status(500).json({ error: "Failed to generate template" });
+    }
+  });
+
   // Import routes
   app.post("/api/import/materials", async (req, res) => {
     try {
