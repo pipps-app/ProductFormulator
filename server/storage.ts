@@ -303,6 +303,12 @@ export class DatabaseStorage implements IStorage {
   }
 
   async deleteRawMaterial(id: number): Promise<boolean> {
+    // First update any formulation ingredients that reference this material to set materialId to null
+    await db.update(formulationIngredients)
+      .set({ materialId: null })
+      .where(eq(formulationIngredients.materialId, id));
+    
+    // Then delete the raw material
     const result = await db.delete(rawMaterials).where(eq(rawMaterials.id, id)).returning();
     return result.length > 0;
   }
