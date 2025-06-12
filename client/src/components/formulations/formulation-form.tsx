@@ -60,11 +60,11 @@ export default function FormulationForm({ formulation, onSuccess }: FormulationF
   const markupPercentage = parseFloat(form.watch("markupPercentage") || "30");
   const suggestedPrice = markupEligibleCost * (1 + markupPercentage / 100);
   const actualSellingPrice = parseFloat(sellingPrice || "0");
-  const profit = actualSellingPrice > 0 ? actualSellingPrice - unitCost : 0;
+  const profit = actualSellingPrice > 0 ? actualSellingPrice - markupEligibleCost : 0;
   
   // Calculate both profit margin (% of selling price) and markup (% of cost)
   const profitMargin = actualSellingPrice > 0 ? ((profit / actualSellingPrice) * 100) : 0;
-  const actualMarkup = unitCost > 0 && actualSellingPrice > 0 ? ((profit / unitCost) * 100) : 0;
+  const actualMarkup = markupEligibleCost > 0 && actualSellingPrice > 0 ? ((profit / markupEligibleCost) * 100) : 0;
 
   // Add ingredient
   const addIngredient = () => {

@@ -400,7 +400,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
             quantity: ingredient.quantity,
             unit: ingredient.unit,
             costContribution: ingredient.costContribution,
-            includeInMarkup: ingredient.includeInMarkup || true,
+            includeInMarkup: ingredient.includeInMarkup !== false,
           });
         }
         
@@ -408,10 +408,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
         const totalMaterialCost = ingredients.reduce((total, ing) => 
           total + Number(ing.costContribution || 0), 0);
         
+        // Calculate markup-eligible cost (only ingredients marked for markup)
+        const markupEligibleCost = ingredients.reduce((total, ing) => 
+          (ing.includeInMarkup !== false) ? total + Number(ing.costContribution || 0) : total, 0);
+        
         const batchSize = Number(formulation.batchSize || 1);
         const unitCost = batchSize > 0 ? totalMaterialCost / batchSize : 0;
         const markupPercentage = Number(formulation.markupPercentage || 30);
-        const profitMargin = (markupPercentage / 100) * totalMaterialCost;
+        const profitMargin = (markupPercentage / 100) * markupEligibleCost;
         
         // Update formulation with calculated costs
         await storage.updateFormulationCosts(formulation.id, {
@@ -475,7 +479,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
             quantity: ingredient.quantity,
             unit: ingredient.unit,
             costContribution: ingredient.costContribution,
-            includeInMarkup: ingredient.includeInMarkup || true,
+            includeInMarkup: ingredient.includeInMarkup !== false,
           });
         }
         
@@ -483,10 +487,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
         const totalMaterialCost = ingredients.reduce((total, ing) => 
           total + Number(ing.costContribution || 0), 0);
         
+        // Calculate markup-eligible cost (only ingredients marked for markup)
+        const markupEligibleCost = ingredients.reduce((total, ing) => 
+          (ing.includeInMarkup !== false) ? total + Number(ing.costContribution || 0) : total, 0);
+        
         const batchSize = Number(formulation?.batchSize || 1);
         const unitCost = batchSize > 0 ? totalMaterialCost / batchSize : 0;
         const markupPercentage = Number(formulation?.markupPercentage || 30);
-        const profitMargin = (markupPercentage / 100) * totalMaterialCost;
+        const profitMargin = (markupPercentage / 100) * markupEligibleCost;
         
         // Update formulation with calculated costs using storage updateFormulationCosts method
         await storage.updateFormulationCosts(id, {
