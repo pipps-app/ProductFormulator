@@ -8,6 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Checkbox } from "@/components/ui/checkbox";
 import { insertFormulationSchema, type Formulation } from "@shared/schema";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
@@ -23,6 +24,7 @@ interface Ingredient {
   quantity: number;
   unit: string;
   totalCost: number;
+  includeInMarkup: boolean;
 }
 
 interface FormulationFormProps {
@@ -80,7 +82,8 @@ export default function FormulationForm({ formulation, onSuccess }: FormulationF
       unitCost: materialUnitCost,
       quantity,
       unit: material.unit,
-      totalCost
+      totalCost,
+      includeInMarkup: true // Default to included in markup
     };
 
     setIngredients([...ingredients, newIngredient]);
@@ -91,6 +94,15 @@ export default function FormulationForm({ formulation, onSuccess }: FormulationF
   // Remove ingredient
   const removeIngredient = (id: string) => {
     setIngredients(ingredients.filter(ing => ing.id !== id));
+  };
+
+  // Toggle include in markup
+  const toggleIncludeInMarkup = (id: string) => {
+    setIngredients(ingredients.map(ing => 
+      ing.id === id 
+        ? { ...ing, includeInMarkup: !ing.includeInMarkup }
+        : ing
+    ));
   };
 
   // Set form values when editing
@@ -124,6 +136,7 @@ export default function FormulationForm({ formulation, onSuccess }: FormulationF
                 quantity: parseFloat(ing.quantity),
                 unit: ing.unit,
                 totalCost: parseFloat(ing.costContribution),
+                includeInMarkup: ing.includeInMarkup ?? true, // Default to true if not specified
               };
             });
             setIngredients(formattedIngredients);
@@ -189,7 +202,7 @@ export default function FormulationForm({ formulation, onSuccess }: FormulationF
         quantity: ing.quantity.toString(),
         unit: ing.unit,
         costContribution: ing.totalCost.toString(),
-        includeInMarkup: true,
+        includeInMarkup: ing.includeInMarkup,
       })),
     };
 
@@ -289,10 +302,22 @@ export default function FormulationForm({ formulation, onSuccess }: FormulationF
                   <div className="text-sm font-medium text-slate-700">Added Ingredients</div>
                   {ingredients.map((ingredient) => (
                     <div key={ingredient.id} className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
-                      <div className="flex-1">
-                        <div className="font-medium text-slate-900">{ingredient.materialName}</div>
-                        <div className="text-sm text-slate-600">
-                          {ingredient.quantity} {ingredient.unit} × ${ingredient.unitCost.toFixed(4)} = ${ingredient.totalCost.toFixed(2)}
+                      <div className="flex items-center space-x-3 flex-1">
+                        <div className="flex items-center space-x-2">
+                          <Checkbox
+                            checked={ingredient.includeInMarkup}
+                            onCheckedChange={() => toggleIncludeInMarkup(ingredient.id)}
+                          />
+                          <span className="text-xs text-slate-600">Include in markup</span>
+                        </div>
+                        <div className="flex-1">
+                          <div className="font-medium text-slate-900">{ingredient.materialName}</div>
+                          <div className="text-sm text-slate-600">
+                            {ingredient.quantity} {ingredient.unit} × ${ingredient.unitCost.toFixed(4)} = ${ingredient.totalCost.toFixed(2)}
+                            {!ingredient.includeInMarkup && (
+                              <Badge variant="secondary" className="ml-2 text-xs">Excluded from markup</Badge>
+                            )}
+                          </div>
                         </div>
                       </div>
                       <Button
