@@ -1,6 +1,7 @@
 import { ReactNode } from "react";
 import Header from "./header";
 import Sidebar from "./sidebar";
+import MobileNotice from "../common/mobile-notice";
 
 interface AppLayoutProps {
   children: ReactNode;
@@ -16,6 +17,7 @@ export default function AppLayout({ children }: AppLayoutProps) {
         </div>
         <main className="flex-1 p-6">
           <div className="max-w-7xl mx-auto">
+            <MobileNotice />
             {children}
           </div>
         </main>

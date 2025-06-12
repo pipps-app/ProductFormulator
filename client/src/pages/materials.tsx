@@ -8,6 +8,7 @@ import MaterialForm from "@/components/materials/material-form";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useMaterials } from "@/hooks/use-materials";
 import { useQueryClient } from "@tanstack/react-query";
+import { LandscapeNotice } from "@/components/common/mobile-notice";
 
 export default function Materials() {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -48,6 +49,7 @@ export default function Materials() {
 
   return (
     <div className="space-y-6">
+      <LandscapeNotice />
       {/* Page Header */}
       <div className="flex items-center justify-between">
         <div>
