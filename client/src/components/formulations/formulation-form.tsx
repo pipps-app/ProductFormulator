@@ -54,9 +54,11 @@ export default function FormulationForm({ formulation, onSuccess }: FormulationF
 
   // Cost calculations
   const totalMaterialCost = ingredients.reduce((sum, ing) => sum + ing.totalCost, 0);
+  const markupEligibleCost = ingredients.reduce((sum, ing) => 
+    ing.includeInMarkup ? sum + ing.totalCost : sum, 0);
   const unitCost = totalMaterialCost; // Direct cost since we removed batch sizing
   const markupPercentage = parseFloat(form.watch("markupPercentage") || "30");
-  const suggestedPrice = unitCost * (1 + markupPercentage / 100);
+  const suggestedPrice = markupEligibleCost * (1 + markupPercentage / 100);
   const actualSellingPrice = parseFloat(sellingPrice || "0");
   const profit = actualSellingPrice > 0 ? actualSellingPrice - unitCost : 0;
   
@@ -348,6 +350,11 @@ export default function FormulationForm({ formulation, onSuccess }: FormulationF
                 <div className="space-y-2">
                   <div className="text-sm text-slate-600">Total Material Cost</div>
                   <div className="text-2xl font-bold text-slate-900">${totalMaterialCost.toFixed(2)}</div>
+                  {markupEligibleCost !== totalMaterialCost && (
+                    <div className="text-sm text-amber-600">
+                      Markup eligible: ${markupEligibleCost.toFixed(2)}
+                    </div>
+                  )}
                 </div>
                 <div className="space-y-2">
                   <div className="text-sm text-slate-600">Cost per unit</div>
