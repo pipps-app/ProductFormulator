@@ -105,6 +105,12 @@ export default function FormulationForm({ formulation, onSuccess }: FormulationF
         ? { ...ing, includeInMarkup: !ing.includeInMarkup }
         : ing
     ));
+    
+    // Force recalculation by triggering a form update
+    setTimeout(() => {
+      const currentMarkup = form.getValues("markupPercentage");
+      form.setValue("markupPercentage", currentMarkup);
+    }, 0);
   };
 
   // Set form values when editing
