@@ -8,6 +8,7 @@ import FormulationForm from "@/components/formulations/formulation-form";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useFormulations } from "@/hooks/use-formulations";
 import { useQueryClient } from "@tanstack/react-query";
+import { LandscapeNotice } from "@/components/common/mobile-notice";
 
 export default function Formulations() {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -53,6 +54,7 @@ export default function Formulations() {
 
   return (
     <div className="space-y-6">
+      <LandscapeNotice />
       {/* Page Header */}
       <div className="flex items-center justify-between">
         <div>
