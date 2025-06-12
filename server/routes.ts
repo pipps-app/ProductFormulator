@@ -269,7 +269,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/raw-materials", async (req, res) => {
     try {
-      const materialData = insertRawMaterialSchema.parse({ ...req.body, userId: 1 });
+      // Calculate unitCost if not provided
+      const requestData = { ...req.body, userId: 1 };
+      if (requestData.totalCost && requestData.quantity && !requestData.unitCost) {
+        const totalCost = parseFloat(requestData.totalCost);
+        const quantity = parseFloat(requestData.quantity);
+        if (quantity > 0) {
+          requestData.unitCost = (totalCost / quantity).toFixed(4);
+        } else {
+          requestData.unitCost = "0.0000";
+        }
+      }
+      
+      const materialData = insertRawMaterialSchema.parse(requestData);
       const material = await storage.createRawMaterial(materialData);
       
       // Create audit log
@@ -286,7 +298,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       res.json(material);
     } catch (error) {
-      res.status(400).json({ error: "Invalid material data" });
+      res.status(400).json({ 
+        error: "Invalid material data",
+        details: error instanceof Error ? error.message : "Unknown error"
+      });
     }
   });
 
