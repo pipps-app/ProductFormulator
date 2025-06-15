@@ -122,11 +122,11 @@ export default function FormulationList({ formulations, isLoading, onEdit, sortF
         <table className="w-full">
           <thead className="bg-slate-50 border-b border-slate-200">
             <tr>
-              <th className="text-left p-4 text-sm font-medium text-slate-600">Formulation</th>
+              <SortableHeader field="name" className="text-left">Formulation</SortableHeader>
               <th className="text-left p-4 text-sm font-medium text-slate-600">Batch Size</th>
-              <th className="text-right p-4 text-sm font-medium text-slate-600">Total Cost</th>
+              <SortableHeader field="totalCost" className="text-right">Total Cost</SortableHeader>
               <th className="text-right p-4 text-sm font-medium text-slate-600">Unit Cost</th>
-              <th className="text-right p-4 text-sm font-medium text-slate-600">Profit Margin</th>
+              <SortableHeader field="profitMargin" className="text-right">Profit Margin</SortableHeader>
               <th className="text-right p-4 text-sm font-medium text-slate-600">Target Price</th>
               <th className="text-center p-4 text-sm font-medium text-slate-600">Status</th>
               <th className="text-center p-4 text-sm font-medium text-slate-600">Actions</th>
