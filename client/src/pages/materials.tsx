@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -10,19 +10,62 @@ import { useMaterials } from "@/hooks/use-materials";
 import { useQueryClient } from "@tanstack/react-query";
 import { LandscapeNotice } from "@/components/common/mobile-notice";
 
+type SortField = 'name' | 'unitCost' | 'totalValue';
+type SortDirection = 'asc' | 'desc';
+
 export default function Materials() {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [editingMaterial, setEditingMaterial] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [sortField, setSortField] = useState<SortField>('name');
+  const [sortDirection, setSortDirection] = useState<SortDirection>('asc');
   
   const { data: materials, isLoading, refetch } = useMaterials();
   const queryClient = useQueryClient();
 
-  const filteredMaterials = materials?.filter(material =>
-    material.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    material.sku?.toLowerCase().includes(searchQuery.toLowerCase())
-  ) || [];
+  const filteredAndSortedMaterials = useMemo(() => {
+    const filtered = materials?.filter(material =>
+      material.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      material.sku?.toLowerCase().includes(searchQuery.toLowerCase())
+    ) || [];
+
+    return filtered.sort((a, b) => {
+      let aValue: string | number;
+      let bValue: string | number;
+
+      switch (sortField) {
+        case 'name':
+          aValue = a.name.toLowerCase();
+          bValue = b.name.toLowerCase();
+          break;
+        case 'unitCost':
+          aValue = Number(a.unitCost);
+          bValue = Number(b.unitCost);
+          break;
+        case 'totalValue':
+          aValue = Number(a.totalCost);
+          bValue = Number(b.totalCost);
+          break;
+        default:
+          aValue = a.name.toLowerCase();
+          bValue = b.name.toLowerCase();
+      }
+
+      if (aValue < bValue) return sortDirection === 'asc' ? -1 : 1;
+      if (aValue > bValue) return sortDirection === 'asc' ? 1 : -1;
+      return 0;
+    });
+  }, [materials, searchQuery, sortField, sortDirection]);
+
+  const handleSort = (field: SortField) => {
+    if (sortField === field) {
+      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortField(field);
+      setSortDirection('asc');
+    }
+  };
 
   const handleEdit = (material: any) => {
     setEditingMaterial(material);
@@ -100,9 +143,12 @@ export default function Materials() {
         </CardHeader>
         <CardContent>
           <MaterialList 
-            materials={filteredMaterials}
+            materials={filteredAndSortedMaterials}
             isLoading={isLoading}
             onEdit={handleEdit}
+            sortField={sortField}
+            sortDirection={sortDirection}
+            onSort={handleSort}
           />
         </CardContent>
       </Card>

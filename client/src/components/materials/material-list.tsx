@@ -3,20 +3,26 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Edit, Trash2, Package, FlaskRound } from "lucide-react";
+import { Edit, Trash2, Package, FlaskRound, ChevronUp, ChevronDown } from "lucide-react";
 import { type RawMaterial } from "@shared/schema";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { useMaterialCategories, useVendors } from "@/hooks/use-materials";
 import ConfirmationModal from "@/components/common/confirmation-modal";
 
+type SortField = 'name' | 'unitCost' | 'totalValue';
+type SortDirection = 'asc' | 'desc';
+
 interface MaterialListProps {
   materials: RawMaterial[];
   isLoading: boolean;
   onEdit: (material: RawMaterial) => void;
+  sortField: SortField;
+  sortDirection: SortDirection;
+  onSort: (field: SortField) => void;
 }
 
-export default function MaterialList({ materials, isLoading, onEdit }: MaterialListProps) {
+export default function MaterialList({ materials, isLoading, onEdit, sortField, sortDirection, onSort }: MaterialListProps) {
   const [deletingMaterial, setDeletingMaterial] = useState<RawMaterial | null>(null);
   const { toast } = useToast();
   const queryClient = useQueryClient();
