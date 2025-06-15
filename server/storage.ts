@@ -29,6 +29,7 @@ export interface IStorage {
   getUser(id: number): Promise<User | undefined>;
   getUserByUsername(username: string): Promise<User | undefined>;
   getUserByEmail(email: string): Promise<User | undefined>;
+  getUserByGoogleId(googleId: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
   updateUser(id: number, user: Partial<InsertUser>): Promise<User | undefined>;
   updateUserPassword(id: number, newPassword: string): Promise<boolean>;
@@ -170,8 +171,21 @@ export class DatabaseStorage implements IStorage {
     return result[0];
   }
 
+  async getUserByGoogleId(googleId: string): Promise<User | undefined> {
+    const result = await db.select().from(users).where(eq(users.googleId, googleId)).limit(1);
+    return result[0];
+  }
+
   async createUser(insertUser: InsertUser): Promise<User> {
-    const [user] = await db.insert(users).values(insertUser).returning();
+    let userData = { ...insertUser };
+    
+    // Hash password if provided (for local auth)
+    if (userData.password) {
+      const bcrypt = await import('bcryptjs');
+      userData.password = await bcrypt.hash(userData.password, 12);
+    }
+    
+    const [user] = await db.insert(users).values(userData).returning();
     return user;
   }
 

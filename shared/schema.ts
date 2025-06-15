@@ -6,9 +6,12 @@ export const users = pgTable("users", {
   id: serial("id").primaryKey(),
   username: text("username").notNull().unique(),
   email: text("email").notNull().unique(),
-  password: text("password").notNull(),
+  password: text("password"), // Optional for OAuth users
   company: text("company"),
   role: text("role").notNull().default("user"), // "admin" or "user"
+  profileImage: text("profile_image"), // For OAuth profile pictures
+  googleId: text("google_id").unique(), // Google OAuth ID
+  authProvider: text("auth_provider").notNull().default("local"), // "local", "google"
   subscriptionStatus: text("subscription_status").default("none"),
   subscriptionPlan: text("subscription_plan"),
   subscriptionStartDate: timestamp("subscription_start_date"),
@@ -105,6 +108,8 @@ export const auditLog = pgTable("audit_log", {
 export const insertUserSchema = createInsertSchema(users).omit({
   id: true,
   createdAt: true,
+}).extend({
+  password: z.string().min(6, "Password must be at least 6 characters").optional(),
 });
 
 export const insertVendorSchema = createInsertSchema(vendors).omit({
