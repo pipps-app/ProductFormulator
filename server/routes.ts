@@ -643,6 +643,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json(auditLogs);
   });
 
+  // User endpoints
+  app.get("/api/user", async (req, res) => {
+    const userId = 1; // Mock user ID
+    const user = await storage.getUser(userId);
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+    
+    // Return user without password
+    const { password, ...userWithoutPassword } = user;
+    res.json(userWithoutPassword);
+  });
+
   // User profile management
   app.get("/api/user/profile", async (req, res) => {
     const userId = 1; // Mock user ID
