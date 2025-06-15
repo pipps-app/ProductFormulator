@@ -5,8 +5,10 @@ import { createPaypalOrder, capturePaypalOrder, loadPaypalDefault } from "./payp
 import { checkMaterialsLimit, checkFormulationsLimit, checkVendorsLimit, getUserSubscriptionInfo } from "./subscription-middleware";
 import { 
   insertVendorSchema, insertMaterialCategorySchema, insertRawMaterialSchema,
-  insertFormulationSchema, insertFormulationIngredientSchema
+  insertFormulationSchema, insertFormulationIngredientSchema, insertUserSchema
 } from "@shared/schema";
+import passport from "./auth";
+import bcrypt from "bcryptjs";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Helper function to recalculate formulation costs when material prices change

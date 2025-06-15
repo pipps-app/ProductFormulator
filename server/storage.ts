@@ -86,15 +86,19 @@ export class DatabaseStorage implements IStorage {
 
   async initializeDefaultData() {
     try {
-      // Add subscription columns if they don't exist
+      // Add subscription and authentication columns if they don't exist
       try {
         await db.execute(sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS subscription_status TEXT DEFAULT 'none'`);
         await db.execute(sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS subscription_plan TEXT`);
         await db.execute(sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS subscription_start_date TIMESTAMP`);
         await db.execute(sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS subscription_end_date TIMESTAMP`);
         await db.execute(sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS paypal_subscription_id TEXT`);
+        await db.execute(sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS profile_image TEXT`);
+        await db.execute(sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS google_id TEXT`);
+        await db.execute(sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS auth_provider TEXT NOT NULL DEFAULT 'local'`);
+        await db.execute(sql`ALTER TABLE users ALTER COLUMN password DROP NOT NULL`);
       } catch (error) {
-        console.log("Subscription columns may already exist:", error);
+        console.log("Database columns may already exist:", error);
       }
 
       // Check if default user exists
