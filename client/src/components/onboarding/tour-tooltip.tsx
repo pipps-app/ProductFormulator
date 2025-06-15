@@ -34,7 +34,7 @@ export function TourTooltip() {
       
       const placement = step.placement || 'bottom';
       const tooltipWidth = 320;
-      const tooltipHeight = 200;
+      const tooltipHeight = 280;
       const offset = 10;
 
       switch (placement) {
@@ -60,14 +60,17 @@ export function TourTooltip() {
           break;
       }
 
-      // Keep tooltip within viewport
+      // Keep tooltip within viewport with extra bottom padding for buttons
       const viewportWidth = window.innerWidth;
       const viewportHeight = window.innerHeight;
+      const bottomPadding = 80; // Extra space for navigation buttons
       
       if (left < 10) left = 10;
       if (left + tooltipWidth > viewportWidth - 10) left = viewportWidth - tooltipWidth - 10;
       if (top < 10) top = 10;
-      if (top + tooltipHeight > viewportHeight - 10) top = viewportHeight - tooltipHeight - 10;
+      if (top + tooltipHeight > viewportHeight - bottomPadding) {
+        top = viewportHeight - tooltipHeight - bottomPadding;
+      }
 
       setPosition({ top, left, width: tooltipWidth, height: tooltipHeight });
 
@@ -118,7 +121,7 @@ export function TourTooltip() {
           top: position.top,
           left: position.left,
           width: position.width,
-          maxHeight: position.height
+          minHeight: 200
         }}
       >
         <CardHeader className="pb-3">
@@ -137,12 +140,12 @@ export function TourTooltip() {
           </div>
         </CardHeader>
         
-        <CardContent className="pt-0">
-          <p className="text-slate-600 mb-4 leading-relaxed">
+        <CardContent className="pt-0 pb-6">
+          <p className="text-slate-600 mb-6 leading-relaxed">
             {step.content}
           </p>
           
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between mt-6">
             <div className="flex items-center space-x-2">
               <span className="text-sm text-slate-500">
                 {currentStep + 1} of {steps.length}
