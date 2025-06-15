@@ -31,49 +31,51 @@ passport.use(new LocalStrategy({
   }
 }));
 
-// Configure Google Strategy
-passport.use(new GoogleStrategy({
-  clientID: process.env.GOOGLE_CLIENT_ID || '',
-  clientSecret: process.env.GOOGLE_CLIENT_SECRET || '',
-  callbackURL: '/auth/google/callback'
-}, async (accessToken, refreshToken, profile, done) => {
-  try {
-    // Check if user already exists with this Google ID
-    let user = await storage.getUserByGoogleId(profile.id);
-    
-    if (user) {
-      return done(null, user);
-    }
-
-    // Check if user exists with same email
-    if (profile.emails && profile.emails[0]) {
-      user = await storage.getUserByEmail(profile.emails[0].value);
+// Configure Google Strategy (only if credentials are provided)
+if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
+  passport.use(new GoogleStrategy({
+    clientID: process.env.GOOGLE_CLIENT_ID,
+    clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    callbackURL: '/auth/google/callback'
+  }, async (accessToken, refreshToken, profile, done) => {
+    try {
+      // Check if user already exists with this Google ID
+      let user = await storage.getUserByGoogleId(profile.id);
+      
       if (user) {
-        // Link Google account to existing user
-        await storage.updateUser(user.id, {
-          googleId: profile.id,
-          profileImage: profile.photos?.[0]?.value,
-          authProvider: 'google'
-        });
         return done(null, user);
       }
+
+      // Check if user exists with same email
+      if (profile.emails && profile.emails[0]) {
+        user = await storage.getUserByEmail(profile.emails[0].value);
+        if (user) {
+          // Link Google account to existing user
+          await storage.updateUser(user.id, {
+            googleId: profile.id,
+            profileImage: profile.photos?.[0]?.value,
+            authProvider: 'google'
+          });
+          return done(null, user);
+        }
+      }
+
+      // Create new user
+      const newUser = await storage.createUser({
+        username: profile.displayName || profile.emails?.[0]?.value?.split('@')[0] || 'user',
+        email: profile.emails?.[0]?.value || '',
+        googleId: profile.id,
+        profileImage: profile.photos?.[0]?.value,
+        authProvider: 'google',
+        role: 'user'
+      });
+
+      return done(null, newUser);
+    } catch (error) {
+      return done(error);
     }
-
-    // Create new user
-    const newUser = await storage.createUser({
-      username: profile.displayName || profile.emails?.[0]?.value?.split('@')[0] || 'user',
-      email: profile.emails?.[0]?.value || '',
-      googleId: profile.id,
-      profileImage: profile.photos?.[0]?.value,
-      authProvider: 'google',
-      role: 'user'
-    });
-
-    return done(null, newUser);
-  } catch (error) {
-    return done(error);
-  }
-}));
+  }));
+}
 
 // Serialize/deserialize user for sessions
 passport.serializeUser((user: any, done) => {
