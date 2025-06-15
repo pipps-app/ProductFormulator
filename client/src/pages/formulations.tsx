@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -10,19 +10,68 @@ import { useFormulations } from "@/hooks/use-formulations";
 import { useQueryClient } from "@tanstack/react-query";
 import { LandscapeNotice } from "@/components/common/mobile-notice";
 
+type FormulationSortField = 'name' | 'totalCost' | 'profitMargin';
+type SortDirection = 'asc' | 'desc';
+
 export default function Formulations() {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [editingFormulation, setEditingFormulation] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [sortField, setSortField] = useState<FormulationSortField>('name');
+  const [sortDirection, setSortDirection] = useState<SortDirection>('asc');
   
   const { data: formulations, isLoading, refetch } = useFormulations();
   const queryClient = useQueryClient();
 
-  const filteredFormulations = formulations?.filter(formulation =>
-    formulation.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    formulation.description?.toLowerCase().includes(searchQuery.toLowerCase())
-  ) || [];
+  const filteredAndSortedFormulations = useMemo(() => {
+    const filtered = formulations?.filter(formulation =>
+      formulation.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      formulation.description?.toLowerCase().includes(searchQuery.toLowerCase())
+    ) || [];
+
+    return filtered.sort((a, b) => {
+      let aValue: string | number;
+      let bValue: string | number;
+
+      switch (sortField) {
+        case 'name':
+          aValue = a.name.toLowerCase();
+          bValue = b.name.toLowerCase();
+          break;
+        case 'totalCost':
+          aValue = Number(a.totalCost);
+          bValue = Number(b.totalCost);
+          break;
+        case 'profitMargin':
+          // Calculate actual profit margin based on target price and total cost
+          const aTargetPrice = Number(a.targetPrice || 0);
+          const aTotalCost = Number(a.totalCost || 0);
+          const bTargetPrice = Number(b.targetPrice || 0);
+          const bTotalCost = Number(b.totalCost || 0);
+          
+          aValue = aTargetPrice > 0 ? ((aTargetPrice - aTotalCost) / aTargetPrice * 100) : 0;
+          bValue = bTargetPrice > 0 ? ((bTargetPrice - bTotalCost) / bTargetPrice * 100) : 0;
+          break;
+        default:
+          aValue = a.name.toLowerCase();
+          bValue = b.name.toLowerCase();
+      }
+
+      if (aValue < bValue) return sortDirection === 'asc' ? -1 : 1;
+      if (aValue > bValue) return sortDirection === 'asc' ? 1 : -1;
+      return 0;
+    });
+  }, [formulations, searchQuery, sortField, sortDirection]);
+
+  const handleSort = (field: FormulationSortField) => {
+    if (sortField === field) {
+      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortField(field);
+      setSortDirection('asc');
+    }
+  };
 
   const handleEdit = (formulation: any) => {
     setEditingFormulation(formulation);
@@ -105,9 +154,12 @@ export default function Formulations() {
         </CardHeader>
         <CardContent>
           <FormulationList 
-            formulations={filteredFormulations}
+            formulations={filteredAndSortedFormulations}
             isLoading={isLoading}
             onEdit={handleEdit}
+            sortField={sortField}
+            sortDirection={sortDirection}
+            onSort={handleSort}
           />
         </CardContent>
       </Card>

@@ -97,6 +97,26 @@ export default function MaterialList({ materials, isLoading, onEdit, sortField, 
     }
   };
 
+  const SortableHeader = ({ field, children, className = "" }: { 
+    field: SortField; 
+    children: React.ReactNode; 
+    className?: string; 
+  }) => (
+    <th 
+      className={`p-4 text-sm font-medium text-slate-600 cursor-pointer hover:bg-slate-100 transition-colors ${className}`}
+      onClick={() => onSort(field)}
+    >
+      <div className="flex items-center space-x-1">
+        <span>{children}</span>
+        {sortField === field && (
+          sortDirection === 'asc' ? 
+            <ChevronUp className="h-4 w-4" /> : 
+            <ChevronDown className="h-4 w-4" />
+        )}
+      </div>
+    </th>
+  );
+
   if (isLoading) {
     return (
       <div className="space-y-4">
@@ -135,12 +155,12 @@ export default function MaterialList({ materials, isLoading, onEdit, sortField, 
         <table className="w-full">
           <thead className="bg-slate-50 border-b border-slate-200">
             <tr>
-              <th className="text-left p-4 text-sm font-medium text-slate-600">Material</th>
+              <SortableHeader field="name" className="text-left">Material</SortableHeader>
               <th className="text-left p-4 text-sm font-medium text-slate-600">Category</th>
               <th className="text-left p-4 text-sm font-medium text-slate-600">Vendor</th>
-              <th className="text-right p-4 text-sm font-medium text-slate-600">Unit Cost</th>
+              <SortableHeader field="unitCost" className="text-right">Unit Cost</SortableHeader>
               <th className="text-right p-4 text-sm font-medium text-slate-600">Total Quantity</th>
-              <th className="text-right p-4 text-sm font-medium text-slate-600">Total Value</th>
+              <SortableHeader field="totalValue" className="text-right">Total Value</SortableHeader>
               <th className="text-center p-4 text-sm font-medium text-slate-600">Actions</th>
             </tr>
           </thead>

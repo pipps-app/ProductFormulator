@@ -3,19 +3,25 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Edit, Trash2, FlaskRound, Calculator } from "lucide-react";
+import { Edit, Trash2, FlaskRound, Calculator, ChevronUp, ChevronDown } from "lucide-react";
 import { type Formulation } from "@shared/schema";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import ConfirmationModal from "@/components/common/confirmation-modal";
 
+type FormulationSortField = 'name' | 'totalCost' | 'profitMargin';
+type SortDirection = 'asc' | 'desc';
+
 interface FormulationListProps {
   formulations: Formulation[];
   isLoading: boolean;
   onEdit: (formulation: Formulation) => void;
+  sortField: FormulationSortField;
+  sortDirection: SortDirection;
+  onSort: (field: FormulationSortField) => void;
 }
 
-export default function FormulationList({ formulations, isLoading, onEdit }: FormulationListProps) {
+export default function FormulationList({ formulations, isLoading, onEdit, sortField, sortDirection, onSort }: FormulationListProps) {
   const [deletingFormulation, setDeletingFormulation] = useState<Formulation | null>(null);
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -57,6 +63,26 @@ export default function FormulationList({ formulations, isLoading, onEdit }: For
     if (marginValue >= 20) return "text-yellow-600";
     return "text-red-600";
   };
+
+  const SortableHeader = ({ field, children, className = "" }: { 
+    field: FormulationSortField; 
+    children: React.ReactNode; 
+    className?: string; 
+  }) => (
+    <th 
+      className={`p-4 text-sm font-medium text-slate-600 cursor-pointer hover:bg-slate-100 transition-colors ${className}`}
+      onClick={() => onSort(field)}
+    >
+      <div className="flex items-center space-x-1">
+        <span>{children}</span>
+        {sortField === field && (
+          sortDirection === 'asc' ? 
+            <ChevronUp className="h-4 w-4" /> : 
+            <ChevronDown className="h-4 w-4" />
+        )}
+      </div>
+    </th>
+  );
 
   if (isLoading) {
     return (
