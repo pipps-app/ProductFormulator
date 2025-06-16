@@ -71,14 +71,21 @@ export default function FormulationList({ formulations, isLoading, onEdit, sortF
   }) => (
     <th 
       className={`p-4 text-sm font-medium text-slate-600 cursor-pointer hover:bg-slate-100 transition-colors ${className}`}
-      onClick={() => onSort(field)}
+      onClick={() => {
+        console.log('Sorting formulations by:', field);
+        onSort(field);
+      }}
     >
       <div className="flex items-center space-x-1">
         <span>{children}</span>
-        {sortField === field && (
+        {sortField === field ? (
           sortDirection === 'asc' ? 
             <ChevronUp className="h-4 w-4" /> : 
             <ChevronDown className="h-4 w-4" />
+        ) : (
+          <div className="h-4 w-4 opacity-30">
+            <ChevronUp className="h-4 w-4" />
+          </div>
         )}
       </div>
     </th>
