@@ -22,7 +22,7 @@ export default function Onboarding() {
       // Redirect to main app
       window.location.href = "/dashboard";
       toast({
-        title: "Welcome to Pipps Maker Calc!",
+        title: "Welcome to PIPPS Maker Calc!",
         description: "Your free account is ready. Start creating your first formulation."
       });
     },
@@ -50,7 +50,7 @@ export default function Onboarding() {
       <div className="max-w-4xl w-full">
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold text-gray-900 mb-4">
-            Welcome to Pipps Maker Calc
+            Welcome to PIPPS Maker Calc
           </h1>
           <p className="text-xl text-gray-600 mb-8">
             Professional formulation and cost management for manufacturers

@@ -15,7 +15,7 @@ export function HelpButton() {
         id: 'welcome-back',
         target: 'body',
         title: 'Welcome to the Help Tour',
-        content: 'This tour will guide you through the main features of Pipps Maker Calc. You can restart this tour anytime by clicking the help button.',
+        content: 'This tour will guide you through the main features of PIPPS Maker Calc. You can restart this tour anytime by clicking the help button.',
         placement: 'bottom' as const
       },
       {

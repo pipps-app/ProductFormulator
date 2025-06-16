@@ -64,7 +64,7 @@ export function FirstTimeGuide() {
       {
         id: 'welcome',
         target: 'body',
-        title: 'Welcome to Pipps Maker Calc!',
+        title: 'Welcome to PIPPS Maker Calc!',
         content: 'This is your product formulation and cost management platform. Let\'s explore the key features together.',
         placement: 'bottom' as const
       },
@@ -193,7 +193,7 @@ export function FirstTimeGuide() {
           
           <div className="pt-2 border-t border-primary-200">
             <p className="text-xs text-primary-600 text-center">
-              Complete these steps to get the most out of Pipps Maker Calc
+              Complete these steps to get the most out of PIPPS Maker Calc
             </p>
           </div>
         </CardContent>

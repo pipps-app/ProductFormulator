@@ -87,7 +87,7 @@ export function TourProvider({ children }: { children: React.ReactNode }) {
       {
         id: 'welcome',
         target: 'body',
-        title: 'Welcome to Pipps Maker Calc!',
+        title: 'Welcome to PIPPS Maker Calc!',
         content: 'This guided tour will show you the key features to help you manage your product formulations and costs effectively.',
         placement: 'bottom'
       },
