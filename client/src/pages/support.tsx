@@ -18,6 +18,7 @@ import {
   Send
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import ContactInfo from "@/components/support/contact-info";
 
 export default function Support() {
   const [formData, setFormData] = useState({
@@ -129,37 +130,8 @@ export default function Support() {
         <p className="text-slate-600">Get the help you need to succeed with PIPPS Maker</p>
       </div>
 
-      {/* Contact Methods */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {contactMethods.map((method, index) => (
-          <Card key={index} className="hover:shadow-md transition-shadow">
-            <CardHeader className="pb-3">
-              <div className="flex items-center space-x-3">
-                <div className="p-2 bg-blue-100 rounded-lg">
-                  <method.icon className="h-5 w-5 text-blue-600" />
-                </div>
-                <CardTitle className="text-lg">{method.title}</CardTitle>
-              </div>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              <p className="text-slate-600 text-sm">{method.description}</p>
-              <div className="space-y-2">
-                <div className="flex items-center space-x-2">
-                  <Mail className="h-4 w-4 text-slate-400" />
-                  <span className="text-sm font-medium">{method.contact}</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <Clock className="h-4 w-4 text-slate-400" />
-                  <span className="text-sm">{method.responseTime}</span>
-                </div>
-                <Badge variant="outline" className="text-xs">
-                  {method.availability}
-                </Badge>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+      {/* Contact Information */}
+      <ContactInfo />
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Support Ticket Form */}
