@@ -8,6 +8,7 @@ import { TourTooltip } from "@/components/onboarding/tour-tooltip";
 import { FirstTimeGuide } from "@/components/onboarding/first-time-guide";
 import Dashboard from "@/pages/dashboard";
 import Materials from "@/pages/materials";
+import MaterialDetail from "@/pages/material-detail";
 import Formulations from "@/pages/formulations";
 import Vendors from "@/pages/vendors";
 import Categories from "@/pages/categories";
@@ -37,6 +38,7 @@ function Router() {
       <Route path="/login" component={Login} />
       <Route path="/onboarding" component={Onboarding} />
       <ProtectedAppRoute path="/dashboard" component={Dashboard} />
+      <ProtectedAppRoute path="/materials/:id" component={MaterialDetail} />
       <ProtectedAppRoute path="/materials" component={Materials} />
       <ProtectedAppRoute path="/formulations" component={Formulations} />
       <ProtectedAppRoute path="/vendors" component={Vendors} />

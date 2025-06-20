@@ -3,7 +3,8 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Edit, Trash2, Package, FlaskRound, ChevronUp, ChevronDown } from "lucide-react";
+import { Edit, Trash2, Package, FlaskRound, ChevronUp, ChevronDown, Eye } from "lucide-react";
+import { Link } from "wouter";
 import { type RawMaterial } from "@shared/schema";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
@@ -228,10 +229,20 @@ export default function MaterialList({ materials, isLoading, onEdit, sortField, 
                   </td>
                   <td className="p-4 text-center">
                     <div className="flex items-center justify-center space-x-2">
+                      <Link href={`/materials/${material.id}`}>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          title="View details"
+                        >
+                          <Eye className="h-4 w-4" />
+                        </Button>
+                      </Link>
                       <Button
                         variant="ghost"
                         size="sm"
                         onClick={() => onEdit(material)}
+                        title="Edit material"
                       >
                         <Edit className="h-4 w-4" />
                       </Button>
@@ -239,6 +250,7 @@ export default function MaterialList({ materials, isLoading, onEdit, sortField, 
                         variant="ghost"
                         size="sm"
                         onClick={() => handleDelete(material)}
+                        title="Delete material"
                       >
                         <Trash2 className="h-4 w-4" />
                       </Button>
