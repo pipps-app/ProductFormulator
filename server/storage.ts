@@ -101,7 +101,128 @@ class MemoryStorage implements IStorage {
       createdAt: new Date()
     };
     this.users.push(defaultUser);
-    this.nextId = 2;
+
+    // Add sample vendor
+    const defaultVendor: Vendor = {
+      id: 1,
+      name: "ABC Supplies",
+      contactEmail: "orders@abcsupplies.com",
+      phone: "555-0123",
+      address: "123 Business St, City, State 12345",
+      notes: null,
+      isActive: true,
+      userId: 1,
+      createdAt: new Date()
+    };
+    this.vendors.push(defaultVendor);
+
+    // Add sample material category
+    const defaultCategory: MaterialCategory = {
+      id: 1,
+      name: "Raw Materials",
+      description: "Basic ingredients and materials",
+      color: "#3B82F6",
+      userId: 1,
+      createdAt: new Date()
+    };
+    this.materialCategories.push(defaultCategory);
+
+    // Add sample raw materials
+    const materials: RawMaterial[] = [
+      {
+        id: 1,
+        name: "Coconut Oil",
+        sku: "CO-001",
+        categoryId: 1,
+        vendorId: 1,
+        totalCost: "25.50",
+        quantity: "5.000",
+        unit: "kg",
+        unitCost: "5.1000",
+        notes: "Organic extra virgin coconut oil",
+        isActive: true,
+        userId: 1,
+        createdAt: new Date()
+      },
+      {
+        id: 2,
+        name: "Shea Butter",
+        sku: "SB-001",
+        categoryId: 1,
+        vendorId: 1,
+        totalCost: "18.75",
+        quantity: "2.500",
+        unit: "kg",
+        unitCost: "7.5000",
+        notes: "Unrefined African shea butter",
+        isActive: true,
+        userId: 1,
+        createdAt: new Date()
+      },
+      {
+        id: 3,
+        name: "Essential Oil - Lavender",
+        sku: "EO-LAV",
+        categoryId: 1,
+        vendorId: 1,
+        totalCost: "15.00",
+        quantity: "0.100",
+        unit: "L",
+        unitCost: "150.0000",
+        notes: "Pure lavender essential oil",
+        isActive: true,
+        userId: 1,
+        createdAt: new Date()
+      }
+    ];
+    this.rawMaterials.push(...materials);
+
+    // Add sample formulation
+    const defaultFormulation: Formulation = {
+      id: 1,
+      name: "Natural Body Butter",
+      description: "Moisturizing body butter with natural ingredients",
+      batchSize: "1.000",
+      batchUnit: "unit",
+      targetPrice: "45.00",
+      markupPercentage: "35.00",
+      totalCost: "4.80",
+      unitCost: "4.8000",
+      profitMargin: "1.68",
+      isActive: true,
+      userId: 1,
+      createdAt: new Date()
+    };
+    this.formulations.push(defaultFormulation);
+
+    // Add formulation ingredients
+    const ingredients: FormulationIngredient[] = [
+      {
+        id: 1,
+        formulationId: 1,
+        materialId: 1,
+        subFormulationId: null,
+        quantity: "0.500",
+        unit: "kg",
+        costContribution: "2.5500",
+        includeInMarkup: true,
+        notes: null
+      },
+      {
+        id: 2,
+        formulationId: 1,
+        materialId: 2,
+        subFormulationId: null,
+        quantity: "0.300",
+        unit: "kg",
+        costContribution: "2.2500",
+        includeInMarkup: true,
+        notes: null
+      }
+    ];
+    this.formulationIngredients.push(...ingredients);
+
+    this.nextId = 10;
   }
 
   async getUser(id: number): Promise<User | undefined> {
