@@ -25,18 +25,20 @@ function Router() {
     <Switch>
       <Route path="/login" component={Login} />
       <Route path="/onboarding" component={Onboarding} />
-      <AppLayout>
-        <Route path="/" component={Dashboard} />
-        <Route path="/dashboard" component={Dashboard} />
-        <Route path="/materials" component={Materials} />
-        <Route path="/formulations" component={Formulations} />
-        <Route path="/vendors" component={Vendors} />
-        <Route path="/categories" component={Categories} />
-        <Route path="/import-export" component={ImportExport} />
-        <Route path="/profile" component={Profile} />
-        <Route path="/subscription" component={Subscription} />
-        <Route component={NotFound} />
-      </AppLayout>
+      <ProtectedRoute>
+        <AppLayout>
+          <Route path="/" component={Dashboard} />
+          <Route path="/dashboard" component={Dashboard} />
+          <Route path="/materials" component={Materials} />
+          <Route path="/formulations" component={Formulations} />
+          <Route path="/vendors" component={Vendors} />
+          <Route path="/categories" component={Categories} />
+          <Route path="/import-export" component={ImportExport} />
+          <Route path="/profile" component={Profile} />
+          <Route path="/subscription" component={Subscription} />
+          <Route component={NotFound} />
+        </AppLayout>
+      </ProtectedRoute>
     </Switch>
   );
 }
