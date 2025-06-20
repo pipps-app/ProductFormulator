@@ -1,0 +1,32 @@
+{
+  "users": [
+    {
+      "id": 1,
+      "username": "Juliet",
+      "email": "jumelisa@yahoo.com",
+      "password": "$2b$10$KBiX1HqE/7L0Xm.CtGEJWO3ne.RGq2KETa0vQsuUXpEhnijyvCuZK",
+      "company": "J.C Epiphany Limited",
+      "role": "admin",
+      "profileImage": null,
+      "googleId": null,
+      "authProvider": "local",
+      "subscriptionStatus": "active",
+      "subscriptionPlan": "free",
+      "subscriptionStartDate": "2025-06-20T18:27:58.707Z",
+      "subscriptionEndDate": null,
+      "paypalSubscriptionId": null,
+      "createdAt": "2025-06-20T18:27:58.707Z"
+    }
+  ],
+  "vendors": [],
+  "materialCategories": [],
+  "rawMaterials": [],
+  "formulations": [],
+  "formulationIngredients": [],
+  "files": [],
+  "fileAttachments": [],
+  "materialFiles": [],
+  "auditLogs": [],
+  "passwordResetTokens": [],
+  "nextId": 2
+}
