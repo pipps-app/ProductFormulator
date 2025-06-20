@@ -54,26 +54,7 @@ export default function Login() {
     },
   });
 
-  // Handle redirect to dashboard if user is authenticated
-  useEffect(() => {
-    if (!isLoading && user) {
-      setLocation("/dashboard");
-    }
-  }, [isLoading, user, setLocation]);
-
-  // If user is already authenticated, redirect to dashboard
-  if (isLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-lg">Loading...</div>
-      </div>
-    );
-  }
-
-  if (user) {
-    return null; // Will redirect via useEffect
-  }
-
+  // Move mutations to top level to fix hooks rule violation
   const loginMutation = useMutation({
     mutationFn: async (data: LoginFormData) => {
       const response = await fetch("/api/auth/login", {
@@ -132,6 +113,26 @@ export default function Login() {
       });
     },
   });
+
+  // Handle redirect to dashboard if user is authenticated
+  useEffect(() => {
+    if (!isLoading && user) {
+      setLocation("/dashboard");
+    }
+  }, [isLoading, user, setLocation]);
+
+  // If user is already authenticated, redirect to dashboard
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-lg">Loading...</div>
+      </div>
+    );
+  }
+
+  if (user) {
+    return null; // Will redirect via useEffect
+  }
 
   const onLoginSubmit = (data: LoginFormData) => {
     loginMutation.mutate(data);
