@@ -18,15 +18,255 @@
       "createdAt": "2025-06-20T18:27:58.707Z"
     }
   ],
-  "vendors": [],
-  "materialCategories": [],
-  "rawMaterials": [],
-  "formulations": [],
-  "formulationIngredients": [],
+  "vendors": [
+    {
+      "id": 2,
+      "name": "Island Ingredients Co",
+      "contactEmail": "info@islandingredients.jm",
+      "address": "Spanish Town, Jamaica",
+      "userId": 1,
+      "createdAt": "2025-06-20T18:29:46.242Z"
+    }
+  ],
+  "materialCategories": [
+    {
+      "id": 4,
+      "name": "Base Oils",
+      "color": "#10B981",
+      "userId": 1,
+      "createdAt": "2025-06-20T18:29:51.620Z"
+    },
+    {
+      "id": 6,
+      "name": "Essential Oils",
+      "color": "#8B5CF6",
+      "userId": 1,
+      "createdAt": "2025-06-20T18:29:53.311Z"
+    },
+    {
+      "id": 8,
+      "name": "Packaging",
+      "color": "#F59E0B",
+      "userId": 1,
+      "createdAt": "2025-06-20T18:29:55.205Z"
+    }
+  ],
+  "rawMaterials": [
+    {
+      "id": 10,
+      "name": "Coconut Oil (Virgin)",
+      "sku": "CO-VIR-001",
+      "categoryId": 4,
+      "vendorId": 2,
+      "totalCost": "28.50",
+      "quantity": "5.000",
+      "unit": "kg",
+      "notes": "Cold-pressed virgin coconut oil from Jamaica",
+      "userId": 1,
+      "createdAt": "2025-06-20T18:30:02.661Z"
+    },
+    {
+      "id": 12,
+      "name": "Shea Butter (Raw)",
+      "sku": "SB-RAW-001",
+      "categoryId": 4,
+      "vendorId": 2,
+      "totalCost": "22.75",
+      "quantity": "3.000",
+      "unit": "kg",
+      "notes": "Unrefined African shea butter",
+      "userId": 1,
+      "createdAt": "2025-06-20T18:30:05.098Z"
+    },
+    {
+      "id": 14,
+      "name": "Lavender Essential Oil",
+      "sku": "EO-LAV-001",
+      "categoryId": 6,
+      "vendorId": 2,
+      "totalCost": "45.00",
+      "quantity": "0.250",
+      "unit": "L",
+      "notes": "Bulgarian lavender essential oil",
+      "userId": 1,
+      "createdAt": "2025-06-20T18:30:07.292Z"
+    },
+    {
+      "id": 16,
+      "name": "Glass Jar (4oz)",
+      "sku": "JAR-4OZ-001",
+      "categoryId": 8,
+      "vendorId": 2,
+      "totalCost": "15.60",
+      "quantity": "24.000",
+      "unit": "pcs",
+      "notes": "Amber glass jars with black lids",
+      "userId": 1,
+      "createdAt": "2025-06-20T18:30:09.887Z"
+    },
+    {
+      "id": 18,
+      "name": "Castor Oil (Jamaican Black)",
+      "sku": "CO-JB-001",
+      "categoryId": 4,
+      "vendorId": 2,
+      "totalCost": "35.00",
+      "quantity": "2.500",
+      "unit": "L",
+      "notes": "Premium Jamaican black castor oil",
+      "userId": 1,
+      "createdAt": "2025-06-20T18:30:11.968Z"
+    }
+  ],
+  "formulations": [
+    {
+      "id": 20,
+      "name": "Caribbean Hair & Body Butter",
+      "description": "Nourishing butter blend with coconut and castor oils",
+      "batchSize": "1.000",
+      "batchUnit": "unit",
+      "targetPrice": "28.00",
+      "markupPercentage": "40.00",
+      "userId": 1,
+      "createdAt": "2025-06-20T18:30:21.801Z",
+      "totalCost": "7.06",
+      "unitCost": "7.0600",
+      "profitMargin": "2.82"
+    }
+  ],
+  "formulationIngredients": [
+    {
+      "id": 21,
+      "formulationId": 20,
+      "materialId": 10,
+      "quantity": "0.400",
+      "unit": "kg",
+      "costContribution": "2.28",
+      "includeInMarkup": true
+    },
+    {
+      "id": 22,
+      "formulationId": 20,
+      "materialId": 12,
+      "quantity": "0.300",
+      "unit": "kg",
+      "costContribution": "2.28",
+      "includeInMarkup": true
+    },
+    {
+      "id": 23,
+      "formulationId": 20,
+      "materialId": 18,
+      "quantity": "0.050",
+      "unit": "L",
+      "costContribution": "0.70",
+      "includeInMarkup": true
+    },
+    {
+      "id": 24,
+      "formulationId": 20,
+      "materialId": 14,
+      "quantity": "0.010",
+      "unit": "L",
+      "costContribution": "1.80",
+      "includeInMarkup": true
+    }
+  ],
   "files": [],
   "fileAttachments": [],
   "materialFiles": [],
-  "auditLogs": [],
+  "auditLogs": [
+    {
+      "id": 3,
+      "userId": 1,
+      "action": "create",
+      "entityType": "vendor",
+      "entityId": 2,
+      "changes": "{\"description\":\"Added new vendor \\\"Island Ingredients Co\\\" with email info@islandingredients.jm\",\"data\":{\"id\":2,\"name\":\"Island Ingredients Co\",\"contactEmail\":\"info@islandingredients.jm\",\"address\":\"Spanish Town, Jamaica\",\"userId\":1,\"createdAt\":\"2025-06-20T18:29:46.242Z\"}}",
+      "createdAt": "2025-06-20T18:29:46.248Z"
+    },
+    {
+      "id": 5,
+      "userId": 1,
+      "action": "create",
+      "entityType": "category",
+      "entityId": 4,
+      "changes": "{\"description\":\"Created new category \\\"Base Oils\\\" with #10B981 color\",\"data\":{\"id\":4,\"name\":\"Base Oils\",\"color\":\"#10B981\",\"userId\":1,\"createdAt\":\"2025-06-20T18:29:51.620Z\"}}",
+      "createdAt": "2025-06-20T18:29:51.625Z"
+    },
+    {
+      "id": 7,
+      "userId": 1,
+      "action": "create",
+      "entityType": "category",
+      "entityId": 6,
+      "changes": "{\"description\":\"Created new category \\\"Essential Oils\\\" with #8B5CF6 color\",\"data\":{\"id\":6,\"name\":\"Essential Oils\",\"color\":\"#8B5CF6\",\"userId\":1,\"createdAt\":\"2025-06-20T18:29:53.311Z\"}}",
+      "createdAt": "2025-06-20T18:29:53.312Z"
+    },
+    {
+      "id": 9,
+      "userId": 1,
+      "action": "create",
+      "entityType": "category",
+      "entityId": 8,
+      "changes": "{\"description\":\"Created new category \\\"Packaging\\\" with #F59E0B color\",\"data\":{\"id\":8,\"name\":\"Packaging\",\"color\":\"#F59E0B\",\"userId\":1,\"createdAt\":\"2025-06-20T18:29:55.205Z\"}}",
+      "createdAt": "2025-06-20T18:29:55.206Z"
+    },
+    {
+      "id": 11,
+      "userId": 1,
+      "action": "create",
+      "entityType": "material",
+      "entityId": 10,
+      "changes": "{\"description\":\"Added new raw material \\\"Coconut Oil (Virgin)\\\" with a total cost of $28.50 for 5.000 kg\",\"data\":{\"id\":10,\"name\":\"Coconut Oil (Virgin)\",\"sku\":\"CO-VIR-001\",\"categoryId\":4,\"vendorId\":2,\"totalCost\":\"28.50\",\"quantity\":\"5.000\",\"unit\":\"kg\",\"notes\":\"Cold-pressed virgin coconut oil from Jamaica\",\"userId\":1,\"createdAt\":\"2025-06-20T18:30:02.661Z\"}}",
+      "createdAt": "2025-06-20T18:30:02.664Z"
+    },
+    {
+      "id": 13,
+      "userId": 1,
+      "action": "create",
+      "entityType": "material",
+      "entityId": 12,
+      "changes": "{\"description\":\"Added new raw material \\\"Shea Butter (Raw)\\\" with a total cost of $22.75 for 3.000 kg\",\"data\":{\"id\":12,\"name\":\"Shea Butter (Raw)\",\"sku\":\"SB-RAW-001\",\"categoryId\":4,\"vendorId\":2,\"totalCost\":\"22.75\",\"quantity\":\"3.000\",\"unit\":\"kg\",\"notes\":\"Unrefined African shea butter\",\"userId\":1,\"createdAt\":\"2025-06-20T18:30:05.098Z\"}}",
+      "createdAt": "2025-06-20T18:30:05.100Z"
+    },
+    {
+      "id": 15,
+      "userId": 1,
+      "action": "create",
+      "entityType": "material",
+      "entityId": 14,
+      "changes": "{\"description\":\"Added new raw material \\\"Lavender Essential Oil\\\" with a total cost of $45.00 for 0.250 L\",\"data\":{\"id\":14,\"name\":\"Lavender Essential Oil\",\"sku\":\"EO-LAV-001\",\"categoryId\":6,\"vendorId\":2,\"totalCost\":\"45.00\",\"quantity\":\"0.250\",\"unit\":\"L\",\"notes\":\"Bulgarian lavender essential oil\",\"userId\":1,\"createdAt\":\"2025-06-20T18:30:07.292Z\"}}",
+      "createdAt": "2025-06-20T18:30:07.297Z"
+    },
+    {
+      "id": 17,
+      "userId": 1,
+      "action": "create",
+      "entityType": "material",
+      "entityId": 16,
+      "changes": "{\"description\":\"Added new raw material \\\"Glass Jar (4oz)\\\" with a total cost of $15.60 for 24.000 pcs\",\"data\":{\"id\":16,\"name\":\"Glass Jar (4oz)\",\"sku\":\"JAR-4OZ-001\",\"categoryId\":8,\"vendorId\":2,\"totalCost\":\"15.60\",\"quantity\":\"24.000\",\"unit\":\"pcs\",\"notes\":\"Amber glass jars with black lids\",\"userId\":1,\"createdAt\":\"2025-06-20T18:30:09.887Z\"}}",
+      "createdAt": "2025-06-20T18:30:09.890Z"
+    },
+    {
+      "id": 19,
+      "userId": 1,
+      "action": "create",
+      "entityType": "material",
+      "entityId": 18,
+      "changes": "{\"description\":\"Added new raw material \\\"Castor Oil (Jamaican Black)\\\" with a total cost of $35.00 for 2.500 L\",\"data\":{\"id\":18,\"name\":\"Castor Oil (Jamaican Black)\",\"sku\":\"CO-JB-001\",\"categoryId\":4,\"vendorId\":2,\"totalCost\":\"35.00\",\"quantity\":\"2.500\",\"unit\":\"L\",\"notes\":\"Premium Jamaican black castor oil\",\"userId\":1,\"createdAt\":\"2025-06-20T18:30:11.968Z\"}}",
+      "createdAt": "2025-06-20T18:30:11.969Z"
+    },
+    {
+      "id": 25,
+      "userId": 1,
+      "action": "create",
+      "entityType": "formulation",
+      "entityId": 20,
+      "changes": "{\"description\":\"Created new formulation \\\"Caribbean Hair & Body Butter\\\" with batch size of 1.000 unit and 40.00% markup\",\"data\":{\"id\":20,\"name\":\"Caribbean Hair & Body Butter\",\"description\":\"Nourishing butter blend with coconut and castor oils\",\"batchSize\":\"1.000\",\"batchUnit\":\"unit\",\"targetPrice\":\"28.00\",\"markupPercentage\":\"40.00\",\"userId\":1,\"createdAt\":\"2025-06-20T18:30:21.801Z\",\"totalCost\":\"7.06\",\"unitCost\":\"7.0600\",\"profitMargin\":\"2.82\"},\"ingredients\":[{\"materialId\":10,\"quantity\":\"0.400\",\"unit\":\"kg\",\"costContribution\":\"2.28\",\"includeInMarkup\":true},{\"materialId\":12,\"quantity\":\"0.300\",\"unit\":\"kg\",\"costContribution\":\"2.28\",\"includeInMarkup\":true},{\"materialId\":18,\"quantity\":\"0.050\",\"unit\":\"L\",\"costContribution\":\"0.70\",\"includeInMarkup\":true},{\"materialId\":14,\"quantity\":\"0.010\",\"unit\":\"L\",\"costContribution\":\"1.80\",\"includeInMarkup\":true}]}",
+      "createdAt": "2025-06-20T18:30:21.817Z"
+    }
+  ],
   "passwordResetTokens": [],
-  "nextId": 2
+  "nextId": 26
 }
