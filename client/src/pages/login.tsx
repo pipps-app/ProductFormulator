@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
 import { useMutation } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
@@ -35,20 +35,7 @@ export default function Login() {
   const { toast } = useToast();
   const { data: user, isLoading } = useUser();
 
-  // If user is already authenticated, redirect to dashboard
-  if (isLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-lg">Loading...</div>
-      </div>
-    );
-  }
-
-  if (user) {
-    setLocation("/dashboard");
-    return null;
-  }
-
+  // Always initialize forms at the top level
   const loginForm = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
@@ -66,6 +53,26 @@ export default function Login() {
       company: "",
     },
   });
+
+  // Handle redirect to dashboard if user is authenticated
+  useEffect(() => {
+    if (!isLoading && user) {
+      setLocation("/dashboard");
+    }
+  }, [isLoading, user, setLocation]);
+
+  // If user is already authenticated, redirect to dashboard
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-lg">Loading...</div>
+      </div>
+    );
+  }
+
+  if (user) {
+    return null; // Will redirect via useEffect
+  }
 
   const loginMutation = useMutation({
     mutationFn: async (data: LoginFormData) => {

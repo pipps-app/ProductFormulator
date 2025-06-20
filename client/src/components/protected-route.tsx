@@ -1,4 +1,4 @@
-import { ReactNode } from "react";
+import { ReactNode, useEffect } from "react";
 import { useLocation } from "wouter";
 import { useUser } from "@/hooks/use-user";
 
@@ -10,6 +10,12 @@ export default function ProtectedRoute({ children }: ProtectedRouteProps) {
   const { data: user, isLoading } = useUser();
   const [, setLocation] = useLocation();
 
+  useEffect(() => {
+    if (!isLoading && !user) {
+      setLocation("/login");
+    }
+  }, [isLoading, user, setLocation]);
+
   // Show loading while checking authentication
   if (isLoading) {
     return (
@@ -19,9 +25,8 @@ export default function ProtectedRoute({ children }: ProtectedRouteProps) {
     );
   }
 
-  // Redirect to login if not authenticated
+  // Show nothing while redirecting
   if (!user) {
-    setLocation("/login");
     return null;
   }
 

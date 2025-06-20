@@ -13,7 +13,7 @@ app.use(express.urlencoded({ extended: false, limit: '50mb' }));
 const PgSession = connectPgSimple(session);
 app.use(session({
   store: new PgSession({
-    conString: `postgresql://${process.env.PGUSER}:${process.env.PGPASSWORD}@${process.env.PGHOST}:${process.env.PGPORT}/${process.env.PGDATABASE}?sslmode=require`,
+    conString: process.env.DATABASE_URL,
     createTableIfMissing: true,
   }),
   secret: process.env.SESSION_SECRET || 'your-secret-key-change-this-in-production',

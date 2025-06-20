@@ -1,5 +1,3 @@
-import { drizzle } from "drizzle-orm/postgres-js";
-import postgres from "postgres";
 import { eq, desc, sql, and } from "drizzle-orm";
 import { 
   users, vendors, materialCategories, rawMaterials, formulations, 
@@ -14,17 +12,7 @@ import {
   type FileAttachment, type InsertFileAttachment,
   type AuditLog, type InsertAuditLog
 } from "@shared/schema";
-
-// Database connection - construct from individual env vars since DATABASE_URL is malformed
-const connectionString = `postgresql://${process.env.PGUSER}:${process.env.PGPASSWORD}@${process.env.PGHOST}:${process.env.PGPORT}/${process.env.PGDATABASE}?sslmode=require`;
-
-// Add timeout and connection pool settings
-const client = postgres(connectionString, {
-  connect_timeout: 30,
-  idle_timeout: 30,
-  max_lifetime: 60 * 30,
-});
-const db = drizzle(client);
+import { db } from "./db";
 
 export interface IStorage {
   // Users
