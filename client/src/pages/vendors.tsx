@@ -233,7 +233,7 @@ export default function Vendors() {
 
       {/* Add/Edit Vendor Modal */}
       <Dialog open={isAddModalOpen} onOpenChange={handleCloseModal}>
-        <DialogContent>
+        <DialogContent className="max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>
               {editingVendor ? 'Edit Vendor' : 'Add New Vendor'}

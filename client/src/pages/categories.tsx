@@ -161,7 +161,7 @@ export default function Categories() {
               Add Category
             </Button>
           </DialogTrigger>
-          <DialogContent>
+          <DialogContent className="max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>{editingCategory ? "Edit Category" : "Add New Category"}</DialogTitle>
             </DialogHeader>
