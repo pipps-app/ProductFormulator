@@ -499,11 +499,15 @@ export class DatabaseStorage implements IStorage {
     }
   }
 
-  // File Attachments Methods - simplified for now  
+  // File Attachments Methods
   async getFileAttachments(entityType: string, entityId: number): Promise<FileAttachment[]> {
     try {
-      // For now, return empty array - will implement after database is properly set up
-      return [];
+      const attachments = await db.select().from(fileAttachments)
+        .where(and(
+          eq(fileAttachments.entityType, entityType),
+          eq(fileAttachments.entityId, entityId)
+        ));
+      return attachments;
     } catch (error) {
       console.error("Error getting file attachments:", error);
       return [];
@@ -512,8 +516,27 @@ export class DatabaseStorage implements IStorage {
 
   async getAttachedFiles(entityType: string, entityId: number): Promise<File[]> {
     try {
-      // For now, return empty array - will implement after database is properly set up
-      return [];
+      const attachmentsWithFiles = await db.select({
+        id: files.id,
+        userId: files.userId,
+        fileName: files.fileName,
+        originalName: files.originalName,
+        fileUrl: files.fileUrl,
+        fileType: files.fileType,
+        mimeType: files.mimeType,
+        fileSize: files.fileSize,
+        thumbnailUrl: files.thumbnailUrl,
+        description: files.description,
+        tags: files.tags,
+        uploadedAt: files.uploadedAt
+      })
+        .from(fileAttachments)
+        .innerJoin(files, eq(fileAttachments.fileId, files.id))
+        .where(and(
+          eq(fileAttachments.entityType, entityType),
+          eq(fileAttachments.entityId, entityId)
+        ));
+      return attachmentsWithFiles;
     } catch (error) {
       console.error("Error getting attached files:", error);
       return [];
@@ -527,8 +550,13 @@ export class DatabaseStorage implements IStorage {
 
   async detachFile(fileId: number, entityType: string, entityId: number): Promise<boolean> {
     try {
-      // For now, return true - will implement after database is properly set up
-      return true;
+      const result = await db.delete(fileAttachments)
+        .where(and(
+          eq(fileAttachments.fileId, fileId),
+          eq(fileAttachments.entityType, entityType),
+          eq(fileAttachments.entityId, entityId)
+        ));
+      return result.rowCount > 0;
     } catch (error) {
       console.error("Error detaching file:", error);
       return false;
