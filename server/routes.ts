@@ -134,7 +134,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       // Generate secure token
-      const crypto = require('crypto');
       const token = crypto.randomBytes(32).toString('hex');
       const expiresAt = new Date(Date.now() + 15 * 60 * 1000); // 15 minutes
 
