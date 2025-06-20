@@ -2,14 +2,11 @@ import { drizzle } from 'drizzle-orm/postgres-js';
 import postgres from 'postgres';
 import * as schema from "@shared/schema";
 
-if (!process.env.DATABASE_URL) {
-  throw new Error(
-    "DATABASE_URL must be set. Did you forget to provision a database?",
-  );
-}
+// Construct proper connection string from individual env vars
+const connectionString = `postgresql://${process.env.PGUSER}:${process.env.PGPASSWORD}@${process.env.PGHOST}:${process.env.PGPORT}/${process.env.PGDATABASE}?sslmode=require`;
 
 // Create postgres client with connection pooling
-const client = postgres(process.env.DATABASE_URL, {
+const client = postgres(connectionString, {
   max: 10,
   idle_timeout: 20,
   connect_timeout: 10
