@@ -201,15 +201,6 @@ export default function FormulationList({ formulations, isLoading, onEdit, sortF
                   </td>
                   <td className="p-4 text-center">
                     <div className="flex items-center justify-center space-x-2">
-                      <Link href={`/formulations/${formulation.id}`}>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          title="View details"
-                        >
-                          <Eye className="h-4 w-4" />
-                        </Button>
-                      </Link>
                       <Button
                         variant="ghost"
                         size="sm"

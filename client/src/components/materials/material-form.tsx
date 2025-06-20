@@ -10,6 +10,7 @@ import { insertRawMaterialSchema, type RawMaterial, type Vendor, type MaterialCa
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { useEffect } from "react";
+import FileAttachments from "@/components/files/file-attachments";
 
 interface MaterialFormProps {
   material?: RawMaterial | null;
@@ -295,6 +296,18 @@ export default function MaterialForm({ material, onSuccess }: MaterialFormProps)
             </FormItem>
           )}
         />
+
+        {material?.id && (
+          <div className="space-y-3">
+            <FormLabel>Attached Files</FormLabel>
+            <FileAttachments
+              entityType="material"
+              entityId={material.id}
+              entityName={material.name}
+              className="border rounded-lg p-4"
+            />
+          </div>
+        )}
 
         <div className="flex justify-end space-x-3">
           <Button type="button" variant="outline" onClick={onSuccess}>

@@ -15,6 +15,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useMaterials } from "@/hooks/use-materials";
 import { useEffect, useState } from "react";
 import { Plus, X, Calculator } from "lucide-react";
+import FileAttachments from "@/components/files/file-attachments";
 
 interface Ingredient {
   id: string;
@@ -421,6 +422,21 @@ export default function FormulationForm({ formulation, onSuccess }: FormulationF
               )}
             </CardContent>
           </Card>
+
+          {formulation?.id && (
+            <Card>
+              <CardHeader>
+                <CardTitle>Attached Files</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <FileAttachments
+                  entityType="formulation"
+                  entityId={formulation.id}
+                  entityName={formulation.name}
+                />
+              </CardContent>
+            </Card>
+          )}
 
           <div className="flex justify-end space-x-3">
             <Button type="button" variant="outline" onClick={onSuccess}>
