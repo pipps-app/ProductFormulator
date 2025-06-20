@@ -10,6 +10,7 @@ import Dashboard from "@/pages/dashboard";
 import Materials from "@/pages/materials";
 import MaterialDetail from "@/pages/material-detail";
 import Formulations from "@/pages/formulations";
+import FormulationDetail from "@/pages/formulation-detail";
 import Vendors from "@/pages/vendors";
 import Categories from "@/pages/categories";
 import ImportExport from "@/pages/import-export";
@@ -40,6 +41,7 @@ function Router() {
       <ProtectedAppRoute path="/dashboard" component={Dashboard} />
       <ProtectedAppRoute path="/materials/:id" component={MaterialDetail} />
       <ProtectedAppRoute path="/materials" component={Materials} />
+      <ProtectedAppRoute path="/formulations/:id" component={FormulationDetail} />
       <ProtectedAppRoute path="/formulations" component={Formulations} />
       <ProtectedAppRoute path="/vendors" component={Vendors} />
       <ProtectedAppRoute path="/categories" component={Categories} />
