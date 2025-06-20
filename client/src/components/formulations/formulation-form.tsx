@@ -423,20 +423,28 @@ export default function FormulationForm({ formulation, onSuccess }: FormulationF
             </CardContent>
           </Card>
 
-          {formulation?.id && (
-            <Card>
-              <CardHeader>
-                <CardTitle>Attached Files</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <FileAttachments
-                  entityType="formulation"
-                  entityId={formulation.id}
-                  entityName={formulation.name}
-                />
-              </CardContent>
-            </Card>
-          )}
+          <Card>
+            <CardHeader>
+              <CardTitle>File Attachments</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                <div className="border rounded-lg p-4 bg-gray-50">
+                  {formulation?.id ? (
+                    <FileAttachments
+                      entityType="formulation"
+                      entityId={formulation.id}
+                      entityName={formulation.name}
+                    />
+                  ) : (
+                    <div className="text-sm text-gray-600 text-center py-4">
+                      Files can be attached after creating the formulation
+                    </div>
+                  )}
+                </div>
+              </div>
+            </CardContent>
+          </Card>
 
           <div className="flex justify-end space-x-3">
             <Button type="button" variant="outline" onClick={onSuccess}>

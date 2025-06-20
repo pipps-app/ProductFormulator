@@ -297,17 +297,22 @@ export default function MaterialForm({ material, onSuccess }: MaterialFormProps)
           )}
         />
 
-        {material?.id && (
-          <div className="space-y-3">
-            <FormLabel>Attached Files</FormLabel>
-            <FileAttachments
-              entityType="material"
-              entityId={material.id}
-              entityName={material.name}
-              className="border rounded-lg p-4"
-            />
+        <div className="space-y-3">
+          <FormLabel>File Attachments (Optional)</FormLabel>
+          <div className="border rounded-lg p-4 bg-gray-50">
+            {material?.id ? (
+              <FileAttachments
+                entityType="material"
+                entityId={material.id}
+                entityName={material.name}
+              />
+            ) : (
+              <div className="text-sm text-gray-600 text-center py-4">
+                Files can be attached after creating the material
+              </div>
+            )}
           </div>
-        )}
+        </div>
 
         <div className="flex justify-end space-x-3">
           <Button type="button" variant="outline" onClick={onSuccess}>
