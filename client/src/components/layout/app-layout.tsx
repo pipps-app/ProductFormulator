@@ -1,13 +1,33 @@
 import { ReactNode } from "react";
+import { useLocation } from "wouter";
 import Header from "./header";
 import Sidebar from "./sidebar";
 import MobileNotice from "../common/mobile-notice";
+import { useUser } from "@/hooks/use-user";
 
 interface AppLayoutProps {
   children: ReactNode;
 }
 
 export default function AppLayout({ children }: AppLayoutProps) {
+  const { data: user, isLoading } = useUser();
+  const [, setLocation] = useLocation();
+
+  // Show loading while checking authentication
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-lg">Loading...</div>
+      </div>
+    );
+  }
+
+  // Redirect to login if not authenticated
+  if (!user) {
+    setLocation("/login");
+    return null;
+  }
+
   return (
     <div className="min-h-screen flex flex-col bg-slate-50">
       <Header />
