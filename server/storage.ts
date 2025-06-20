@@ -82,6 +82,359 @@ export interface IStorage {
   getAuditLogs(userId: number, limit?: number): Promise<AuditLog[]>;
 }
 
+// In-memory storage for development/testing
+class MemoryStorage implements IStorage {
+  private users: User[] = [];
+  private vendors: Vendor[] = [];
+  private materialCategories: MaterialCategory[] = [];
+  private rawMaterials: RawMaterial[] = [];
+  private formulations: Formulation[] = [];
+  private formulationIngredients: FormulationIngredient[] = [];
+  private files: File[] = [];
+  private fileAttachments: FileAttachment[] = [];
+  private materialFiles: MaterialFile[] = [];
+  private auditLogs: AuditLog[] = [];
+  private nextId = 1;
+
+  constructor() {
+    this.initializeDefaultData();
+  }
+
+  async initializeDefaultData() {
+    // Create default user
+    const defaultUser: User = {
+      id: 1,
+      username: "Juliet",
+      email: "jumelisa@yahoo.com",
+      password: "$2a$10$8vJ9FX8qLbVr8PfZYQY0D.HkN6sDGlrNLLGwGQ9dB5.6GQlOL1aKG", // newpassword123
+      company: "J.C Epiphany Limited",
+      role: "admin",
+      profileImage: null,
+      googleId: null,
+      authProvider: "local",
+      subscriptionStatus: "active",
+      subscriptionPlan: "free",
+      subscriptionStartDate: new Date(),
+      subscriptionEndDate: null,
+      paypalSubscriptionId: null,
+      createdAt: new Date()
+    };
+    this.users.push(defaultUser);
+    this.nextId = 2;
+  }
+
+  // User methods
+  async getUser(id: number): Promise<User | undefined> {
+    return this.users.find(u => u.id === id);
+  }
+
+  async getUserByUsername(username: string): Promise<User | undefined> {
+    return this.users.find(u => u.username === username);
+  }
+
+  async getUserByEmail(email: string): Promise<User | undefined> {
+    return this.users.find(u => u.email === email);
+  }
+
+  async getUserByGoogleId(googleId: string): Promise<User | undefined> {
+    return this.users.find(u => u.googleId === googleId);
+  }
+
+  async createUser(user: InsertUser): Promise<User> {
+    const newUser: User = {
+      id: this.nextId++,
+      ...user,
+      createdAt: new Date()
+    } as User;
+    this.users.push(newUser);
+    return newUser;
+  }
+
+  async updateUser(id: number, updates: Partial<InsertUser>): Promise<User | undefined> {
+    const index = this.users.findIndex(u => u.id === id);
+    if (index === -1) return undefined;
+    this.users[index] = { ...this.users[index], ...updates };
+    return this.users[index];
+  }
+
+  async updateUserPassword(id: number, newPassword: string): Promise<boolean> {
+    const user = this.users.find(u => u.id === id);
+    if (!user) return false;
+    user.password = newPassword;
+    return true;
+  }
+
+  // Vendor methods
+  async getVendors(userId: number): Promise<Vendor[]> {
+    return this.vendors.filter(v => v.userId === userId);
+  }
+
+  async getVendor(id: number): Promise<Vendor | undefined> {
+    return this.vendors.find(v => v.id === id);
+  }
+
+  async createVendor(vendor: InsertVendor): Promise<Vendor> {
+    const newVendor: Vendor = {
+      id: this.nextId++,
+      ...vendor,
+      createdAt: new Date()
+    } as Vendor;
+    this.vendors.push(newVendor);
+    return newVendor;
+  }
+
+  async updateVendor(id: number, updates: Partial<InsertVendor>): Promise<Vendor | undefined> {
+    const index = this.vendors.findIndex(v => v.id === id);
+    if (index === -1) return undefined;
+    this.vendors[index] = { ...this.vendors[index], ...updates };
+    return this.vendors[index];
+  }
+
+  async deleteVendor(id: number): Promise<boolean> {
+    const index = this.vendors.findIndex(v => v.id === id);
+    if (index === -1) return false;
+    this.vendors.splice(index, 1);
+    return true;
+  }
+
+  // Material Category methods
+  async getMaterialCategories(userId: number): Promise<MaterialCategory[]> {
+    return this.materialCategories.filter(c => c.userId === userId);
+  }
+
+  async getMaterialCategory(id: number): Promise<MaterialCategory | undefined> {
+    return this.materialCategories.find(c => c.id === id);
+  }
+
+  async createMaterialCategory(category: InsertMaterialCategory): Promise<MaterialCategory> {
+    const newCategory: MaterialCategory = {
+      id: this.nextId++,
+      ...category,
+      createdAt: new Date()
+    } as MaterialCategory;
+    this.materialCategories.push(newCategory);
+    return newCategory;
+  }
+
+  async updateMaterialCategory(id: number, updates: Partial<InsertMaterialCategory>): Promise<MaterialCategory | undefined> {
+    const index = this.materialCategories.findIndex(c => c.id === id);
+    if (index === -1) return undefined;
+    this.materialCategories[index] = { ...this.materialCategories[index], ...updates };
+    return this.materialCategories[index];
+  }
+
+  async deleteMaterialCategory(id: number): Promise<boolean> {
+    const index = this.materialCategories.findIndex(c => c.id === id);
+    if (index === -1) return false;
+    this.materialCategories.splice(index, 1);
+    return true;
+  }
+
+  // Raw Material methods
+  async getRawMaterials(userId: number): Promise<any[]> {
+    return this.rawMaterials.filter(m => m.userId === userId);
+  }
+
+  async getRawMaterial(id: number): Promise<RawMaterial | undefined> {
+    return this.rawMaterials.find(m => m.id === id);
+  }
+
+  async createRawMaterial(material: InsertRawMaterial): Promise<RawMaterial> {
+    const newMaterial: RawMaterial = {
+      id: this.nextId++,
+      ...material,
+      createdAt: new Date()
+    } as RawMaterial;
+    this.rawMaterials.push(newMaterial);
+    return newMaterial;
+  }
+
+  async updateRawMaterial(id: number, updates: Partial<InsertRawMaterial>): Promise<RawMaterial | undefined> {
+    const index = this.rawMaterials.findIndex(m => m.id === id);
+    if (index === -1) return undefined;
+    this.rawMaterials[index] = { ...this.rawMaterials[index], ...updates };
+    return this.rawMaterials[index];
+  }
+
+  async deleteRawMaterial(id: number): Promise<boolean> {
+    const index = this.rawMaterials.findIndex(m => m.id === id);
+    if (index === -1) return false;
+    this.rawMaterials.splice(index, 1);
+    return true;
+  }
+
+  // Formulation methods
+  async getFormulations(userId: number): Promise<Formulation[]> {
+    return this.formulations.filter(f => f.userId === userId);
+  }
+
+  async getFormulation(id: number): Promise<Formulation | undefined> {
+    return this.formulations.find(f => f.id === id);
+  }
+
+  async createFormulation(formulation: InsertFormulation): Promise<Formulation> {
+    const newFormulation: Formulation = {
+      id: this.nextId++,
+      ...formulation,
+      createdAt: new Date()
+    } as Formulation;
+    this.formulations.push(newFormulation);
+    return newFormulation;
+  }
+
+  async updateFormulation(id: number, updates: Partial<InsertFormulation>): Promise<Formulation | undefined> {
+    const index = this.formulations.findIndex(f => f.id === id);
+    if (index === -1) return undefined;
+    this.formulations[index] = { ...this.formulations[index], ...updates };
+    return this.formulations[index];
+  }
+
+  async updateFormulationCosts(id: number, costs: { totalCost: string; unitCost: string; profitMargin: string; }): Promise<boolean> {
+    const formulation = this.formulations.find(f => f.id === id);
+    if (!formulation) return false;
+    Object.assign(formulation, costs);
+    return true;
+  }
+
+  async deleteFormulation(id: number): Promise<boolean> {
+    const index = this.formulations.findIndex(f => f.id === id);
+    if (index === -1) return false;
+    this.formulations.splice(index, 1);
+    return true;
+  }
+
+  // Formulation Ingredient methods
+  async getFormulationIngredients(formulationId: number): Promise<any[]> {
+    return this.formulationIngredients.filter(i => i.formulationId === formulationId);
+  }
+
+  async createFormulationIngredient(ingredient: InsertFormulationIngredient): Promise<FormulationIngredient> {
+    const newIngredient: FormulationIngredient = {
+      id: this.nextId++,
+      ...ingredient,
+      createdAt: new Date()
+    } as FormulationIngredient;
+    this.formulationIngredients.push(newIngredient);
+    return newIngredient;
+  }
+
+  async updateFormulationIngredient(id: number, updates: Partial<InsertFormulationIngredient>): Promise<FormulationIngredient | undefined> {
+    const index = this.formulationIngredients.findIndex(i => i.id === id);
+    if (index === -1) return undefined;
+    this.formulationIngredients[index] = { ...this.formulationIngredients[index], ...updates };
+    return this.formulationIngredients[index];
+  }
+
+  async deleteFormulationIngredient(id: number): Promise<boolean> {
+    const index = this.formulationIngredients.findIndex(i => i.id === id);
+    if (index === -1) return false;
+    this.formulationIngredients.splice(index, 1);
+    return true;
+  }
+
+  // File methods
+  async getFiles(userId: number): Promise<File[]> {
+    return this.files.filter(f => f.userId === userId);
+  }
+
+  async getFile(id: number): Promise<File | undefined> {
+    return this.files.find(f => f.id === id);
+  }
+
+  async createFile(file: InsertFile): Promise<File> {
+    const newFile: File = {
+      id: this.nextId++,
+      ...file,
+      uploadedAt: new Date()
+    } as File;
+    this.files.push(newFile);
+    return newFile;
+  }
+
+  async updateFile(id: number, updates: Partial<InsertFile>): Promise<File | undefined> {
+    const index = this.files.findIndex(f => f.id === id);
+    if (index === -1) return undefined;
+    this.files[index] = { ...this.files[index], ...updates };
+    return this.files[index];
+  }
+
+  async deleteFile(id: number): Promise<boolean> {
+    const index = this.files.findIndex(f => f.id === id);
+    if (index === -1) return false;
+    this.files.splice(index, 1);
+    return true;
+  }
+
+  // File attachment methods
+  async getFileAttachments(entityType: string, entityId: number): Promise<FileAttachment[]> {
+    return this.fileAttachments.filter(a => a.entityType === entityType && a.entityId === entityId);
+  }
+
+  async getAttachedFiles(entityType: string, entityId: number): Promise<File[]> {
+    const attachments = await this.getFileAttachments(entityType, entityId);
+    return this.files.filter(f => attachments.some(a => a.fileId === f.id));
+  }
+
+  async attachFile(attachment: InsertFileAttachment): Promise<FileAttachment> {
+    const newAttachment: FileAttachment = {
+      id: this.nextId++,
+      ...attachment,
+      attachedAt: new Date()
+    } as FileAttachment;
+    this.fileAttachments.push(newAttachment);
+    return newAttachment;
+  }
+
+  async detachFile(fileId: number, entityType: string, entityId: number): Promise<boolean> {
+    const index = this.fileAttachments.findIndex(a => 
+      a.fileId === fileId && a.entityType === entityType && a.entityId === entityId
+    );
+    if (index === -1) return false;
+    this.fileAttachments.splice(index, 1);
+    return true;
+  }
+
+  // Material file methods (legacy)
+  async getMaterialFiles(materialId: number): Promise<MaterialFile[]> {
+    return this.materialFiles.filter(f => f.materialId === materialId);
+  }
+
+  async createMaterialFile(file: InsertMaterialFile): Promise<MaterialFile> {
+    const newFile: MaterialFile = {
+      id: this.nextId++,
+      ...file,
+      uploadedAt: new Date()
+    } as MaterialFile;
+    this.materialFiles.push(newFile);
+    return newFile;
+  }
+
+  async deleteMaterialFile(id: number): Promise<boolean> {
+    const index = this.materialFiles.findIndex(f => f.id === id);
+    if (index === -1) return false;
+    this.materialFiles.splice(index, 1);
+    return true;
+  }
+
+  // Audit log methods
+  async createAuditLog(log: InsertAuditLog): Promise<AuditLog> {
+    const newLog: AuditLog = {
+      id: this.nextId++,
+      ...log,
+      timestamp: new Date()
+    } as AuditLog;
+    this.auditLogs.push(newLog);
+    return newLog;
+  }
+
+  async getAuditLogs(userId: number, limit = 50): Promise<AuditLog[]> {
+    return this.auditLogs
+      .filter(log => log.userId === userId)
+      .sort((a, b) => (b.timestamp?.getTime() || 0) - (a.timestamp?.getTime() || 0))
+      .slice(0, limit);
+  }
+}
+
 export class DatabaseStorage implements IStorage {
   constructor() {
     this.initializeDefaultData();
@@ -559,4 +912,4 @@ export class DatabaseStorage implements IStorage {
   }
 }
 
-export const storage = new DatabaseStorage();
+export const storage = new MemoryStorage();

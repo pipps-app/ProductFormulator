@@ -2,15 +2,22 @@ import { drizzle } from 'drizzle-orm/postgres-js';
 import postgres from 'postgres';
 import * as schema from "@shared/schema";
 
-// Construct connection string from individual env vars since DATABASE_URL is corrupted
-const connectionString = `postgresql://${process.env.PGUSER}:${process.env.PGPASSWORD}@${process.env.PGHOST}:${process.env.PGPORT}/${process.env.PGDATABASE}?sslmode=require`;
+// Simple in-memory fallback for development
+let client: any;
+let db: any;
 
-// Create postgres client with connection pooling and increased timeouts
-const client = postgres(connectionString, {
-  max: 10,
-  idle_timeout: 60,
-  connect_timeout: 30,
-  prepare: false
-});
+try {
+  // Try to connect to PostgreSQL
+  const connectionString = `postgresql://${process.env.PGUSER}:${process.env.PGPASSWORD}@${process.env.PGHOST}:${process.env.PGPORT}/${process.env.PGDATABASE}?sslmode=require`;
+  client = postgres(connectionString, {
+    max: 5,
+    idle_timeout: 10,
+    connect_timeout: 5,
+    prepare: false
+  });
+  db = drizzle(client, { schema });
+} catch (error) {
+  console.log('Database connection failed, using in-memory storage');
+}
 
-export const db = drizzle(client, { schema });
+export { db };
