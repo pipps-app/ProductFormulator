@@ -1393,6 +1393,134 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // File Management API Routes
+  app.get("/api/files", async (req, res) => {
+    try {
+      const userId = 1; // Mock user ID for demo
+      const files = await storage.getFiles(userId);
+      res.json(files);
+    } catch (error) {
+      console.error("Error getting files:", error);
+      res.status(500).json({ error: "Failed to get files" });
+    }
+  });
+
+  app.post("/api/files/upload", async (req, res) => {
+    try {
+      const userId = 1; // Mock user ID for demo
+      const fileData = insertFileSchema.parse({
+        ...req.body,
+        userId
+      });
+      
+      const file = await storage.createFile(fileData);
+      res.json(file);
+    } catch (error) {
+      console.error("Error uploading file:", error);
+      res.status(400).json({ error: "Failed to upload file" });
+    }
+  });
+
+  app.get("/api/files/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const file = await storage.getFile(id);
+      
+      if (!file) {
+        return res.status(404).json({ error: "File not found" });
+      }
+      
+      res.json(file);
+    } catch (error) {
+      console.error("Error getting file:", error);
+      res.status(500).json({ error: "Failed to get file" });
+    }
+  });
+
+  app.put("/api/files/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const updates = req.body;
+      
+      const file = await storage.updateFile(id, updates);
+      if (!file) {
+        return res.status(404).json({ error: "File not found" });
+      }
+      
+      res.json(file);
+    } catch (error) {
+      console.error("Error updating file:", error);
+      res.status(400).json({ error: "Failed to update file" });
+    }
+  });
+
+  app.delete("/api/files/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const success = await storage.deleteFile(id);
+      
+      if (!success) {
+        return res.status(404).json({ error: "File not found" });
+      }
+      
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error deleting file:", error);
+      res.status(500).json({ error: "Failed to delete file" });
+    }
+  });
+
+  // File attachment routes for materials and formulations
+  app.get("/api/:entityType/:entityId/files", async (req, res) => {
+    try {
+      const { entityType, entityId } = req.params;
+      const files = await storage.getAttachedFiles(entityType, parseInt(entityId));
+      res.json(files);
+    } catch (error) {
+      console.error("Error getting attached files:", error);
+      res.status(500).json({ error: "Failed to get attached files" });
+    }
+  });
+
+  app.post("/api/:entityType/:entityId/files/attach", async (req, res) => {
+    try {
+      const { entityType, entityId } = req.params;
+      const { fileId } = req.body;
+      
+      const attachment = await storage.attachFile({
+        fileId,
+        entityType,
+        entityId: parseInt(entityId)
+      });
+      
+      res.json(attachment);
+    } catch (error) {
+      console.error("Error attaching file:", error);
+      res.status(400).json({ error: "Failed to attach file" });
+    }
+  });
+
+  app.delete("/api/:entityType/:entityId/files/:fileId", async (req, res) => {
+    try {
+      const { entityType, entityId, fileId } = req.params;
+      
+      const success = await storage.detachFile(
+        parseInt(fileId),
+        entityType,
+        parseInt(entityId)
+      );
+      
+      if (!success) {
+        return res.status(404).json({ error: "File attachment not found" });
+      }
+      
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error detaching file:", error);
+      res.status(500).json({ error: "Failed to detach file" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }
