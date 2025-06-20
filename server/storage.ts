@@ -7,7 +7,8 @@ import {
   type MaterialFile, type InsertMaterialFile,
   type File, type InsertFile,
   type FileAttachment, type InsertFileAttachment,
-  type AuditLog, type InsertAuditLog
+  type AuditLog, type InsertAuditLog,
+  type PasswordResetToken, type InsertPasswordResetToken
 } from "@shared/schema";
 
 export interface IStorage {
@@ -57,6 +58,10 @@ export interface IStorage {
   deleteMaterialFile(id: number): Promise<boolean>;
   createAuditLog(log: InsertAuditLog): Promise<AuditLog>;
   getAuditLogs(userId: number, limit?: number): Promise<AuditLog[]>;
+  createPasswordResetToken(token: InsertPasswordResetToken): Promise<PasswordResetToken>;
+  getPasswordResetToken(token: string): Promise<PasswordResetToken | undefined>;
+  markTokenAsUsed(token: string): Promise<boolean>;
+  cleanupExpiredTokens(): Promise<void>;
 }
 
 class MemoryStorage implements IStorage {
@@ -70,6 +75,7 @@ class MemoryStorage implements IStorage {
   private fileAttachments: FileAttachment[] = [];
   private materialFiles: MaterialFile[] = [];
   private auditLogs: AuditLog[] = [];
+  private passwordResetTokens: PasswordResetToken[] = [];
   private nextId = 1;
 
   constructor() {
@@ -397,6 +403,32 @@ class MemoryStorage implements IStorage {
       .filter(log => log.userId === userId)
       .sort((a, b) => (b.timestamp?.getTime() || 0) - (a.timestamp?.getTime() || 0))
       .slice(0, limit);
+  }
+
+  async createPasswordResetToken(token: InsertPasswordResetToken): Promise<PasswordResetToken> {
+    const newToken: PasswordResetToken = {
+      id: this.nextId++,
+      ...token,
+      createdAt: new Date()
+    } as PasswordResetToken;
+    this.passwordResetTokens.push(newToken);
+    return newToken;
+  }
+
+  async getPasswordResetToken(token: string): Promise<PasswordResetToken | undefined> {
+    return this.passwordResetTokens.find(t => t.token === token && !t.used && t.expiresAt > new Date());
+  }
+
+  async markTokenAsUsed(token: string): Promise<boolean> {
+    const resetToken = this.passwordResetTokens.find(t => t.token === token);
+    if (!resetToken) return false;
+    resetToken.used = true;
+    return true;
+  }
+
+  async cleanupExpiredTokens(): Promise<void> {
+    const now = new Date();
+    this.passwordResetTokens = this.passwordResetTokens.filter(t => t.expiresAt > now && !t.used);
   }
 }
 

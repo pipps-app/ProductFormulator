@@ -27,18 +27,25 @@ const registerSchema = z.object({
   company: z.string().optional(),
 });
 
-const passwordResetSchema = z.object({
+const passwordResetRequestSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
+});
+
+const passwordResetSchema = z.object({
+  token: z.string().min(1, "Reset token is required"),
   newPassword: z.string().min(6, "Password must be at least 6 characters"),
 });
 
 type RegisterFormData = z.infer<typeof registerSchema>;
+type PasswordResetRequestFormData = z.infer<typeof passwordResetRequestSchema>;
 type PasswordResetFormData = z.infer<typeof passwordResetSchema>;
 
 export default function Login() {
   const [, setLocation] = useLocation();
   const [isLogin, setIsLogin] = useState(true);
   const [showPasswordReset, setShowPasswordReset] = useState(false);
+  const [showPasswordResetForm, setShowPasswordResetForm] = useState(false);
+  const [resetToken, setResetToken] = useState<string>("");
   const { toast } = useToast();
   const { data: user, isLoading } = useUser();
   const queryClient = useQueryClient();
@@ -62,10 +69,17 @@ export default function Login() {
     },
   });
 
+  const passwordResetRequestForm = useForm<PasswordResetRequestFormData>({
+    resolver: zodResolver(passwordResetRequestSchema),
+    defaultValues: {
+      email: "",
+    },
+  });
+
   const passwordResetForm = useForm<PasswordResetFormData>({
     resolver: zodResolver(passwordResetSchema),
     defaultValues: {
-      email: "",
+      token: "",
       newPassword: "",
     },
   });
@@ -139,6 +153,41 @@ export default function Login() {
     },
   });
 
+  const passwordResetRequestMutation = useMutation({
+    mutationFn: async (data: PasswordResetRequestFormData) => {
+      const response = await fetch("/api/auth/request-password-reset", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || "Password reset request failed");
+      }
+      return response.json();
+    },
+    onSuccess: (data) => {
+      toast({
+        title: "Reset link sent",
+        description: data.message,
+      });
+      // For demo purposes, auto-fill the token (remove in production)
+      if (data.resetToken) {
+        setResetToken(data.resetToken);
+        passwordResetForm.setValue("token", data.resetToken);
+        setShowPasswordResetForm(true);
+      }
+      passwordResetRequestForm.reset();
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Request failed",
+        description: error.message || "Failed to send reset link",
+        variant: "destructive",
+      });
+    },
+  });
+
   const passwordResetMutation = useMutation({
     mutationFn: async (data: PasswordResetFormData) => {
       const response = await fetch("/api/auth/reset-password", {
@@ -158,6 +207,8 @@ export default function Login() {
         description: "Your password has been updated. You can now log in with your new password.",
       });
       setShowPasswordReset(false);
+      setShowPasswordResetForm(false);
+      setResetToken("");
       passwordResetForm.reset();
     },
     onError: (error: any) => {
@@ -286,145 +337,163 @@ export default function Login() {
                 </Form>
               </div>
             ) : isLogin ? (
-              <Form {...loginForm}>
-                <form onSubmit={loginForm.handleSubmit(onLoginSubmit)} className="space-y-4">
-                  <FormField
-                    control={loginForm.control}
-                    name="email"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Email</FormLabel>
-                        <FormControl>
-                          <Input 
-                            type="email" 
-                            placeholder="Enter your email" 
-                            {...field} 
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+              <div className="w-full">
+                <Form {...loginForm}>
+                  <form onSubmit={loginForm.handleSubmit(onLoginSubmit)} className="space-y-4">
+                    <FormField
+                      control={loginForm.control}
+                      name="email"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Email</FormLabel>
+                          <FormControl>
+                            <Input 
+                              type="email" 
+                              placeholder="Enter your email" 
+                              className="w-full"
+                              autoComplete="email"
+                              {...field} 
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
 
-                  <FormField
-                    control={loginForm.control}
-                    name="password"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Password</FormLabel>
-                        <FormControl>
-                          <Input 
-                            type="password" 
-                            placeholder="Enter your password" 
-                            {...field} 
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                    <FormField
+                      control={loginForm.control}
+                      name="password"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Password</FormLabel>
+                          <FormControl>
+                            <Input 
+                              type="password" 
+                              placeholder="Enter your password" 
+                              className="w-full"
+                              autoComplete="current-password"
+                              {...field} 
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
 
-                  <Button 
-                    type="submit" 
-                    className="w-full" 
-                    disabled={loginMutation.isPending}
-                  >
-                    {loginMutation.isPending ? "Signing in..." : "Sign In"}
-                  </Button>
-                  
-                  <div className="text-center">
-                    <button
-                      type="button"
-                      onClick={() => setShowPasswordReset(true)}
-                      className="text-sm text-blue-600 hover:text-blue-800 underline"
+                    <Button 
+                      type="submit" 
+                      className="w-full mt-4" 
+                      disabled={loginMutation.isPending}
+                      size="default"
                     >
-                      Forgot your password?
-                    </button>
-                  </div>
-                </form>
-              </Form>
+                      {loginMutation.isPending ? "Signing in..." : "Sign In"}
+                    </Button>
+                    
+                    <div className="text-center mt-4">
+                      <button
+                        type="button"
+                        onClick={() => setShowPasswordReset(true)}
+                        className="text-sm text-blue-600 hover:text-blue-800 underline focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded px-2 py-1"
+                      >
+                        Forgot your password?
+                      </button>
+                    </div>
+                  </form>
+                </Form>
+              </div>
             ) : (
-              <Form {...registerForm}>
-                <form onSubmit={registerForm.handleSubmit(onRegisterSubmit)} className="space-y-4">
-                  <FormField
-                    control={registerForm.control}
-                    name="username"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Username</FormLabel>
-                        <FormControl>
-                          <Input 
-                            placeholder="Choose a username" 
-                            {...field} 
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+              <div className="w-full">
+                <Form {...registerForm}>
+                  <form onSubmit={registerForm.handleSubmit(onRegisterSubmit)} className="space-y-4">
+                    <FormField
+                      control={registerForm.control}
+                      name="username"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Username</FormLabel>
+                          <FormControl>
+                            <Input 
+                              placeholder="Choose a username" 
+                              className="w-full"
+                              autoComplete="username"
+                              {...field} 
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
 
-                  <FormField
-                    control={registerForm.control}
-                    name="email"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Email</FormLabel>
-                        <FormControl>
-                          <Input 
-                            type="email" 
-                            placeholder="Enter your email" 
-                            {...field} 
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                    <FormField
+                      control={registerForm.control}
+                      name="email"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Email</FormLabel>
+                          <FormControl>
+                            <Input 
+                              type="email" 
+                              placeholder="Enter your email" 
+                              className="w-full"
+                              autoComplete="email"
+                              {...field} 
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
 
-                  <FormField
-                    control={registerForm.control}
-                    name="password"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Password</FormLabel>
-                        <FormControl>
-                          <Input 
-                            type="password" 
-                            placeholder="Create a password" 
-                            {...field} 
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                    <FormField
+                      control={registerForm.control}
+                      name="password"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Password</FormLabel>
+                          <FormControl>
+                            <Input 
+                              type="password" 
+                              placeholder="Create a password" 
+                              className="w-full"
+                              autoComplete="new-password"
+                              {...field} 
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
 
-                  <FormField
-                    control={registerForm.control}
-                    name="company"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Company (Optional)</FormLabel>
-                        <FormControl>
-                          <Input 
-                            placeholder="Your company name" 
-                            {...field} 
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                    <FormField
+                      control={registerForm.control}
+                      name="company"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Company (Optional)</FormLabel>
+                          <FormControl>
+                            <Input 
+                              placeholder="Your company name" 
+                              className="w-full"
+                              autoComplete="organization"
+                              {...field} 
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
 
-                  <Button 
-                    type="submit" 
-                    className="w-full" 
-                    disabled={registerMutation.isPending}
-                  >
-                    {registerMutation.isPending ? "Creating account..." : "Create Account"}
-                  </Button>
-                </form>
-              </Form>
+                    <Button 
+                      type="submit" 
+                      className="w-full mt-4" 
+                      disabled={registerMutation.isPending}
+                      size="default"
+                    >
+                      {registerMutation.isPending ? "Creating account..." : "Create Account"}
+                    </Button>
+                  </form>
+                </Form>
+              </div>
             )}
 
             <div className="mt-6 text-center">

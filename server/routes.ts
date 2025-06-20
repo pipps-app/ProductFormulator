@@ -118,29 +118,82 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Password reset endpoint
-  app.post("/api/auth/reset-password", async (req, res) => {
+  // Request password reset token
+  app.post("/api/auth/request-password-reset", async (req, res) => {
     try {
-      const { email, newPassword } = req.body;
+      const { email } = req.body;
       
-      if (!email || !newPassword) {
-        return res.status(400).json({ error: "Email and new password are required" });
+      if (!email) {
+        return res.status(400).json({ error: "Email is required" });
       }
 
       const user = await storage.getUserByEmail(email);
       if (!user) {
-        return res.status(404).json({ error: "User not found" });
+        // Don't reveal if user exists or not for security
+        return res.json({ success: true, message: "If an account with that email exists, we've sent a password reset link." });
+      }
+
+      // Generate secure token
+      const crypto = require('crypto');
+      const token = crypto.randomBytes(32).toString('hex');
+      const expiresAt = new Date(Date.now() + 15 * 60 * 1000); // 15 minutes
+
+      // Clean up old tokens
+      await storage.cleanupExpiredTokens();
+
+      // Store the token
+      await storage.createPasswordResetToken({
+        userId: user.id,
+        token,
+        expiresAt,
+        used: false
+      });
+
+      // In a real app, you would send an email with the reset link
+      // For demo purposes, we'll return the token (remove this in production)
+      res.json({ 
+        success: true, 
+        message: "If an account with that email exists, we've sent a password reset link.",
+        // Remove this in production - only for demo
+        resetToken: token
+      });
+    } catch (error) {
+      console.error("Password reset request error:", error);
+      res.status(500).json({ error: "Failed to process password reset request" });
+    }
+  });
+
+  // Reset password with token
+  app.post("/api/auth/reset-password", async (req, res) => {
+    try {
+      const { token, newPassword } = req.body;
+      
+      if (!token || !newPassword) {
+        return res.status(400).json({ error: "Token and new password are required" });
+      }
+
+      if (newPassword.length < 6) {
+        return res.status(400).json({ error: "Password must be at least 6 characters long" });
+      }
+
+      // Find and validate token
+      const resetToken = await storage.getPasswordResetToken(token);
+      if (!resetToken) {
+        return res.status(400).json({ error: "Invalid or expired reset token" });
       }
 
       // Hash the new password
       const hashedPassword = await bcrypt.hash(newPassword, 10);
       
       // Update the password
-      const success = await storage.updateUserPassword(user.id, hashedPassword);
+      const success = await storage.updateUserPassword(resetToken.userId, hashedPassword);
       
       if (!success) {
         return res.status(500).json({ error: "Failed to update password" });
       }
+
+      // Mark token as used
+      await storage.markTokenAsUsed(token);
 
       res.json({ success: true, message: "Password updated successfully" });
     } catch (error) {
