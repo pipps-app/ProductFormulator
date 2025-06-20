@@ -16,6 +16,14 @@
       "subscriptionEndDate": null,
       "paypalSubscriptionId": null,
       "createdAt": "2025-06-20T18:27:58.707Z"
+    },
+    {
+      "id": 26,
+      "username": "JulietD",
+      "email": "jcepiphany@yahoo.com",
+      "password": "$2b$10$GROovCj36jAjLidmadcFp.j/AxTOPrbsbt3j6zD1kCOd2zAu1hDki",
+      "company": "",
+      "createdAt": "2025-06-20T20:39:38.237Z"
     }
   ],
   "vendors": [
@@ -268,5 +276,5 @@
     }
   ],
   "passwordResetTokens": [],
-  "nextId": 26
+  "nextId": 27
 }
