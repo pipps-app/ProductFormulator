@@ -369,12 +369,35 @@ export default function FileAttachments({
                     alt={selectedFile.originalName}
                     className="w-full h-auto"
                   />
+                ) : selectedFile.mimeType === 'application/pdf' ? (
+                  <div className="w-full h-96">
+                    <iframe
+                      src={selectedFile.fileUrl}
+                      className="w-full h-full border-0"
+                      title={`Preview of ${selectedFile.originalName}`}
+                    />
+                  </div>
+                ) : selectedFile.mimeType?.startsWith('text/') ? (
+                  <div className="p-4 bg-slate-50 rounded">
+                    <pre className="text-sm whitespace-pre-wrap font-mono">
+                      {/* Text content would need to be fetched separately for security */}
+                      <div className="text-center py-8">
+                        <FileIcon className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
+                        <p className="text-sm text-muted-foreground">
+                          Text file preview - download to view content
+                        </p>
+                      </div>
+                    </pre>
+                  </div>
                 ) : (
                   <div className="text-center py-12 px-8">
                     <FileIcon className="w-16 h-16 mx-auto mb-4 text-muted-foreground" />
                     <p className="text-lg font-medium mb-2">{selectedFile.originalName}</p>
+                    <p className="text-sm text-muted-foreground mb-2">
+                      {selectedFile.mimeType || 'Unknown file type'}
+                    </p>
                     <p className="text-sm text-muted-foreground mb-4">
-                      This file type cannot be previewed in the browser
+                      Preview not available - download to view content
                     </p>
                     <Button 
                       onClick={() => {
