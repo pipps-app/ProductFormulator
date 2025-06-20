@@ -553,4 +553,8 @@ class MemoryStorage implements IStorage {
   }
 }
 
-export const storage = new MemoryStorage();
+// Import the database storage implementation
+import { DatabaseStorage } from "./database-storage";
+
+// Use database storage for persistence
+export const storage = new DatabaseStorage();
