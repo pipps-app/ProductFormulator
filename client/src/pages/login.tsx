@@ -274,26 +274,26 @@ export default function Login() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
+      <div className="w-full max-w-md mx-auto">
         <div className="text-center mb-8">
           <img 
             src={logoPath} 
             alt="PIPPS Logo" 
             className="h-16 w-auto mx-auto mb-4"
           />
-          <h1 className="text-3xl font-bold text-gray-900">PIPPS Maker Calc</h1>
-          <p className="text-gray-600 mt-2">Professional formulation and cost management</p>
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">PIPPS Maker Calc</h1>
+          <p className="text-gray-600 mt-2 text-sm sm:text-base">Professional formulation and cost management</p>
         </div>
 
-        <Card className="w-full">
-          <CardHeader>
-            <CardTitle>
+        <Card className="w-full shadow-lg">
+          <CardHeader className="pb-4">
+            <CardTitle className="text-xl sm:text-2xl">
               {showPasswordReset 
                 ? (showPasswordResetForm ? "Enter New Password" : "Reset Password")
                 : (isLogin ? "Sign In" : "Create Account")
               }
             </CardTitle>
-            <CardDescription>
+            <CardDescription className="text-sm sm:text-base">
               {showPasswordReset 
                 ? (showPasswordResetForm 
                   ? "Enter the token and your new password" 
@@ -306,7 +306,7 @@ export default function Login() {
               }
             </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="space-y-4 px-4 sm:px-6">
             {showPasswordReset ? (
               <div className="w-full">
                 {showPasswordResetForm ? (
@@ -462,101 +462,109 @@ export default function Login() {
                 </Form>
               </div>
             ) : (
-              <div className="w-full">
+              <div className="w-full space-y-4">
                 <Form {...registerForm}>
                   <form onSubmit={registerForm.handleSubmit(onRegisterSubmit)} className="space-y-4">
-                    <FormField
-                      control={registerForm.control}
-                      name="username"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Username</FormLabel>
-                          <FormControl>
-                            <Input 
-                              placeholder="Choose a username" 
-                              className="w-full"
-                              autoComplete="username"
-                              {...field} 
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+                    <div className="space-y-4">
+                      <FormField
+                        control={registerForm.control}
+                        name="username"
+                        render={({ field }) => (
+                          <FormItem className="space-y-2">
+                            <FormLabel className="text-sm font-medium">Username</FormLabel>
+                            <FormControl>
+                              <Input 
+                                placeholder="Choose a username" 
+                                className="w-full h-11 px-3 py-2 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                autoComplete="username"
+                                {...field} 
+                              />
+                            </FormControl>
+                            <FormMessage className="text-xs text-red-600" />
+                          </FormItem>
+                        )}
+                      />
 
-                    <FormField
-                      control={registerForm.control}
-                      name="email"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Email</FormLabel>
-                          <FormControl>
-                            <Input 
-                              type="email" 
-                              placeholder="Enter your email" 
-                              className="w-full"
-                              autoComplete="email"
-                              {...field} 
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+                      <FormField
+                        control={registerForm.control}
+                        name="email"
+                        render={({ field }) => (
+                          <FormItem className="space-y-2">
+                            <FormLabel className="text-sm font-medium">Email</FormLabel>
+                            <FormControl>
+                              <Input 
+                                type="email" 
+                                placeholder="Enter your email" 
+                                className="w-full h-11 px-3 py-2 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                autoComplete="email"
+                                {...field} 
+                              />
+                            </FormControl>
+                            <FormMessage className="text-xs text-red-600" />
+                          </FormItem>
+                        )}
+                      />
 
-                    <FormField
-                      control={registerForm.control}
-                      name="password"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Password</FormLabel>
-                          <FormControl>
-                            <Input 
-                              type="password" 
-                              placeholder="Create a password" 
-                              className="w-full"
-                              autoComplete="new-password"
-                              {...field} 
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+                      <FormField
+                        control={registerForm.control}
+                        name="password"
+                        render={({ field }) => (
+                          <FormItem className="space-y-2">
+                            <FormLabel className="text-sm font-medium">Password</FormLabel>
+                            <FormControl>
+                              <Input 
+                                type="password" 
+                                placeholder="Create a password" 
+                                className="w-full h-11 px-3 py-2 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                autoComplete="new-password"
+                                {...field} 
+                              />
+                            </FormControl>
+                            <FormMessage className="text-xs text-red-600" />
+                          </FormItem>
+                        )}
+                      />
 
-                    <FormField
-                      control={registerForm.control}
-                      name="company"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Company (Optional)</FormLabel>
-                          <FormControl>
-                            <Input 
-                              placeholder="Your company name" 
-                              className="w-full"
-                              autoComplete="organization"
-                              {...field} 
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+                      <FormField
+                        control={registerForm.control}
+                        name="company"
+                        render={({ field }) => (
+                          <FormItem className="space-y-2">
+                            <FormLabel className="text-sm font-medium">Company (Optional)</FormLabel>
+                            <FormControl>
+                              <Input 
+                                placeholder="Your company name" 
+                                className="w-full h-11 px-3 py-2 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                autoComplete="organization"
+                                {...field} 
+                              />
+                            </FormControl>
+                            <FormMessage className="text-xs text-red-600" />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
 
                     <Button 
                       type="submit" 
-                      className="w-full mt-4" 
+                      className="w-full h-11 mt-6 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-md transition-colors duration-200" 
                       disabled={registerMutation.isPending}
-                      size="default"
                     >
-                      {registerMutation.isPending ? "Creating account..." : "Create Account"}
+                      {registerMutation.isPending ? (
+                        <div className="flex items-center justify-center space-x-2">
+                          <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                          <span>Creating account...</span>
+                        </div>
+                      ) : (
+                        "Create Account"
+                      )}
                     </Button>
                   </form>
                 </Form>
               </div>
             )}
 
-            <div className="mt-6 text-center">
+            <div className="mt-6 pt-4 border-t border-gray-200 text-center">
               {showPasswordReset ? (
                 <div className="space-y-2">
                   {showPasswordResetForm && (
@@ -566,7 +574,7 @@ export default function Login() {
                         setShowPasswordResetForm(false);
                         passwordResetForm.reset();
                       }}
-                      className="block w-full text-sm text-blue-600 hover:text-blue-800 underline focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded px-2 py-1"
+                      className="block w-full text-sm text-blue-600 hover:text-blue-800 underline focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded px-2 py-1 transition-colors duration-200"
                     >
                       Back to email entry
                     </button>
@@ -580,7 +588,7 @@ export default function Login() {
                       passwordResetRequestForm.reset();
                       passwordResetForm.reset();
                     }}
-                    className="block w-full text-sm text-blue-600 hover:text-blue-800 underline focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded px-2 py-1"
+                    className="block w-full text-sm text-blue-600 hover:text-blue-800 underline focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded px-2 py-1 transition-colors duration-200"
                   >
                     Back to sign in
                   </button>
@@ -589,7 +597,7 @@ export default function Login() {
                 <button
                   type="button"
                   onClick={() => isLogin ? handleSwitchToRegister() : handleSwitchToLogin()}
-                  className="text-sm text-blue-600 hover:text-blue-800 underline focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded px-2 py-1"
+                  className="text-sm text-blue-600 hover:text-blue-800 underline focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded px-2 py-1 transition-colors duration-200"
                 >
                   {isLogin 
                     ? "Don't have an account? Sign up" 
