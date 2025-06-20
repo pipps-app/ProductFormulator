@@ -308,7 +308,8 @@ export default function MaterialForm({ material, onSuccess }: MaterialFormProps)
               />
             ) : (
               <div className="text-sm text-gray-600 text-center py-4">
-                Files can be attached after creating the material
+                <p className="font-medium mb-1">Files can be attached after creating the material</p>
+                <p className="text-xs">Attach specifications, certificates, safety data sheets, or product images</p>
               </div>
             )}
           </div>

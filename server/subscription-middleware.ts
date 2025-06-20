@@ -5,6 +5,9 @@ interface SubscriptionLimits {
   maxMaterials: number;
   maxFormulations: number;
   maxVendors: number;
+  maxCategories: number;
+  maxFileAttachments: number;
+  maxStorageSize: number; // in MB
 }
 
 const planLimits: Record<string, SubscriptionLimits> = {
