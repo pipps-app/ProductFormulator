@@ -27,11 +27,18 @@ const registerSchema = z.object({
   company: z.string().optional(),
 });
 
+const passwordResetSchema = z.object({
+  email: z.string().email("Please enter a valid email address"),
+  newPassword: z.string().min(6, "Password must be at least 6 characters"),
+});
+
 type RegisterFormData = z.infer<typeof registerSchema>;
+type PasswordResetFormData = z.infer<typeof passwordResetSchema>;
 
 export default function Login() {
   const [, setLocation] = useLocation();
   const [isLogin, setIsLogin] = useState(true);
+  const [showPasswordReset, setShowPasswordReset] = useState(false);
   const { toast } = useToast();
   const { data: user, isLoading } = useUser();
 
@@ -51,6 +58,14 @@ export default function Login() {
       email: "",
       password: "",
       company: "",
+    },
+  });
+
+  const passwordResetForm = useForm<PasswordResetFormData>({
+    resolver: zodResolver(passwordResetSchema),
+    defaultValues: {
+      email: "",
+      newPassword: "",
     },
   });
 
@@ -109,6 +124,36 @@ export default function Login() {
       toast({
         title: "Registration failed",
         description: error.message || "Failed to create account",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const passwordResetMutation = useMutation({
+    mutationFn: async (data: PasswordResetFormData) => {
+      const response = await fetch("/api/auth/reset-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || "Password reset failed");
+      }
+      return response.json();
+    },
+    onSuccess: () => {
+      toast({
+        title: "Password reset successful",
+        description: "Your password has been updated. You can now log in with your new password.",
+      });
+      setShowPasswordReset(false);
+      passwordResetForm.reset();
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Password reset failed",
+        description: error.message || "Failed to reset password",
         variant: "destructive",
       });
     },

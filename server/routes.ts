@@ -118,6 +118,37 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Password reset endpoint
+  app.post("/api/auth/reset-password", async (req, res) => {
+    try {
+      const { email, newPassword } = req.body;
+      
+      if (!email || !newPassword) {
+        return res.status(400).json({ error: "Email and new password are required" });
+      }
+
+      const user = await storage.getUserByEmail(email);
+      if (!user) {
+        return res.status(404).json({ error: "User not found" });
+      }
+
+      // Hash the new password
+      const hashedPassword = await bcrypt.hash(newPassword, 10);
+      
+      // Update the password
+      const success = await storage.updateUserPassword(user.id, hashedPassword);
+      
+      if (!success) {
+        return res.status(500).json({ error: "Failed to update password" });
+      }
+
+      res.json({ success: true, message: "Password updated successfully" });
+    } catch (error) {
+      console.error("Password reset error:", error);
+      res.status(500).json({ error: "Password reset failed" });
+    }
+  });
+
   // Helper function to recalculate formulation costs when material prices change
   async function updateFormulationsUsingMaterial(materialId: number) {
     try {
