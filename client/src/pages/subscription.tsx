@@ -17,6 +17,10 @@ interface SubscriptionPlan {
   popular?: boolean;
   maxMaterials: number;
   maxFormulations: number;
+  maxVendors: number;
+  maxCategories: number;
+  maxFileAttachments: number;
+  maxStorageSize: number;
   support: string;
 }
 
@@ -26,52 +30,94 @@ const plans: SubscriptionPlan[] = [
     name: "Free",
     price: 0,
     interval: "forever",
-    maxMaterials: 5,
-    maxFormulations: 2,
+    maxMaterials: 10,
+    maxFormulations: 3,
+    maxVendors: 2,
+    maxCategories: 2,
+    maxFileAttachments: 2,
+    maxStorageSize: 5,
     support: "Community support",
     features: [
-      "Up to 5 raw materials",
-      "Up to 2 formulations",
+      "Up to 10 raw materials",
+      "Up to 3 formulations",
+      "2 vendors & 2 categories",
       "Basic cost calculations",
-      "1 vendor",
-      "Material categories",
+      "2 file attachments",
+      "5MB storage",
       "Community support"
     ]
   },
   {
-    id: "starter",
-    name: "Starter",
+    id: "pro",
+    name: "Pro",
     price: 19,
     interval: "month",
     popular: true,
-    maxMaterials: 50,
-    maxFormulations: 10,
+    maxMaterials: 100,
+    maxFormulations: 25,
+    maxVendors: 10,
+    maxCategories: 10,
+    maxFileAttachments: 10,
+    maxStorageSize: 100,
     support: "Email support",
     features: [
-      "Up to 50 raw materials",
-      "Up to 10 formulations",
-      "Unlimited vendors & categories",
-      "Basic cost calculations",
-      "Export to CSV",
-      "Email support"
+      "Up to 100 raw materials",
+      "Up to 25 formulations",
+      "10 vendors & 10 categories",
+      "CSV import/export",
+      "10 file attachments",
+      "100MB storage",
+      "Email support",
+      "Cost optimization tools"
     ]
   },
   {
-    id: "professional",
-    name: "Professional", 
+    id: "business",
+    name: "Business", 
     price: 49,
     interval: "month",
-    maxMaterials: -1, // Unlimited
-    maxFormulations: -1, // Unlimited
+    maxMaterials: 500,
+    maxFormulations: 100,
+    maxVendors: 25,
+    maxCategories: 25,
+    maxFileAttachments: 50,
+    maxStorageSize: 1000,
     support: "Priority email support",
+    features: [
+      "Up to 500 raw materials",
+      "Up to 100 formulations",
+      "25 vendors & 25 categories",
+      "Advanced reporting & analytics",
+      "50 file attachments",
+      "1GB storage",
+      "Batch cost optimization",
+      "Multi-user access",
+      "Priority email support"
+    ]
+  },
+  {
+    id: "enterprise",
+    name: "Enterprise",
+    price: 99,
+    interval: "month",
+    maxMaterials: -1,
+    maxFormulations: -1,
+    maxVendors: -1,
+    maxCategories: -1,
+    maxFileAttachments: -1,
+    maxStorageSize: 10000,
+    support: "Dedicated support manager",
     features: [
       "Unlimited materials",
       "Unlimited formulations",
-      "Advanced reporting & analytics",
-      "Batch cost optimization",
-      "Profit margin analysis",
-      "Priority email support",
-      "Advanced export options"
+      "Unlimited vendors & categories",
+      "API access",
+      "Unlimited file attachments",
+      "10GB storage",
+      "Custom integrations",
+      "Advanced analytics",
+      "Dedicated support manager",
+      "Custom training"
     ]
   }
 ];
@@ -234,7 +280,7 @@ export default function Subscription() {
       )}
 
       {/* Pricing Plans */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {plans.map((plan) => (
           <Card
             key={plan.id}
@@ -338,6 +384,38 @@ export default function Subscription() {
                   {plans.map((plan) => (
                     <td key={plan.id} className="text-center p-4">
                       {plan.maxFormulations === -1 ? "Unlimited" : plan.maxFormulations}
+                    </td>
+                  ))}
+                </tr>
+                <tr>
+                  <td className="p-4 font-medium">Vendors</td>
+                  {plans.map((plan) => (
+                    <td key={plan.id} className="text-center p-4">
+                      {plan.maxVendors === -1 ? "Unlimited" : plan.maxVendors}
+                    </td>
+                  ))}
+                </tr>
+                <tr>
+                  <td className="p-4 font-medium">Categories</td>
+                  {plans.map((plan) => (
+                    <td key={plan.id} className="text-center p-4">
+                      {plan.maxCategories === -1 ? "Unlimited" : plan.maxCategories}
+                    </td>
+                  ))}
+                </tr>
+                <tr>
+                  <td className="p-4 font-medium">File Attachments</td>
+                  {plans.map((plan) => (
+                    <td key={plan.id} className="text-center p-4">
+                      {plan.maxFileAttachments === -1 ? "Unlimited" : plan.maxFileAttachments}
+                    </td>
+                  ))}
+                </tr>
+                <tr>
+                  <td className="p-4 font-medium">Storage</td>
+                  {plans.map((plan) => (
+                    <td key={plan.id} className="text-center p-4">
+                      {plan.maxStorageSize >= 1000 ? `${plan.maxStorageSize/1000}GB` : `${plan.maxStorageSize}MB`}
                     </td>
                   ))}
                 </tr>
