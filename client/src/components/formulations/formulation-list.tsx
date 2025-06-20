@@ -3,7 +3,8 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Edit, Trash2, FlaskRound, Calculator, ChevronUp, ChevronDown } from "lucide-react";
+import { Edit, Trash2, FlaskRound, Calculator, ChevronUp, ChevronDown, Eye } from "lucide-react";
+import { Link } from "wouter";
 import { type Formulation } from "@shared/schema";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
@@ -200,10 +201,20 @@ export default function FormulationList({ formulations, isLoading, onEdit, sortF
                   </td>
                   <td className="p-4 text-center">
                     <div className="flex items-center justify-center space-x-2">
+                      <Link href={`/formulations/${formulation.id}`}>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          title="View details"
+                        >
+                          <Eye className="h-4 w-4" />
+                        </Button>
+                      </Link>
                       <Button
                         variant="ghost"
                         size="sm"
                         onClick={() => onEdit(formulation)}
+                        title="Edit formulation"
                       >
                         <Edit className="h-4 w-4" />
                       </Button>
@@ -211,6 +222,7 @@ export default function FormulationList({ formulations, isLoading, onEdit, sortF
                         variant="ghost"
                         size="sm"
                         onClick={() => handleDelete(formulation)}
+                        title="Delete formulation"
                       >
                         <Trash2 className="h-4 w-4" />
                       </Button>
