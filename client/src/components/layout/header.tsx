@@ -61,6 +61,18 @@ export default function Header() {
         
         <div className="flex items-center space-x-4">
           <HelpButton />
+          
+          <Button 
+            variant="destructive" 
+            size="default"
+            onClick={handleLogout}
+            disabled={logoutMutation.isPending}
+            className="bg-red-600 hover:bg-red-700 text-white font-medium"
+          >
+            <LogOut className="h-4 w-4 mr-2" />
+            {logoutMutation.isPending ? "Logging out..." : "Logout"}
+          </Button>
+          
           <Link href="/profile">
             <Button variant="ghost" size="icon">
               <Settings className="h-5 w-5" />
@@ -82,17 +94,6 @@ export default function Header() {
               </AvatarFallback>
             </Avatar>
           </div>
-          
-          <Button 
-            variant="outline" 
-            size="sm"
-            onClick={handleLogout}
-            disabled={logoutMutation.isPending}
-            className="text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200"
-          >
-            <LogOut className="h-4 w-4 mr-2" />
-            {logoutMutation.isPending ? "Logging out..." : "Logout"}
-          </Button>
         </div>
       </div>
     </header>
