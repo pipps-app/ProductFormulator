@@ -214,7 +214,7 @@ export default function Login() {
           <p className="text-gray-600 mt-2">Professional formulation and cost management</p>
         </div>
 
-        <Card>
+        <Card className="w-full">
           <CardHeader>
             <CardTitle>
               {showPasswordReset ? "Reset Password" : (isLogin ? "Sign In" : "Create Account")}
@@ -229,55 +229,62 @@ export default function Login() {
               }
             </CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="space-y-4">
             {showPasswordReset ? (
-              <Form {...passwordResetForm}>
-                <form onSubmit={passwordResetForm.handleSubmit(onPasswordResetSubmit)} className="space-y-4">
-                  <FormField
-                    control={passwordResetForm.control}
-                    name="email"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Email</FormLabel>
-                        <FormControl>
-                          <Input 
-                            type="email" 
-                            placeholder="Enter your email" 
-                            {...field} 
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+              <div className="w-full">
+                <Form {...passwordResetForm}>
+                  <form onSubmit={passwordResetForm.handleSubmit(onPasswordResetSubmit)} className="space-y-4">
+                    <FormField
+                      control={passwordResetForm.control}
+                      name="email"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Email</FormLabel>
+                          <FormControl>
+                            <Input 
+                              type="email" 
+                              placeholder="Enter your email" 
+                              className="w-full"
+                              autoComplete="email"
+                              {...field} 
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
 
-                  <FormField
-                    control={passwordResetForm.control}
-                    name="newPassword"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>New Password</FormLabel>
-                        <FormControl>
-                          <Input 
-                            type="password" 
-                            placeholder="Enter your new password" 
-                            {...field} 
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                    <FormField
+                      control={passwordResetForm.control}
+                      name="newPassword"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>New Password</FormLabel>
+                          <FormControl>
+                            <Input 
+                              type="password" 
+                              placeholder="Enter your new password" 
+                              className="w-full"
+                              autoComplete="new-password"
+                              {...field} 
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
 
-                  <Button 
-                    type="submit" 
-                    className="w-full" 
-                    disabled={passwordResetMutation.isPending}
-                  >
-                    {passwordResetMutation.isPending ? "Resetting..." : "Reset Password"}
-                  </Button>
-                </form>
-              </Form>
+                    <Button 
+                      type="submit" 
+                      className="w-full mt-4" 
+                      disabled={passwordResetMutation.isPending}
+                      size="default"
+                    >
+                      {passwordResetMutation.isPending ? "Resetting..." : "Reset Password"}
+                    </Button>
+                  </form>
+                </Form>
+              </div>
             ) : isLogin ? (
               <Form {...loginForm}>
                 <form onSubmit={loginForm.handleSubmit(onLoginSubmit)} className="space-y-4">
@@ -420,12 +427,15 @@ export default function Login() {
               </Form>
             )}
 
-            <div className="mt-4 text-center">
+            <div className="mt-6 text-center">
               {showPasswordReset ? (
                 <button
                   type="button"
-                  onClick={() => setShowPasswordReset(false)}
-                  className="text-sm text-blue-600 hover:text-blue-800 underline"
+                  onClick={() => {
+                    setShowPasswordReset(false);
+                    passwordResetForm.reset();
+                  }}
+                  className="text-sm text-blue-600 hover:text-blue-800 underline focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded px-2 py-1"
                 >
                   Back to sign in
                 </button>
@@ -433,7 +443,7 @@ export default function Login() {
                 <button
                   type="button"
                   onClick={() => setIsLogin(!isLogin)}
-                  className="text-sm text-blue-600 hover:text-blue-800 underline"
+                  className="text-sm text-blue-600 hover:text-blue-800 underline focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded px-2 py-1"
                 >
                   {isLogin 
                     ? "Don't have an account? Sign up" 
