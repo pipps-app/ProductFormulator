@@ -17,6 +17,7 @@ import ImportExport from "@/pages/import-export";
 import Profile from "@/pages/profile";
 import Subscription from "@/pages/subscription";
 import Support from "@/pages/support";
+import HelpPage from "@/pages/help";
 import Onboarding from "@/pages/onboarding";
 import Login from "@/pages/login";
 import AppLayout from "@/components/layout/app-layout";
@@ -50,6 +51,7 @@ function Router() {
       <ProtectedAppRoute path="/profile" component={Profile} />
       <ProtectedAppRoute path="/subscription" component={Subscription} />
       <ProtectedAppRoute path="/support" component={Support} />
+      <ProtectedAppRoute path="/help" component={HelpPage} />
       <ProtectedAppRoute path="/" component={Dashboard} />
     </Switch>
   );

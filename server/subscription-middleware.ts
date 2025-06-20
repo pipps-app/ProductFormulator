@@ -12,19 +12,36 @@ interface SubscriptionLimits {
 
 const planLimits: Record<string, SubscriptionLimits> = {
   free: {
-    maxMaterials: 5,
-    maxFormulations: 2,
-    maxVendors: 1
+    maxMaterials: 10,
+    maxFormulations: 3,
+    maxVendors: 2,
+    maxCategories: 2,
+    maxFileAttachments: 2,
+    maxStorageSize: 5
   },
-  starter: {
-    maxMaterials: 50,
-    maxFormulations: 10,
-    maxVendors: -1 // Unlimited
+  pro: {
+    maxMaterials: 100,
+    maxFormulations: 25,
+    maxVendors: 10,
+    maxCategories: 10,
+    maxFileAttachments: 10,
+    maxStorageSize: 100
   },
-  professional: {
-    maxMaterials: -1, // Unlimited
-    maxFormulations: -1, // Unlimited
-    maxVendors: -1 // Unlimited
+  business: {
+    maxMaterials: 500,
+    maxFormulations: 100,
+    maxVendors: 25,
+    maxCategories: 25,
+    maxFileAttachments: 50,
+    maxStorageSize: 1000
+  },
+  enterprise: {
+    maxMaterials: -1,
+    maxFormulations: -1,
+    maxVendors: -1,
+    maxCategories: -1,
+    maxFileAttachments: -1,
+    maxStorageSize: 10000
   }
 };
 

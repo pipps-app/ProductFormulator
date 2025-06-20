@@ -179,10 +179,26 @@ export default function ImportExport() {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <Alert>
-                <AlertCircle className="h-4 w-4" />
+              <Alert className="border-amber-200 bg-amber-50">
+                <AlertCircle className="h-4 w-4 text-amber-600" />
                 <AlertDescription>
-                  Upload a CSV file with columns: name, sku, category, vendor, totalCost, quantity, unit
+                  <div className="space-y-3 text-sm">
+                    <p><strong className="text-amber-800">⚠️ IMPORTANT: Setup Required Before Import</strong></p>
+                    <ol className="list-decimal list-inside space-y-1 text-amber-700 ml-4">
+                      <li><strong>Create all vendors</strong> in the Vendors section first</li>
+                      <li><strong>Create all categories</strong> in the Categories section first</li>
+                      <li>Ensure names in your CSV match exactly (case-sensitive)</li>
+                    </ol>
+                    <div className="mt-2">
+                      <p className="font-semibold text-amber-800">CSV Format Required:</p>
+                      <p className="text-amber-700 font-mono text-xs bg-amber-100 p-2 rounded mt-1">
+                        name, sku, categoryName, vendorName, totalCost, quantity, unit, notes
+                      </p>
+                    </div>
+                    <p className="text-red-600 text-xs font-medium">
+                      Import will fail if vendor or category names don't exist in the system.
+                    </p>
+                  </div>
                 </AlertDescription>
               </Alert>
               
