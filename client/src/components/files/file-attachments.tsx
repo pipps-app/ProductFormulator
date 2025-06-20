@@ -34,6 +34,15 @@ export default function FileAttachments({
   const { toast } = useToast();
 
   const handleFileUploaded = async (fileId: number) => {
+    if (!entityId) {
+      toast({
+        variant: "destructive",
+        title: "Save required",
+        description: "Please save the item first before attaching files.",
+      });
+      return;
+    }
+
     try {
       await attachFile.mutateAsync({
         entityType,
@@ -57,6 +66,15 @@ export default function FileAttachments({
   };
 
   const handleAttachExistingFile = async (fileId: number) => {
+    if (!entityId) {
+      toast({
+        variant: "destructive",
+        title: "Save required",
+        description: "Please save the item first before attaching files.",
+      });
+      return;
+    }
+
     try {
       await attachFile.mutateAsync({
         entityType,
