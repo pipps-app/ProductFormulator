@@ -1,18 +1,33 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { apiRequest } from "@/lib/queryClient";
 import type { File, InsertFile } from "@shared/schema";
+
+// Simple API request function for file operations
+async function fileApiRequest(endpoint: string, options?: { method?: string; body?: any }) {
+  const response = await fetch(endpoint, {
+    method: options?.method || 'GET',
+    headers: options?.body ? { 'Content-Type': 'application/json' } : {},
+    body: options?.body ? JSON.stringify(options.body) : undefined,
+    credentials: 'include',
+  });
+  
+  if (!response.ok) {
+    throw new Error(`API request failed: ${response.status}`);
+  }
+  
+  return response.json();
+}
 
 export function useFiles() {
   return useQuery({
     queryKey: ['/api/files'],
-    queryFn: () => apiRequest<File[]>({ endpoint: '/api/files' }),
+    queryFn: () => fileApiRequest('/api/files'),
   });
 }
 
 export function useFile(id: number) {
   return useQuery({
     queryKey: ['/api/files', id],
-    queryFn: () => apiRequest<File>({ endpoint: `/api/files/${id}` }),
+    queryFn: () => fileApiRequest(`/api/files/${id}`),
     enabled: !!id,
   });
 }
@@ -22,8 +37,7 @@ export function useFileUpload() {
   
   return useMutation({
     mutationFn: async (fileData: Omit<InsertFile, 'userId'>) => {
-      return apiRequest<File>({
-        endpoint: '/api/files/upload',
+      return fileApiRequest('/api/files/upload', {
         method: 'POST',
         body: fileData,
       });
@@ -39,8 +53,7 @@ export function useFileUpdate() {
   
   return useMutation({
     mutationFn: async ({ id, updates }: { id: number; updates: Partial<InsertFile> }) => {
-      return apiRequest<File>({
-        endpoint: `/api/files/${id}`,
+      return fileApiRequest(`/api/files/${id}`, {
         method: 'PUT',
         body: updates,
       });
@@ -57,10 +70,7 @@ export function useFileDelete() {
   
   return useMutation({
     mutationFn: async (id: number) => {
-      return apiRequest<{ success: boolean }>({
-        endpoint: `/api/files/${id}`,
-        method: 'DELETE',
-      });
+      return fileApiRequest(`/api/files/${id}`, { method: 'DELETE' });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/files'] });
@@ -71,7 +81,7 @@ export function useFileDelete() {
 export function useAttachedFiles(entityType: string, entityId: number) {
   return useQuery({
     queryKey: ['/api', entityType, entityId, 'files'],
-    queryFn: () => apiRequest<File[]>({ endpoint: `/api/${entityType}/${entityId}/files` }),
+    queryFn: () => fileApiRequest(`/api/${entityType}/${entityId}/files`),
     enabled: !!entityType && !!entityId,
   });
 }
@@ -85,8 +95,7 @@ export function useAttachFile() {
       entityId: number; 
       fileId: number; 
     }) => {
-      return apiRequest({
-        endpoint: `/api/${entityType}/${entityId}/files/attach`,
+      return fileApiRequest(`/api/${entityType}/${entityId}/files/attach`, {
         method: 'POST',
         body: { fileId },
       });
@@ -106,8 +115,7 @@ export function useDetachFile() {
       entityId: number; 
       fileId: number; 
     }) => {
-      return apiRequest<{ success: boolean }>({
-        endpoint: `/api/${entityType}/${entityId}/files/${fileId}`,
+      return fileApiRequest(`/api/${entityType}/${entityId}/files/${fileId}`, {
         method: 'DELETE',
       });
     },
