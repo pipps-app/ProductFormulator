@@ -13,6 +13,15 @@ import bcrypt from "bcryptjs";
 import "./types";
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Authentication middleware
+  function requireAuth(req: any, res: any, next: any) {
+    if (!req.session?.userId) {
+      return res.status(401).json({ error: "Authentication required" });
+    }
+    req.userId = req.session.userId;
+    next();
+  }
+
   // Authentication routes
   app.post("/api/auth/register", async (req, res) => {
     try {
@@ -745,7 +754,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // User endpoints
   app.get("/api/user", async (req, res) => {
-    const userId = 1; // Mock user ID
+    const userId = req.session?.userId;
+    
+    if (!userId) {
+      return res.status(401).json({ error: "Not authenticated" });
+    }
+    
     const user = await storage.getUser(userId);
     if (!user) {
       return res.status(404).json({ error: "User not found" });

@@ -6,13 +6,14 @@ import { Link, useLocation } from "wouter";
 import { useUser } from "@/hooks/use-user";
 import { HelpButton } from "@/components/onboarding/help-button";
 import { useToast } from "@/hooks/use-toast";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import logoPath from "@assets/pipps-app-logo_1749571716445.jpg";
 
 export default function Header() {
   const { data: user } = useUser();
   const [, setLocation] = useLocation();
   const { toast } = useToast();
+  const queryClient = useQueryClient();
 
   const logoutMutation = useMutation({
     mutationFn: async () => {
@@ -26,6 +27,11 @@ export default function Header() {
       return response.json();
     },
     onSuccess: () => {
+      // Clear all cached data
+      queryClient.clear();
+      // Specifically invalidate user query
+      queryClient.invalidateQueries({ queryKey: ["/api/user"] });
+      
       toast({
         title: "Logged out",
         description: "You have been successfully logged out.",
