@@ -370,12 +370,47 @@ export default function FileAttachments({
                     className="w-full h-auto"
                   />
                 ) : selectedFile.mimeType === 'application/pdf' ? (
-                  <div className="w-full h-96">
-                    <iframe
-                      src={selectedFile.fileUrl}
-                      className="w-full h-full border-0"
-                      title={`Preview of ${selectedFile.originalName}`}
-                    />
+                  <div className="w-full h-96 bg-slate-100 rounded-lg overflow-hidden">
+                    <object
+                      data={selectedFile.fileUrl}
+                      type="application/pdf"
+                      className="w-full h-full"
+                      aria-label={`PDF preview of ${selectedFile.originalName}`}
+                    >
+                      <div className="flex flex-col items-center justify-center h-full p-8 text-center">
+                        <FileIcon className="w-16 h-16 mb-4 text-slate-500" />
+                        <p className="text-lg font-medium mb-2">PDF Preview Unavailable</p>
+                        <p className="text-sm text-muted-foreground mb-4">
+                          Your browser cannot display this PDF inline. Download the file to view it.
+                        </p>
+                        <div className="flex gap-2">
+                          <Button 
+                            variant="outline"
+                            onClick={() => {
+                              if (selectedFile.fileUrl) {
+                                window.open(selectedFile.fileUrl, '_blank');
+                              }
+                            }}
+                          >
+                            <Eye className="w-4 h-4 mr-2" />
+                            Open in New Tab
+                          </Button>
+                          <Button 
+                            onClick={() => {
+                              if (selectedFile.fileUrl) {
+                                const link = document.createElement('a');
+                                link.href = selectedFile.fileUrl;
+                                link.download = selectedFile.originalName;
+                                link.click();
+                              }
+                            }}
+                          >
+                            <Download className="w-4 h-4 mr-2" />
+                            Download PDF
+                          </Button>
+                        </div>
+                      </div>
+                    </object>
                   </div>
                 ) : selectedFile.mimeType?.startsWith('text/') ? (
                   <div className="p-4 bg-slate-50 rounded">
