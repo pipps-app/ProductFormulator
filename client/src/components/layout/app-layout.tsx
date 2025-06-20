@@ -1,6 +1,7 @@
 import { ReactNode } from "react";
 import Header from "./header";
 import Sidebar from "./sidebar";
+import Footer from "./footer";
 import MobileNotice from "../common/mobile-notice";
 
 interface AppLayoutProps {
@@ -22,6 +23,7 @@ export default function AppLayout({ children }: AppLayoutProps) {
           </div>
         </main>
       </div>
+      <Footer />
     </div>
   );
 }
