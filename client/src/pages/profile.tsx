@@ -11,7 +11,8 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { useToast } from "@/hooks/use-toast";
 import { useUser } from "@/hooks/use-user";
 import { apiRequest } from "@/lib/queryClient";
-import { User, Lock, Building } from "lucide-react";
+import { User, Lock, Building, LogOut } from "lucide-react";
+import { useLocation } from "wouter";
 
 const profileSchema = z.object({
   username: z.string().min(1, "Username is required"),
@@ -34,6 +35,7 @@ type PasswordForm = z.infer<typeof passwordSchema>;
 export default function Profile() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const [, setLocation] = useLocation();
   const [activeTab, setActiveTab] = useState<"profile" | "password">("profile");
 
   // Fetch current user data
@@ -115,6 +117,38 @@ export default function Profile() {
     },
   });
 
+  // Logout mutation
+  const logoutMutation = useMutation({
+    mutationFn: async () => {
+      const response = await fetch("/api/auth/logout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+      });
+      if (!response.ok) {
+        throw new Error("Logout failed");
+      }
+      return response.json();
+    },
+    onSuccess: () => {
+      toast({
+        title: "Logged out",
+        description: "You have been successfully logged out.",
+      });
+      setLocation("/login");
+    },
+    onError: () => {
+      toast({
+        title: "Logout failed",
+        description: "There was an error logging out. Please try again.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const handleLogout = () => {
+    logoutMutation.mutate();
+  };
+
   const onProfileSubmit = (data: ProfileForm) => {
     updateProfileMutation.mutate(data);
   };
@@ -133,9 +167,20 @@ export default function Profile() {
 
   return (
     <div className="container mx-auto py-6 space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold">Profile Settings</h1>
-        <p className="text-muted-foreground">Manage your account settings and preferences</p>
+      <div className="flex justify-between items-center">
+        <div>
+          <h1 className="text-3xl font-bold">Profile Settings</h1>
+          <p className="text-muted-foreground">Manage your account settings and preferences</p>
+        </div>
+        <Button 
+          variant="destructive" 
+          onClick={handleLogout}
+          disabled={logoutMutation.isPending}
+          className="bg-red-600 hover:bg-red-700 text-white"
+        >
+          <LogOut className="h-4 w-4 mr-2" />
+          {logoutMutation.isPending ? "Logging out..." : "Logout"}
+        </Button>
       </div>
 
       <div className="flex space-x-4 border-b">
