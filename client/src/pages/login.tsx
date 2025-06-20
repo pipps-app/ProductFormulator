@@ -248,6 +248,10 @@ export default function Login() {
     registerMutation.mutate(data);
   };
 
+  const onPasswordResetRequestSubmit = (data: PasswordResetRequestFormData) => {
+    passwordResetRequestMutation.mutate(data);
+  };
+
   const onPasswordResetSubmit = (data: PasswordResetFormData) => {
     passwordResetMutation.mutate(data);
   };
@@ -268,11 +272,17 @@ export default function Login() {
         <Card className="w-full">
           <CardHeader>
             <CardTitle>
-              {showPasswordReset ? "Reset Password" : (isLogin ? "Sign In" : "Create Account")}
+              {showPasswordReset 
+                ? (showPasswordResetForm ? "Enter New Password" : "Reset Password")
+                : (isLogin ? "Sign In" : "Create Account")
+              }
             </CardTitle>
             <CardDescription>
               {showPasswordReset 
-                ? "Enter your email and new password" 
+                ? (showPasswordResetForm 
+                  ? "Enter the token and your new password" 
+                  : "Enter your email to receive a reset token"
+                )
                 : (isLogin 
                   ? "Enter your credentials to access your account" 
                   : "Create a new account to get started"
@@ -283,58 +293,92 @@ export default function Login() {
           <CardContent className="space-y-4">
             {showPasswordReset ? (
               <div className="w-full">
-                <Form {...passwordResetForm}>
-                  <form onSubmit={passwordResetForm.handleSubmit(onPasswordResetSubmit)} className="space-y-4">
-                    <FormField
-                      control={passwordResetForm.control}
-                      name="email"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Email</FormLabel>
-                          <FormControl>
-                            <Input 
-                              type="email" 
-                              placeholder="Enter your email" 
-                              className="w-full"
-                              autoComplete="email"
-                              {...field} 
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+                {showPasswordResetForm ? (
+                  <Form {...passwordResetForm}>
+                    <form onSubmit={passwordResetForm.handleSubmit(onPasswordResetSubmit)} className="space-y-4">
+                      <FormField
+                        control={passwordResetForm.control}
+                        name="token"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Reset Token</FormLabel>
+                            <FormControl>
+                              <Input 
+                                type="text" 
+                                placeholder="Enter the reset token" 
+                                className="w-full"
+                                {...field} 
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
 
-                    <FormField
-                      control={passwordResetForm.control}
-                      name="newPassword"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>New Password</FormLabel>
-                          <FormControl>
-                            <Input 
-                              type="password" 
-                              placeholder="Enter your new password" 
-                              className="w-full"
-                              autoComplete="new-password"
-                              {...field} 
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+                      <FormField
+                        control={passwordResetForm.control}
+                        name="newPassword"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>New Password</FormLabel>
+                            <FormControl>
+                              <Input 
+                                type="password" 
+                                placeholder="Enter your new password" 
+                                className="w-full"
+                                autoComplete="new-password"
+                                {...field} 
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
 
-                    <Button 
-                      type="submit" 
-                      className="w-full mt-4" 
-                      disabled={passwordResetMutation.isPending}
-                      size="default"
-                    >
-                      {passwordResetMutation.isPending ? "Resetting..." : "Reset Password"}
-                    </Button>
-                  </form>
-                </Form>
+                      <Button 
+                        type="submit" 
+                        className="w-full mt-4" 
+                        disabled={passwordResetMutation.isPending}
+                        size="default"
+                      >
+                        {passwordResetMutation.isPending ? "Resetting..." : "Reset Password"}
+                      </Button>
+                    </form>
+                  </Form>
+                ) : (
+                  <Form {...passwordResetRequestForm}>
+                    <form onSubmit={passwordResetRequestForm.handleSubmit(onPasswordResetRequestSubmit)} className="space-y-4">
+                      <FormField
+                        control={passwordResetRequestForm.control}
+                        name="email"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Email</FormLabel>
+                            <FormControl>
+                              <Input 
+                                type="email" 
+                                placeholder="Enter your email" 
+                                className="w-full"
+                                autoComplete="email"
+                                {...field} 
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <Button 
+                        type="submit" 
+                        className="w-full mt-4" 
+                        disabled={passwordResetRequestMutation.isPending}
+                        size="default"
+                      >
+                        {passwordResetRequestMutation.isPending ? "Sending..." : "Send Reset Link"}
+                      </Button>
+                    </form>
+                  </Form>
+                )}
               </div>
             ) : isLogin ? (
               <div className="w-full">
@@ -498,16 +542,33 @@ export default function Login() {
 
             <div className="mt-6 text-center">
               {showPasswordReset ? (
-                <button
-                  type="button"
-                  onClick={() => {
-                    setShowPasswordReset(false);
-                    passwordResetForm.reset();
-                  }}
-                  className="text-sm text-blue-600 hover:text-blue-800 underline focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded px-2 py-1"
-                >
-                  Back to sign in
-                </button>
+                <div className="space-y-2">
+                  {showPasswordResetForm && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setShowPasswordResetForm(false);
+                        passwordResetForm.reset();
+                      }}
+                      className="block w-full text-sm text-blue-600 hover:text-blue-800 underline focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded px-2 py-1"
+                    >
+                      Back to email entry
+                    </button>
+                  )}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowPasswordReset(false);
+                      setShowPasswordResetForm(false);
+                      setResetToken("");
+                      passwordResetRequestForm.reset();
+                      passwordResetForm.reset();
+                    }}
+                    className="block w-full text-sm text-blue-600 hover:text-blue-800 underline focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded px-2 py-1"
+                  >
+                    Back to sign in
+                  </button>
+                </div>
               ) : (
                 <button
                   type="button"
