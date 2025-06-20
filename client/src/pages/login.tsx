@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -41,6 +41,7 @@ export default function Login() {
   const [showPasswordReset, setShowPasswordReset] = useState(false);
   const { toast } = useToast();
   const { data: user, isLoading } = useUser();
+  const queryClient = useQueryClient();
 
   // Always initialize forms at the top level
   const loginForm = useForm<LoginFormData>({
@@ -76,6 +77,7 @@ export default function Login() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
+        credentials: "include",
       });
       if (!response.ok) {
         const error = await response.json();
@@ -83,12 +85,20 @@ export default function Login() {
       }
       return response.json();
     },
-    onSuccess: () => {
+    onSuccess: async (data) => {
+      // Clear all queries and refetch user to ensure fresh auth state
+      queryClient.clear();
+      await queryClient.invalidateQueries({ queryKey: ["/api/user"] });
+      
       toast({
         title: "Welcome back!",
         description: "You have successfully logged in.",
       });
-      setLocation("/dashboard");
+      
+      // Small delay to ensure state updates, then navigate
+      setTimeout(() => {
+        setLocation("/dashboard");
+      }, 250);
     },
     onError: (error: any) => {
       toast({
