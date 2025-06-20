@@ -94,6 +94,79 @@ export default function FileUpload({
     });
   };
 
+  // Compress image files to reduce storage space
+  const compressImage = async (file: File, quality: number = 0.8): Promise<File> => {
+    return new Promise((resolve) => {
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      const img = new Image();
+
+      img.onload = () => {
+        // Calculate new dimensions (max width/height: 1920px for large images)
+        const MAX_SIZE = 1920;
+        let { width, height } = img;
+        
+        if (width > height && width > MAX_SIZE) {
+          height = (height * MAX_SIZE) / width;
+          width = MAX_SIZE;
+        } else if (height > MAX_SIZE) {
+          width = (width * MAX_SIZE) / height;
+          height = MAX_SIZE;
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+        
+        ctx?.drawImage(img, 0, 0, width, height);
+        
+        canvas.toBlob((blob) => {
+          if (blob) {
+            const compressedFile = new File([blob], file.name, {
+              type: file.type,
+              lastModified: Date.now(),
+            });
+            resolve(compressedFile);
+          } else {
+            resolve(file); // Return original if compression fails
+          }
+        }, file.type, quality);
+      };
+
+      img.src = URL.createObjectURL(file);
+    });
+  };
+
+  // Generate optimized thumbnail for images
+  const generateThumbnail = async (file: File): Promise<string> => {
+    return new Promise((resolve) => {
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      const img = new Image();
+
+      img.onload = () => {
+        // Create small thumbnail (150x150 max)
+        const THUMB_SIZE = 150;
+        let { width, height } = img;
+        
+        if (width > height) {
+          height = (height * THUMB_SIZE) / width;
+          width = THUMB_SIZE;
+        } else {
+          width = (width * THUMB_SIZE) / height;
+          height = THUMB_SIZE;
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+        ctx?.drawImage(img, 0, 0, width, height);
+        
+        resolve(canvas.toDataURL('image/jpeg', 0.7));
+      };
+
+      img.src = URL.createObjectURL(file);
+    });
+  };
+
   const uploadFiles = async () => {
     if (files.length === 0) return;
 
@@ -101,26 +174,31 @@ export default function FileUpload({
 
     try {
       for (const filePreview of files) {
-        const { file } = filePreview;
+        let { file } = filePreview;
         
-        // Convert file to base64 for storage (in production, use proper file storage)
+        // Compress images to reduce storage space
+        if (file.type.startsWith('image/')) {
+          file = await compressImage(file, 0.8);
+        }
+        
+        // Convert file to base64 for storage
         const fileUrl = await new Promise<string>((resolve) => {
           const reader = new FileReader();
           reader.onload = () => resolve(reader.result as string);
           reader.readAsDataURL(file);
         });
 
-        // Create thumbnail for images
+        // Create optimized thumbnail for images
         let thumbnailUrl: string | undefined;
         if (file.type.startsWith('image/')) {
-          thumbnailUrl = fileUrl; // In production, generate actual thumbnails
+          thumbnailUrl = await generateThumbnail(file);
         }
 
         const fileData = {
           fileName: `${Date.now()}_${file.name}`,
           originalName: file.name,
           fileUrl,
-          fileType: file.type.split('/')[0], // 'image', 'application', etc.
+          fileType: file.type.split('/')[0],
           mimeType: file.type,
           fileSize: file.size,
           thumbnailUrl,

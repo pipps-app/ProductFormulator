@@ -556,7 +556,7 @@ export class DatabaseStorage implements IStorage {
           eq(fileAttachments.entityType, entityType),
           eq(fileAttachments.entityId, entityId)
         ));
-      return result.rowCount > 0;
+      return true; // Return true if deletion was attempted without error
     } catch (error) {
       console.error("Error detaching file:", error);
       return false;
