@@ -16,13 +16,15 @@ import ImportExport from "@/pages/import-export";
 import Profile from "@/pages/profile";
 import Subscription from "@/pages/subscription";
 import Onboarding from "@/pages/onboarding";
+import Login from "@/pages/login";
 import AppLayout from "@/components/layout/app-layout";
 
 function Router() {
   return (
-    <AppLayout>
-      <Switch>
-        <Route path="/onboarding" component={Onboarding} />
+    <Switch>
+      <Route path="/login" component={Login} />
+      <Route path="/onboarding" component={Onboarding} />
+      <AppLayout>
         <Route path="/" component={Dashboard} />
         <Route path="/dashboard" component={Dashboard} />
         <Route path="/materials" component={Materials} />
@@ -33,8 +35,8 @@ function Router() {
         <Route path="/profile" component={Profile} />
         <Route path="/subscription" component={Subscription} />
         <Route component={NotFound} />
-      </Switch>
-    </AppLayout>
+      </AppLayout>
+    </Switch>
   );
 }
 
