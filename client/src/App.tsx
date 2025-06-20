@@ -20,25 +20,33 @@ import Login from "@/pages/login";
 import AppLayout from "@/components/layout/app-layout";
 import ProtectedRoute from "@/components/protected-route";
 
+function ProtectedAppRoute({ path, component: Component }: { path: string; component: any }) {
+  return (
+    <Route path={path}>
+      <ProtectedRoute>
+        <AppLayout>
+          <Component />
+        </AppLayout>
+      </ProtectedRoute>
+    </Route>
+  );
+}
+
 function Router() {
   return (
     <Switch>
       <Route path="/login" component={Login} />
       <Route path="/onboarding" component={Onboarding} />
-      <ProtectedRoute>
-        <AppLayout>
-          <Route path="/" component={Dashboard} />
-          <Route path="/dashboard" component={Dashboard} />
-          <Route path="/materials" component={Materials} />
-          <Route path="/formulations" component={Formulations} />
-          <Route path="/vendors" component={Vendors} />
-          <Route path="/categories" component={Categories} />
-          <Route path="/import-export" component={ImportExport} />
-          <Route path="/profile" component={Profile} />
-          <Route path="/subscription" component={Subscription} />
-          <Route component={NotFound} />
-        </AppLayout>
-      </ProtectedRoute>
+      <ProtectedAppRoute path="/" component={Dashboard} />
+      <ProtectedAppRoute path="/dashboard" component={Dashboard} />
+      <ProtectedAppRoute path="/materials" component={Materials} />
+      <ProtectedAppRoute path="/formulations" component={Formulations} />
+      <ProtectedAppRoute path="/vendors" component={Vendors} />
+      <ProtectedAppRoute path="/categories" component={Categories} />
+      <ProtectedAppRoute path="/import-export" component={ImportExport} />
+      <ProtectedAppRoute path="/profile" component={Profile} />
+      <ProtectedAppRoute path="/subscription" component={Subscription} />
+      <Route component={NotFound} />
     </Switch>
   );
 }
