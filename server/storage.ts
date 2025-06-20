@@ -81,7 +81,7 @@ class MemoryStorage implements IStorage {
       id: 1,
       username: "Juliet",
       email: "jumelisa@yahoo.com",
-      password: "$2a$10$8vJ9FX8qLbVr8PfZYQY0D.HkN6sDGlrNLLGwGQ9dB5.6GQlOL1aKG",
+      password: "$2a$10$E8QmVZjH8QmVZjH8QmVZjO8QmVZjH8QmVZjH8QmVZjH8QmVZjH8Qm",
       company: "J.C Epiphany Limited",
       role: "admin",
       profileImage: null,
