@@ -39,15 +39,7 @@ export function TourProvider({ children }: { children: React.ReactNode }) {
   const [steps, setSteps] = useState<TourStep[]>([]);
   const { data: user } = useUser();
 
-  // Auto-start tour for first-time users
-  useEffect(() => {
-    if (user && !localStorage.getItem('tour-completed')) {
-      // Small delay to ensure DOM is ready
-      setTimeout(() => {
-        startDashboardTour();
-      }, 1000);
-    }
-  }, [user]);
+  // Auto-start tour disabled - only manual start through Help Tour button
 
   const startTour = (tourSteps: TourStep[]) => {
     setSteps(tourSteps);
