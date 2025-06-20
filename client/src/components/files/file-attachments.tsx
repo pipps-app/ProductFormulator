@@ -129,17 +129,35 @@ export default function FileAttachments({
 
   const getFileIcon = (file: File) => {
     if (file.fileType === 'image') {
-      return file.thumbnailUrl ? (
-        <img 
-          src={file.thumbnailUrl} 
-          alt={file.originalName}
-          className="w-8 h-8 object-cover rounded"
-        />
-      ) : (
-        <ImageIcon className="w-8 h-8 text-blue-500" />
+      return (
+        <div className="w-12 h-12 bg-slate-100 rounded-lg overflow-hidden flex-shrink-0 border">
+          {file.fileUrl ? (
+            <img 
+              src={file.fileUrl} 
+              alt={file.originalName}
+              className="w-full h-full object-cover"
+              onError={(e) => {
+                const target = e.currentTarget;
+                target.style.display = 'none';
+                const fallback = document.createElement('div');
+                fallback.className = 'w-full h-full flex items-center justify-center';
+                fallback.innerHTML = '<svg class="w-6 h-6 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>';
+                target.parentNode?.appendChild(fallback);
+              }}
+            />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center">
+              <ImageIcon className="w-6 h-6 text-blue-500" />
+            </div>
+          )}
+        </div>
       );
     }
-    return <FileIcon className="w-8 h-8 text-gray-500" />;
+    return (
+      <div className="w-12 h-12 bg-slate-100 rounded-lg flex items-center justify-center flex-shrink-0 border">
+        <FileIcon className="w-6 h-6 text-slate-500" />
+      </div>
+    );
   };
 
   const availableFiles = Array.isArray(allFiles) ? allFiles.filter((file: File) => 
@@ -271,7 +289,10 @@ export default function FileAttachments({
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => setSelectedFile(file)}
+                        onClick={() => {
+                          console.log('Preview file clicked:', file);
+                          setSelectedFile(file);
+                        }}
                         title="Preview file"
                       >
                         <Eye className="w-4 h-4" />
@@ -313,27 +334,65 @@ export default function FileAttachments({
 
       {/* File Preview Dialog */}
       <Dialog open={!!selectedFile} onOpenChange={() => setSelectedFile(null)}>
-        <DialogContent className="max-w-4xl">
+        <DialogContent className="max-w-4xl max-h-[80vh]">
           <DialogHeader>
-            <DialogTitle>{selectedFile?.originalName}</DialogTitle>
+            <DialogTitle className="flex items-center gap-2">
+              {selectedFile && getFileIcon(selectedFile)}
+              {selectedFile?.originalName}
+            </DialogTitle>
           </DialogHeader>
           {selectedFile && (
-            <div className="max-h-96 overflow-auto">
-              {selectedFile.fileType === 'image' ? (
-                <img 
-                  src={selectedFile.fileUrl} 
-                  alt={selectedFile.originalName}
-                  className="max-w-full h-auto"
-                />
-              ) : (
-                <div className="text-center py-8">
-                  <FileIcon className="w-16 h-16 mx-auto mb-4 text-muted-foreground" />
-                  <p className="text-lg font-medium">{selectedFile.originalName}</p>
-                  <p className="text-muted-foreground">
-                    {formatFileSize(selectedFile.fileSize)} • {selectedFile.mimeType}
-                  </p>
+            <div className="flex flex-col gap-4">
+              <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                <span>{formatFileSize(selectedFile.fileSize)}</span>
+                <span>•</span>
+                <span className="capitalize">{selectedFile.fileType}</span>
+                <span>•</span>
+                <span>{selectedFile.mimeType}</span>
+              </div>
+              
+              <div className="max-h-96 overflow-auto rounded-lg border">
+                {selectedFile.fileType === 'image' ? (
+                  <img 
+                    src={selectedFile.fileUrl} 
+                    alt={selectedFile.originalName}
+                    className="w-full h-auto"
+                  />
+                ) : (
+                  <div className="text-center py-12 px-8">
+                    <FileIcon className="w-16 h-16 mx-auto mb-4 text-muted-foreground" />
+                    <p className="text-lg font-medium mb-2">{selectedFile.originalName}</p>
+                    <p className="text-sm text-muted-foreground mb-4">
+                      This file type cannot be previewed in the browser
+                    </p>
+                    <Button 
+                      onClick={() => {
+                        if (selectedFile.fileUrl) {
+                          const link = document.createElement('a');
+                          link.href = selectedFile.fileUrl;
+                          link.download = selectedFile.originalName;
+                          link.click();
+                        }
+                      }}
+                    >
+                      <Download className="w-4 h-4 mr-2" />
+                      Download File
+                    </Button>
+                  </div>
+                )}
+              </div>
+              
+              {selectedFile.description && (
+                <div className="p-3 bg-muted rounded-lg">
+                  <p className="text-sm font-medium mb-1">Description</p>
+                  <p className="text-sm text-muted-foreground">{selectedFile.description}</p>
+                </div>
+              )}
+              
+              <div className="flex justify-end gap-2">
+                {selectedFile.fileUrl && (
                   <Button 
-                    className="mt-4"
+                    variant="outline"
                     onClick={() => {
                       const link = document.createElement('a');
                       link.href = selectedFile.fileUrl;
@@ -342,10 +401,13 @@ export default function FileAttachments({
                     }}
                   >
                     <Download className="w-4 h-4 mr-2" />
-                    Download File
+                    Download
                   </Button>
-                </div>
-              )}
+                )}
+                <Button onClick={() => setSelectedFile(null)}>
+                  Close
+                </Button>
+              </div>
             </div>
           )}
         </DialogContent>
