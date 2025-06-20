@@ -61,43 +61,38 @@ export default function Header() {
         
         <div className="flex items-center space-x-4">
           <HelpButton />
+          <Link href="/profile">
+            <Button variant="ghost" size="icon">
+              <Settings className="h-5 w-5" />
+            </Button>
+          </Link>
           
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="flex items-center space-x-3 h-auto p-2">
-                <div className="text-right">
-                  <p className="text-sm font-medium text-slate-900">
-                    {user?.username || 'User'}
-                  </p>
-                  <p className="text-xs text-slate-500">
-                    {user?.company || user?.email || ''}
-                  </p>
-                </div>
-                <Avatar>
-                  <AvatarFallback>
-                    <User className="h-4 w-4" />
-                  </AvatarFallback>
-                </Avatar>
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-56">
-              <DropdownMenuItem asChild>
-                <Link href="/profile" className="flex items-center cursor-pointer">
-                  <Settings className="mr-2 h-4 w-4" />
-                  <span>Profile & Settings</span>
-                </Link>
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem 
-                onClick={handleLogout}
-                disabled={logoutMutation.isPending}
-                className="cursor-pointer text-red-600 focus:text-red-600"
-              >
-                <LogOut className="mr-2 h-4 w-4" />
-                <span>{logoutMutation.isPending ? "Logging out..." : "Logout"}</span>
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <div className="flex items-center space-x-3">
+            <div className="text-right">
+              <p className="text-sm font-medium text-slate-900">
+                {user?.username || 'User'}
+              </p>
+              <p className="text-xs text-slate-500">
+                {user?.company || user?.email || ''}
+              </p>
+            </div>
+            <Avatar>
+              <AvatarFallback>
+                <User className="h-4 w-4" />
+              </AvatarFallback>
+            </Avatar>
+          </div>
+          
+          <Button 
+            variant="outline" 
+            size="sm"
+            onClick={handleLogout}
+            disabled={logoutMutation.isPending}
+            className="text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200"
+          >
+            <LogOut className="h-4 w-4 mr-2" />
+            {logoutMutation.isPending ? "Logging out..." : "Logout"}
+          </Button>
         </div>
       </div>
     </header>
