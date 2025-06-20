@@ -141,8 +141,13 @@ export default function Login() {
         title: "Account created!",
         description: "Your account has been created successfully. You can now log in.",
       });
+      registerForm.reset({
+        username: "",
+        email: "",
+        password: "",
+        company: "",
+      });
       setIsLogin(true);
-      registerForm.reset();
     },
     onError: (error: any) => {
       toast({
@@ -246,6 +251,17 @@ export default function Login() {
 
   const onRegisterSubmit = (data: RegisterFormData) => {
     registerMutation.mutate(data);
+  };
+
+  // Reset forms when switching between modes
+  const handleSwitchToLogin = () => {
+    setIsLogin(true);
+    registerForm.reset();
+  };
+
+  const handleSwitchToRegister = () => {
+    setIsLogin(false);
+    loginForm.reset();
   };
 
   const onPasswordResetRequestSubmit = (data: PasswordResetRequestFormData) => {
@@ -572,7 +588,7 @@ export default function Login() {
               ) : (
                 <button
                   type="button"
-                  onClick={() => setIsLogin(!isLogin)}
+                  onClick={() => isLogin ? handleSwitchToRegister() : handleSwitchToLogin()}
                   className="text-sm text-blue-600 hover:text-blue-800 underline focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded px-2 py-1"
                 >
                   {isLogin 
