@@ -18,11 +18,12 @@ export function FirstTimeGuide() {
   const { startTour } = useTour();
 
   useEffect(() => {
+    // Disable first-time guide for now
     const hasSeenGuide = localStorage.getItem('first-time-guide-seen');
     if (!hasSeenGuide) {
-      setIsVisible(true);
-      initializeSteps();
+      localStorage.setItem('first-time-guide-seen', 'true');
     }
+    setIsVisible(false);
   }, []);
 
   const initializeSteps = () => {
