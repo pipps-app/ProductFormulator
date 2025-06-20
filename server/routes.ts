@@ -5,7 +5,8 @@ import { createPaypalOrder, capturePaypalOrder, loadPaypalDefault } from "./payp
 import { checkMaterialsLimit, checkFormulationsLimit, checkVendorsLimit, getUserSubscriptionInfo } from "./subscription-middleware";
 import { 
   insertVendorSchema, insertMaterialCategorySchema, insertRawMaterialSchema,
-  insertFormulationSchema, insertFormulationIngredientSchema, insertUserSchema
+  insertFormulationSchema, insertFormulationIngredientSchema, insertUserSchema,
+  insertFileSchema, insertFileAttachmentSchema
 } from "@shared/schema";
 import passport from "./auth";
 import bcrypt from "bcryptjs";

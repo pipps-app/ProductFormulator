@@ -1,6 +1,6 @@
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
-import { eq, desc, sql } from "drizzle-orm";
+import { eq, desc, sql, and } from "drizzle-orm";
 import { 
   users, vendors, materialCategories, rawMaterials, formulations, 
   formulationIngredients, materialFiles, auditLog, files, fileAttachments,
@@ -489,8 +489,10 @@ export class DatabaseStorage implements IStorage {
   // File Attachments Methods
   async getFileAttachments(entityType: string, entityId: number): Promise<FileAttachment[]> {
     return await db.select().from(fileAttachments)
-      .where(eq(fileAttachments.entityType, entityType))
-      .where(eq(fileAttachments.entityId, entityId));
+      .where(and(
+        eq(fileAttachments.entityType, entityType),
+        eq(fileAttachments.entityId, entityId)
+      ));
   }
 
   async getAttachedFiles(entityType: string, entityId: number): Promise<File[]> {
