@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { useAttachedFiles, useAttachFile, useDetachFile, useFiles } from "@/hooks/use-files";
 import { useToast } from "@/hooks/use-toast";
@@ -289,7 +289,9 @@ export default function FileAttachments({
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => {
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          e.preventDefault();
                           console.log('Preview file clicked:', file);
                           setSelectedFile(file);
                         }}
@@ -303,7 +305,9 @@ export default function FileAttachments({
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => {
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          e.preventDefault();
                           const link = document.createElement('a');
                           link.href = file.fileUrl;
                           link.download = file.originalName;
@@ -318,7 +322,11 @@ export default function FileAttachments({
                     <Button
                       variant="ghost"
                       size="sm"
-                      onClick={() => handleDetachFile(file.id)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        handleDetachFile(file.id);
+                      }}
                       className="text-destructive hover:text-destructive"
                       title="Remove attachment"
                     >
@@ -340,6 +348,9 @@ export default function FileAttachments({
               {selectedFile && getFileIcon(selectedFile)}
               {selectedFile?.originalName}
             </DialogTitle>
+            <DialogDescription>
+              Preview and manage this attached file
+            </DialogDescription>
           </DialogHeader>
           {selectedFile && (
             <div className="flex flex-col gap-4">
