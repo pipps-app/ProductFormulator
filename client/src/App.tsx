@@ -18,6 +18,7 @@ import Subscription from "@/pages/subscription";
 import Onboarding from "@/pages/onboarding";
 import Login from "@/pages/login";
 import AppLayout from "@/components/layout/app-layout";
+import ProtectedRoute from "@/components/protected-route";
 
 function Router() {
   return (

@@ -10,6 +10,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
+import { useUser } from "@/hooks/use-user";
 import logoPath from "@assets/pipps-app-logo_1749571716445.jpg";
 
 const loginSchema = z.object({
@@ -32,6 +33,21 @@ export default function Login() {
   const [, setLocation] = useLocation();
   const [isLogin, setIsLogin] = useState(true);
   const { toast } = useToast();
+  const { data: user, isLoading } = useUser();
+
+  // If user is already authenticated, redirect to dashboard
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-lg">Loading...</div>
+      </div>
+    );
+  }
+
+  if (user) {
+    setLocation("/dashboard");
+    return null;
+  }
 
   const loginForm = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
