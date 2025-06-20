@@ -187,6 +187,10 @@ export default function Login() {
     registerMutation.mutate(data);
   };
 
+  const onPasswordResetSubmit = (data: PasswordResetFormData) => {
+    passwordResetMutation.mutate(data);
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
@@ -202,16 +206,69 @@ export default function Login() {
 
         <Card>
           <CardHeader>
-            <CardTitle>{isLogin ? "Sign In" : "Create Account"}</CardTitle>
+            <CardTitle>
+              {showPasswordReset ? "Reset Password" : (isLogin ? "Sign In" : "Create Account")}
+            </CardTitle>
             <CardDescription>
-              {isLogin 
-                ? "Enter your credentials to access your account" 
-                : "Create a new account to get started"
+              {showPasswordReset 
+                ? "Enter your email and new password" 
+                : (isLogin 
+                  ? "Enter your credentials to access your account" 
+                  : "Create a new account to get started"
+                )
               }
             </CardDescription>
           </CardHeader>
           <CardContent>
-            {isLogin ? (
+            {showPasswordReset ? (
+              <Form {...passwordResetForm}>
+                <form onSubmit={passwordResetForm.handleSubmit(onPasswordResetSubmit)} className="space-y-4">
+                  <FormField
+                    control={passwordResetForm.control}
+                    name="email"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Email</FormLabel>
+                        <FormControl>
+                          <Input 
+                            type="email" 
+                            placeholder="Enter your email" 
+                            {...field} 
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={passwordResetForm.control}
+                    name="newPassword"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>New Password</FormLabel>
+                        <FormControl>
+                          <Input 
+                            type="password" 
+                            placeholder="Enter your new password" 
+                            {...field} 
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <Button 
+                    type="submit" 
+                    className="w-full" 
+                    disabled={passwordResetMutation.isPending}
+                  >
+                    {passwordResetMutation.isPending ? "Resetting..." : "Reset Password"}
+                  </Button>
+                </form>
+              </Form>
+            ) : isLogin ? (
               <Form {...loginForm}>
                 <form onSubmit={loginForm.handleSubmit(onLoginSubmit)} className="space-y-4">
                   <FormField
@@ -257,6 +314,16 @@ export default function Login() {
                   >
                     {loginMutation.isPending ? "Signing in..." : "Sign In"}
                   </Button>
+                  
+                  <div className="text-center">
+                    <button
+                      type="button"
+                      onClick={() => setShowPasswordReset(true)}
+                      className="text-sm text-blue-600 hover:text-blue-800 underline"
+                    >
+                      Forgot your password?
+                    </button>
+                  </div>
                 </form>
               </Form>
             ) : (
@@ -344,16 +411,26 @@ export default function Login() {
             )}
 
             <div className="mt-4 text-center">
-              <button
-                type="button"
-                onClick={() => setIsLogin(!isLogin)}
-                className="text-sm text-blue-600 hover:text-blue-800 underline"
-              >
-                {isLogin 
-                  ? "Don't have an account? Sign up" 
-                  : "Already have an account? Sign in"
-                }
-              </button>
+              {showPasswordReset ? (
+                <button
+                  type="button"
+                  onClick={() => setShowPasswordReset(false)}
+                  className="text-sm text-blue-600 hover:text-blue-800 underline"
+                >
+                  Back to sign in
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => setIsLogin(!isLogin)}
+                  className="text-sm text-blue-600 hover:text-blue-800 underline"
+                >
+                  {isLogin 
+                    ? "Don't have an account? Sign up" 
+                    : "Already have an account? Sign in"
+                  }
+                </button>
+              )}
             </div>
           </CardContent>
         </Card>
