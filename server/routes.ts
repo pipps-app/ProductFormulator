@@ -10,6 +10,7 @@ import {
 } from "@shared/schema";
 import passport from "./auth";
 import bcrypt from "bcryptjs";
+import * as crypto from "crypto";
 import "./types";
 
 export async function registerRoutes(app: Express): Promise<Server> {
