@@ -84,6 +84,32 @@ export const formulationIngredients = pgTable("formulation_ingredients", {
   notes: text("notes"),
 });
 
+// Central file library for shared files
+export const files = pgTable("files", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id),
+  fileName: text("file_name").notNull(),
+  originalName: text("original_name").notNull(),
+  fileUrl: text("file_url").notNull(),
+  fileType: text("file_type").notNull(),
+  mimeType: text("mime_type").notNull(),
+  fileSize: integer("file_size").notNull(),
+  thumbnailUrl: text("thumbnail_url"),
+  description: text("description"),
+  tags: text("tags").array(),
+  uploadedAt: timestamp("uploaded_at").defaultNow(),
+});
+
+// File attachments linking files to entities
+export const fileAttachments = pgTable("file_attachments", {
+  id: serial("id").primaryKey(),
+  fileId: integer("file_id").notNull().references(() => files.id, { onDelete: "cascade" }),
+  entityType: text("entity_type").notNull(), // "material", "formulation"
+  entityId: integer("entity_id").notNull(),
+  attachedAt: timestamp("attached_at").defaultNow(),
+});
+
+// Keep legacy table for backward compatibility
 export const materialFiles = pgTable("material_files", {
   id: serial("id").primaryKey(),
   materialId: integer("material_id").notNull().references(() => rawMaterials.id),
@@ -141,6 +167,16 @@ export const insertFormulationIngredientSchema = createInsertSchema(formulationI
   id: true,
 });
 
+export const insertFileSchema = createInsertSchema(files).omit({
+  id: true,
+  uploadedAt: true,
+});
+
+export const insertFileAttachmentSchema = createInsertSchema(fileAttachments).omit({
+  id: true,
+  attachedAt: true,
+});
+
 export const insertMaterialFileSchema = createInsertSchema(materialFiles).omit({
   id: true,
   uploadedAt: true,
@@ -169,6 +205,12 @@ export type InsertFormulation = z.infer<typeof insertFormulationSchema>;
 
 export type FormulationIngredient = typeof formulationIngredients.$inferSelect;
 export type InsertFormulationIngredient = z.infer<typeof insertFormulationIngredientSchema>;
+
+export type File = typeof files.$inferSelect;
+export type InsertFile = z.infer<typeof insertFileSchema>;
+
+export type FileAttachment = typeof fileAttachments.$inferSelect;
+export type InsertFileAttachment = z.infer<typeof insertFileAttachmentSchema>;
 
 export type MaterialFile = typeof materialFiles.$inferSelect;
 export type InsertMaterialFile = z.infer<typeof insertMaterialFileSchema>;

@@ -3,13 +3,15 @@ import postgres from "postgres";
 import { eq, desc, sql } from "drizzle-orm";
 import { 
   users, vendors, materialCategories, rawMaterials, formulations, 
-  formulationIngredients, materialFiles, auditLog,
+  formulationIngredients, materialFiles, auditLog, files, fileAttachments,
   type User, type InsertUser, type Vendor, type InsertVendor,
   type MaterialCategory, type InsertMaterialCategory,
   type RawMaterial, type InsertRawMaterial,
   type Formulation, type InsertFormulation,
   type FormulationIngredient, type InsertFormulationIngredient,
   type MaterialFile, type InsertMaterialFile,
+  type File, type InsertFile,
+  type FileAttachment, type InsertFileAttachment,
   type AuditLog, type InsertAuditLog
 } from "@shared/schema";
 
@@ -69,7 +71,20 @@ export interface IStorage {
   updateFormulationIngredient(id: number, ingredient: Partial<InsertFormulationIngredient>): Promise<FormulationIngredient | undefined>;
   deleteFormulationIngredient(id: number): Promise<boolean>;
 
-  // Material Files
+  // Files (Shared File Library)
+  getFiles(userId: number): Promise<File[]>;
+  getFile(id: number): Promise<File | undefined>;
+  createFile(file: InsertFile): Promise<File>;
+  updateFile(id: number, file: Partial<InsertFile>): Promise<File | undefined>;
+  deleteFile(id: number): Promise<boolean>;
+  
+  // File Attachments
+  getFileAttachments(entityType: string, entityId: number): Promise<FileAttachment[]>;
+  getAttachedFiles(entityType: string, entityId: number): Promise<File[]>;
+  attachFile(attachment: InsertFileAttachment): Promise<FileAttachment>;
+  detachFile(fileId: number, entityType: string, entityId: number): Promise<boolean>;
+
+  // Material Files (Legacy)
   getMaterialFiles(materialId: number): Promise<MaterialFile[]>;
   createMaterialFile(file: InsertMaterialFile): Promise<MaterialFile>;
   deleteMaterialFile(id: number): Promise<boolean>;
@@ -431,6 +446,93 @@ export class DatabaseStorage implements IStorage {
   async createAuditLog(insertLog: InsertAuditLog): Promise<AuditLog> {
     const [log] = await db.insert(auditLog).values(insertLog).returning();
     return log;
+  }
+
+  // Shared File Library Methods
+  async getFiles(userId: number): Promise<File[]> {
+    return await db.select().from(files)
+      .where(eq(files.userId, userId))
+      .orderBy(desc(files.uploadedAt));
+  }
+
+  async getFile(id: number): Promise<File | undefined> {
+    const result = await db.select().from(files).where(eq(files.id, id));
+    return result[0];
+  }
+
+  async createFile(insertFile: InsertFile): Promise<File> {
+    const result = await db.insert(files).values(insertFile).returning();
+    return result[0];
+  }
+
+  async updateFile(id: number, updates: Partial<InsertFile>): Promise<File | undefined> {
+    const result = await db.update(files)
+      .set(updates)
+      .where(eq(files.id, id))
+      .returning();
+    return result[0];
+  }
+
+  async deleteFile(id: number): Promise<boolean> {
+    try {
+      // First delete all attachments
+      await db.delete(fileAttachments).where(eq(fileAttachments.fileId, id));
+      // Then delete the file
+      await db.delete(files).where(eq(files.id, id));
+      return true;
+    } catch (error) {
+      console.error("Error deleting file:", error);
+      return false;
+    }
+  }
+
+  // File Attachments Methods
+  async getFileAttachments(entityType: string, entityId: number): Promise<FileAttachment[]> {
+    return await db.select().from(fileAttachments)
+      .where(eq(fileAttachments.entityType, entityType))
+      .where(eq(fileAttachments.entityId, entityId));
+  }
+
+  async getAttachedFiles(entityType: string, entityId: number): Promise<File[]> {
+    const result = await db.select({
+      id: files.id,
+      userId: files.userId,
+      fileName: files.fileName,
+      originalName: files.originalName,
+      fileUrl: files.fileUrl,
+      fileType: files.fileType,
+      mimeType: files.mimeType,
+      fileSize: files.fileSize,
+      thumbnailUrl: files.thumbnailUrl,
+      description: files.description,
+      tags: files.tags,
+      uploadedAt: files.uploadedAt,
+    })
+    .from(files)
+    .innerJoin(fileAttachments, eq(files.id, fileAttachments.fileId))
+    .where(eq(fileAttachments.entityType, entityType))
+    .where(eq(fileAttachments.entityId, entityId))
+    .orderBy(desc(fileAttachments.attachedAt));
+    
+    return result;
+  }
+
+  async attachFile(attachment: InsertFileAttachment): Promise<FileAttachment> {
+    const result = await db.insert(fileAttachments).values(attachment).returning();
+    return result[0];
+  }
+
+  async detachFile(fileId: number, entityType: string, entityId: number): Promise<boolean> {
+    try {
+      await db.delete(fileAttachments)
+        .where(eq(fileAttachments.fileId, fileId))
+        .where(eq(fileAttachments.entityType, entityType))
+        .where(eq(fileAttachments.entityId, entityId));
+      return true;
+    } catch (error) {
+      console.error("Error detaching file:", error);
+      return false;
+    }
   }
 
   async getAuditLogs(userId: number, limit = 50): Promise<AuditLog[]> {
