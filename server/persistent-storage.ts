@@ -59,7 +59,10 @@ export class PersistentStorage implements IStorage {
       this.data.materialCategories.forEach(c => c.createdAt = new Date(c.createdAt));
       this.data.rawMaterials.forEach(m => m.createdAt = new Date(m.createdAt));
       this.data.formulations.forEach(f => f.createdAt = new Date(f.createdAt));
-      this.data.auditLogs.forEach(a => a.createdAt = new Date(a.createdAt));
+      this.data.auditLogs.forEach(a => {
+        a.createdAt = new Date(a.createdAt);
+        if (a.timestamp) a.timestamp = new Date(a.timestamp);
+      });
       if (this.data.files) {
         this.data.files.forEach(f => {
           if (f.uploadedAt) f.uploadedAt = new Date(f.uploadedAt);
@@ -457,7 +460,8 @@ export class PersistentStorage implements IStorage {
     const newLog: AuditLog = {
       id: this.data.nextId++,
       ...log,
-      createdAt: new Date()
+      createdAt: new Date(),
+      timestamp: new Date()
     } as AuditLog;
     this.data.auditLogs.push(newLog);
     await this.saveData();

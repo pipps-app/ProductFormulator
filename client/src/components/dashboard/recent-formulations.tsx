@@ -96,7 +96,7 @@ export default function RecentFormulations() {
                 <div className="flex-1 min-w-0">
                   <p className="text-sm text-slate-900 break-words">{description}</p>
                   <p className="text-xs text-slate-500 mt-1">
-                    {formatDistanceToNow(new Date(activity.timestamp), { addSuffix: true })}
+                    {activity.timestamp ? formatDistanceToNow(new Date(activity.timestamp), { addSuffix: true }) : 'Recently'}
                   </p>
                 </div>
               </div>
