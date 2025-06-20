@@ -6,7 +6,6 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { TourProvider } from "@/components/onboarding/tour-provider";
 import { TourTooltip } from "@/components/onboarding/tour-tooltip";
 import { FirstTimeGuide } from "@/components/onboarding/first-time-guide";
-import NotFound from "@/pages/not-found";
 import Dashboard from "@/pages/dashboard";
 import Materials from "@/pages/materials";
 import Formulations from "@/pages/formulations";
@@ -37,7 +36,6 @@ function Router() {
     <Switch>
       <Route path="/login" component={Login} />
       <Route path="/onboarding" component={Onboarding} />
-      <ProtectedAppRoute path="/" component={Dashboard} />
       <ProtectedAppRoute path="/dashboard" component={Dashboard} />
       <ProtectedAppRoute path="/materials" component={Materials} />
       <ProtectedAppRoute path="/formulations" component={Formulations} />
@@ -46,7 +44,7 @@ function Router() {
       <ProtectedAppRoute path="/import-export" component={ImportExport} />
       <ProtectedAppRoute path="/profile" component={Profile} />
       <ProtectedAppRoute path="/subscription" component={Subscription} />
-      <Route component={NotFound} />
+      <ProtectedAppRoute path="/" component={Dashboard} />
     </Switch>
   );
 }
