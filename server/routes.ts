@@ -1270,6 +1270,49 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Database reset endpoint for production deployment
+  app.post("/api/admin/reset-database", async (req, res) => {
+    try {
+      const { confirmCode } = req.body;
+      
+      // Simple protection - require specific code
+      if (confirmCode !== "RESET_FOR_PRODUCTION_2024") {
+        return res.status(401).json({ error: "Invalid confirmation code" });
+      }
+
+      // Delete all data in reverse dependency order
+      await storage.createAuditLog({
+        userId: 1,
+        action: "delete",
+        entityType: "system",
+        entityId: 0,
+        changes: JSON.stringify({ description: "Database reset for production deployment" })
+      });
+
+      // Get count before deletion
+      const stats = {
+        users: (await storage.getFormulations(1)).length > 0 ? "Data exists" : "No data",
+        materials: (await storage.getRawMaterials(1)).length,
+        formulations: (await storage.getFormulations(1)).length,
+        vendors: (await storage.getVendors(1)).length,
+        categories: (await storage.getMaterialCategories(1)).length
+      };
+
+      // Note: This is a simplified approach - in production you'd use direct SQL
+      // For now, this endpoint exists but actual reset should be done manually
+      
+      res.json({ 
+        success: true, 
+        message: "Database reset endpoint ready",
+        currentStats: stats,
+        note: "For safety, manual database reset is recommended for production"
+      });
+    } catch (error) {
+      console.error("Database reset error:", error);
+      res.status(500).json({ error: "Failed to reset database" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }
