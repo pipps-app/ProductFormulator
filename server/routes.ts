@@ -83,12 +83,30 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   app.post("/api/auth/logout", (req, res) => {
-    req.session.destroy((err) => {
-      if (err) {
-        return res.status(500).json({ error: "Logout failed" });
+    console.log("Logout endpoint hit - new version");
+    try {
+      // Clear session data
+      if (req.session) {
+        console.log("Session exists, clearing userId");
+        req.session.userId = undefined;
+        delete req.session.userId;
       }
+      
+      // Clear the session cookie
+      res.clearCookie('connect.sid', {
+        path: '/',
+        httpOnly: true,
+        secure: false
+      });
+      
+      console.log("Logout successful");
       res.json({ success: true });
-    });
+    } catch (error) {
+      console.error("Logout error:", error);
+      // Even if there's an error, clear the cookie and return success
+      res.clearCookie('connect.sid');
+      res.json({ success: true });
+    }
   });
 
   // Helper function to recalculate formulation costs when material prices change
