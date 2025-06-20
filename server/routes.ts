@@ -183,8 +183,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   }
 
   // Vendors
-  app.get("/api/vendors", async (req, res) => {
-    const userId = 1; // Mock user ID for now
+  app.get("/api/vendors", requireAuth, async (req: any, res) => {
+    const userId = req.userId; // Mock user ID for now
     const vendors = await storage.getVendors(userId);
     res.json(vendors);
   });
@@ -272,8 +272,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Material Categories
-  app.get("/api/material-categories", async (req, res) => {
-    const userId = 1;
+  app.get("/api/material-categories", requireAuth, async (req: any, res) => {
+    const userId = req.userId;
     const categories = await storage.getMaterialCategories(userId);
     res.json(categories);
   });
@@ -361,8 +361,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Raw Materials
-  app.get("/api/raw-materials", async (req, res) => {
-    const userId = 1;
+  app.get("/api/raw-materials", requireAuth, async (req: any, res) => {
+    const userId = req.userId;
     const materials = await storage.getRawMaterials(userId);
     res.json(materials);
   });
@@ -479,8 +479,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Formulations
-  app.get("/api/formulations", async (req, res) => {
-    const userId = 1;
+  app.get("/api/formulations", requireAuth, async (req: any, res) => {
+    const userId = req.userId;
     const formulations = await storage.getFormulations(userId);
     res.json(formulations);
   });
@@ -711,8 +711,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Dashboard stats
-  app.get("/api/dashboard/stats", async (req, res) => {
-    const userId = 1;
+  app.get("/api/dashboard/stats", requireAuth, async (req: any, res) => {
+    const userId = req.userId;
     const materials = await storage.getRawMaterials(userId);
     const formulations = await storage.getFormulations(userId);
     const vendors = await storage.getVendors(userId);
@@ -746,8 +746,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Recent activity
-  app.get("/api/dashboard/recent-activity", async (req, res) => {
-    const userId = 1;
+  app.get("/api/dashboard/recent-activity", requireAuth, async (req: any, res) => {
+    const userId = req.userId;
     const auditLogs = await storage.getAuditLogs(userId, 10);
     res.json(auditLogs);
   });
