@@ -362,13 +362,15 @@ export default function HelpDocs() {
           <h3 className="text-lg font-semibold text-blue-900 mb-2">Can't find what you're looking for?</h3>
           <p className="text-blue-700 mb-4">Our support team is here to help with personalized assistance</p>
           <div className="flex justify-center space-x-4">
-            <a href="mailto:support@pippsmaker.com" className="text-blue-600 hover:text-blue-700 font-medium">
+            <a href="mailto:maker-calc@pipps.app" className="text-blue-600 hover:text-blue-700 font-medium">
               Email Support
             </a>
             <span className="text-blue-300">•</span>
             <span className="text-blue-600 font-medium">Live Chat</span>
             <span className="text-blue-300">•</span>
-            <span className="text-blue-600 font-medium">+1 (555) 123-PIPPS</span>
+            <a href="https://wa.me/18767747372" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-700 font-medium">
+              WhatsApp: 876 774 7372
+            </a>
           </div>
         </CardContent>
       </Card>

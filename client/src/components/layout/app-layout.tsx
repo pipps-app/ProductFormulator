@@ -3,6 +3,7 @@ import Header from "./header";
 import Sidebar from "./sidebar";
 import Footer from "./footer";
 import MobileNotice from "../common/mobile-notice";
+import ChatWidget from "../chat-widget";
 
 interface AppLayoutProps {
   children: ReactNode;
@@ -24,6 +25,7 @@ export default function AppLayout({ children }: AppLayoutProps) {
         </main>
       </div>
       <Footer />
+      <ChatWidget />
     </div>
   );
 }

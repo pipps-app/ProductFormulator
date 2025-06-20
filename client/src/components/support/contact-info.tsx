@@ -20,10 +20,10 @@ export default function ContactInfo() {
             <h4 className="font-medium text-slate-900 mb-1">Email Support</h4>
             <p className="text-sm text-slate-600 mb-2">Professional assistance via email</p>
             <a 
-              href="mailto:support@pippsmaker.com" 
+              href="mailto:maker-calc@pipps.app" 
               className="text-sm font-medium text-blue-600 hover:text-blue-700"
             >
-              support@pippsmaker.com
+              maker-calc@pipps.app
             </a>
             <div className="mt-2">
               <Badge variant="outline" className="text-xs">24/7 Response</Badge>
@@ -43,14 +43,21 @@ export default function ContactInfo() {
             </div>
           </div>
 
-          {/* Phone Support */}
+          {/* WhatsApp Support */}
           <div className="text-center p-4 bg-white rounded-lg border border-blue-200">
-            <div className="inline-flex items-center justify-center w-10 h-10 bg-purple-100 rounded-full mb-3">
-              <Phone className="h-5 w-5 text-purple-600" />
+            <div className="inline-flex items-center justify-center w-10 h-10 bg-green-100 rounded-full mb-3">
+              <Phone className="h-5 w-5 text-green-600" />
             </div>
-            <h4 className="font-medium text-slate-900 mb-1">Phone Support</h4>
-            <p className="text-sm text-slate-600 mb-2">Direct voice assistance</p>
-            <span className="text-sm font-medium text-purple-600">+1 (555) 123-PIPPS</span>
+            <h4 className="font-medium text-slate-900 mb-1">WhatsApp Support</h4>
+            <p className="text-sm text-slate-600 mb-2">Message us on WhatsApp</p>
+            <a 
+              href="https://wa.me/18767747372" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="text-sm font-medium text-green-600 hover:text-green-700"
+            >
+              876 774 7372
+            </a>
             <div className="mt-2">
               <Badge variant="outline" className="text-xs">Business Hours</Badge>
             </div>

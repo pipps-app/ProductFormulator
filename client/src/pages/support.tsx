@@ -60,7 +60,7 @@ export default function Support() {
       icon: Mail,
       title: "Email Support",
       description: "Get help via email",
-      contact: "support@pippsmaker.com",
+      contact: "maker-calc@pipps.app",
       responseTime: "Within 24 hours",
       availability: "24/7"
     },
@@ -74,9 +74,9 @@ export default function Support() {
     },
     {
       icon: Phone,
-      title: "Phone Support",
-      description: "Speak directly with support",
-      contact: "+1 (555) 123-PIPPS",
+      title: "WhatsApp Support",
+      description: "Message us on WhatsApp",
+      contact: "876 774 7372",
       responseTime: "Immediate",
       availability: "Business hours only"
     }
