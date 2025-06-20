@@ -10,7 +10,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useMaterialCategories, useVendors } from "@/hooks/use-materials";
 import ConfirmationModal from "@/components/common/confirmation-modal";
 
-type SortField = 'name' | 'unitCost' | 'totalValue';
+type SortField = 'name' | 'unitCost' | 'totalValue' | 'category' | 'vendor';
 type SortDirection = 'asc' | 'desc';
 
 interface MaterialListProps {
@@ -163,8 +163,8 @@ export default function MaterialList({ materials, isLoading, onEdit, sortField, 
           <thead className="bg-slate-50 border-b border-slate-200">
             <tr>
               <SortableHeader field="name" className="text-left">Material</SortableHeader>
-              <th className="text-left p-4 text-sm font-medium text-slate-600">Category</th>
-              <th className="text-left p-4 text-sm font-medium text-slate-600">Vendor</th>
+              <SortableHeader field="category" className="text-left">Category</SortableHeader>
+              <SortableHeader field="vendor" className="text-left">Vendor</SortableHeader>
               <SortableHeader field="unitCost" className="text-right">Unit Cost</SortableHeader>
               <th className="text-right p-4 text-sm font-medium text-slate-600">Total Quantity</th>
               <SortableHeader field="totalValue" className="text-right">Total Value</SortableHeader>

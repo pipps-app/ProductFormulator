@@ -10,7 +10,7 @@ import { useMaterials } from "@/hooks/use-materials";
 import { useQueryClient } from "@tanstack/react-query";
 import { LandscapeNotice } from "@/components/common/mobile-notice";
 
-type SortField = 'name' | 'unitCost' | 'totalValue';
+type SortField = 'name' | 'unitCost' | 'totalValue' | 'category' | 'vendor';
 type SortDirection = 'asc' | 'desc';
 
 export default function Materials() {
@@ -46,6 +46,14 @@ export default function Materials() {
         case 'totalValue':
           aValue = Number(a.totalCost);
           bValue = Number(b.totalCost);
+          break;
+        case 'category':
+          aValue = a.category?.name?.toLowerCase() || '';
+          bValue = b.category?.name?.toLowerCase() || '';
+          break;
+        case 'vendor':
+          aValue = a.vendor?.name?.toLowerCase() || '';
+          bValue = b.vendor?.name?.toLowerCase() || '';
           break;
         default:
           aValue = a.name.toLowerCase();
