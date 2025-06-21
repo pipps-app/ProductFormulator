@@ -10,7 +10,7 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Company Info */}
           <div>
-            <h3 className="text-white font-semibold text-lg mb-4">PIPPS Maker</h3>
+            <h3 className="text-white font-semibold text-lg mb-4">PIPPS Maker Calc</h3>
             <p className="text-slate-400 mb-4">
               Professional formulation and cost management platform for product development teams.
             </p>
