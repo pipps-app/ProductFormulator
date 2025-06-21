@@ -102,7 +102,9 @@ export default function Dashboard() {
                           {activity.action} {activity.entityType}
                         </p>
                         <p className="text-xs text-slate-500">
-                          {new Date(activity.timestamp).toLocaleDateString()}
+                          {activity.timestamp && !isNaN(new Date(activity.timestamp).getTime()) 
+                            ? new Date(activity.timestamp).toLocaleDateString() 
+                            : 'Recently'}
                         </p>
                       </div>
                     </div>

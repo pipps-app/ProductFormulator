@@ -457,11 +457,12 @@ export class PersistentStorage implements IStorage {
   }
 
   async createAuditLog(log: InsertAuditLog): Promise<AuditLog> {
+    const now = new Date();
     const newLog: AuditLog = {
       id: this.data.nextId++,
       ...log,
-      createdAt: new Date(),
-      timestamp: new Date()
+      createdAt: now,
+      timestamp: now
     } as AuditLog;
     this.data.auditLogs.push(newLog);
     await this.saveData();
@@ -471,6 +472,11 @@ export class PersistentStorage implements IStorage {
   async getAuditLogs(userId: number, limit = 50): Promise<AuditLog[]> {
     return this.data.auditLogs
       .filter(l => l.userId === userId)
+      .map(log => ({
+        ...log,
+        createdAt: new Date(log.createdAt),
+        timestamp: new Date(log.timestamp || log.createdAt)
+      }))
       .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
       .slice(0, limit);
   }
