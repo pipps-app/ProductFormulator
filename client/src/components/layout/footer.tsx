@@ -12,7 +12,7 @@ export default function Footer() {
           <div>
             <h3 className="text-white font-semibold text-lg mb-4">PIPPS Maker Calc</h3>
             <p className="text-slate-400 mb-4">
-              Professional formulation and cost management platform for product development teams.
+              Smart product costing and pricing platform that helps makers, manufacturers, and entrepreneurs calculate accurate costs, optimize pricing strategies, and maximize profit margins for any product-based business.
             </p>
             <div className="space-y-2">
               <div className="flex items-center space-x-2">
