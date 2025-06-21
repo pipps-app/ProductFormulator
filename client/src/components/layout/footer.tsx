@@ -43,9 +43,9 @@ export default function Footer() {
             <h4 className="text-white font-medium mb-4">Support</h4>
             <ul className="space-y-2">
               <li><Link href="/support" className="hover:text-white transition-colors">Help Center</Link></li>
-              <li><a href="mailto:support@pippsmaker.com" className="hover:text-white transition-colors">Contact Support</a></li>
+              <li><a href="mailto:maker-calc@pipps.app" className="hover:text-white transition-colors">Contact Support</a></li>
               <li><span className="text-slate-400">Live Chat (Mon-Fri)</span></li>
-              <li><span className="text-slate-400">Phone: +1 (555) 123-PIPPS</span></li>
+              <li><a href="https://wa.me/18767747372" className="hover:text-white transition-colors">WhatsApp: 876 774 7372</a></li>
             </ul>
           </div>
 
@@ -57,8 +57,8 @@ export default function Footer() {
                 <Mail className="h-4 w-4 mt-0.5" />
                 <div>
                   <div className="text-sm font-medium">Email Support</div>
-                  <a href="mailto:support@pippsmaker.com" className="text-sm text-blue-400 hover:text-blue-300">
-                    support@pippsmaker.com
+                  <a href="mailto:maker-calc@pipps.app" className="text-sm text-blue-400 hover:text-blue-300">
+                    maker-calc@pipps.app
                   </a>
                 </div>
               </div>
@@ -66,8 +66,8 @@ export default function Footer() {
               <div className="flex items-start space-x-2">
                 <Phone className="h-4 w-4 mt-0.5" />
                 <div>
-                  <div className="text-sm font-medium">Phone Support</div>
-                  <span className="text-sm">+1 (555) 123-PIPPS</span>
+                  <div className="text-sm font-medium">WhatsApp Support</div>
+                  <a href="https://wa.me/18767747372" className="text-sm text-blue-400 hover:text-blue-300">876 774 7372</a>
                 </div>
               </div>
 
