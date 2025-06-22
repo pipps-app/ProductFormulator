@@ -17,7 +17,8 @@ import {
   Shield,
   AlertCircle,
   CheckCircle,
-  Info
+  Info,
+  FolderOpen
 } from "lucide-react";
 
 interface HelpTopic {
@@ -55,72 +56,75 @@ const helpTopics: HelpTopic[] = [
   },
   {
     id: "csv-import-setup",
-    title: "CSV Import - Essential Setup Steps",
+    title: "CSV Import - Complete Guide",
     category: "Data Import",
     icon: Upload,
     priority: "high",
-    content: "Before importing materials via CSV, you MUST create your vendors and categories first. This prevents errors and ensures data consistency.",
+    content: "Import your materials from CSV files quickly and easily with automated setup features.",
     steps: [
-      "Go to Vendors and create all vendors that appear in your CSV file",
-      "Go to Categories and create all categories referenced in your CSV",
+      "Go to Import/Export in the sidebar menu",
+      "Click 'Setup Vendors & Categories' to automatically create all required vendors and categories",
       "Prepare your CSV file with columns: name, sku, categoryName, vendorName, totalCost, quantity, unit, notes",
-      "Go to Raw Materials → Import CSV",
-      "Select your prepared CSV file and review the preview",
-      "Click Import to add all materials at once"
+      "Drag and drop your CSV file into the upload area or click to browse",
+      "Wait for import completion - you'll see a success message with material count",
+      "If you accidentally import duplicates, click 'Remove Duplicates' to clean up"
     ],
     warnings: [
-      "CSV import will fail if vendor names or category names don't exist in the system",
-      "Category names and vendor names must match exactly (case-sensitive)",
-      "Always backup your data before large imports"
+      "Always use Setup feature first to avoid vendor/category errors",
+      "CSV import creates duplicate materials if run multiple times on same file",
+      "Remove Duplicates feature permanently deletes extra materials"
     ],
     tips: [
-      "Use consistent naming in your CSV (e.g., 'Base Oils' not 'base oils')",
-      "Test with a small CSV file (5-10 items) first",
-      "Keep vendor and category names simple and consistent"
+      "The Setup feature works best with soap making and cosmetic supply data",
+      "Download the template file to see correct CSV format",
+      "Unit costs are automatically calculated from total cost and quantity",
+      "Both CSV and JSON file formats are supported"
     ]
   },
   {
-    id: "creating-vendors",
-    title: "Creating Vendors Before Import",
-    category: "Vendors",
-    icon: Users,
-    priority: "high",
-    content: "Vendors must be created before CSV import. Here's how to add them efficiently.",
+    id: "managing-duplicates",
+    title: "Managing Duplicate Materials",
+    category: "Data Management", 
+    icon: AlertCircle,
+    priority: "medium",
+    content: "Learn how to identify and remove duplicate materials from your inventory system.",
     steps: [
-      "Go to Vendors in the sidebar",
-      "Click 'Add Vendor' button",
-      "Enter vendor name exactly as it appears in your CSV",
-      "Add contact email and phone (optional but recommended)",
-      "Add address for shipping and communication",
-      "Click 'Save Vendor'",
-      "Repeat for all vendors in your import file"
+      "Go to Import/Export in the sidebar",
+      "Click 'Remove Duplicates' button to automatically find and remove duplicate materials",
+      "The system will keep the first instance of each material name and delete the rest",
+      "You'll see a confirmation message showing how many duplicates were removed",
+      "Go to Raw Materials to verify the cleanup was successful"
+    ],
+    warnings: [
+      "Duplicate removal is permanent - materials are deleted from the system",
+      "The system matches materials by name (case-insensitive)",
+      "Always review your materials before running duplicate removal"
     ],
     tips: [
-      "Use the exact same name that appears in your CSV file",
-      "Add complete contact information for better vendor management",
-      "Consider creating a master list of vendors before starting"
+      "Run duplicate removal after importing the same CSV file multiple times",
+      "Use the refresh button in Raw Materials to see updated counts",
+      "Consider exporting your data before major cleanup operations"
     ]
   },
   {
-    id: "creating-categories",
-    title: "Setting Up Material Categories",
-    category: "Categories",
-    icon: Package,
+    id: "automated-setup",
+    title: "Automated Setup for CSV Import",
+    category: "Data Import",
+    icon: Settings,
     priority: "high",
-    content: "Categories help organize your materials and must be created before CSV import.",
+    content: "Use the automated setup feature to create all vendors and categories needed for CSV import in one click.",
     steps: [
-      "Go to Categories in the sidebar",
-      "Click 'Add Category' button", 
-      "Enter category name exactly as it appears in your CSV",
-      "Add a description (e.g., 'Essential oils for fragrance')",
-      "Choose a color for visual organization",
-      "Click 'Save Category'",
-      "Repeat for all categories in your import file"
+      "Go to Import/Export in the sidebar menu",
+      "Click 'Setup Vendors & Categories' button",
+      "The system automatically creates common soap making vendors and categories",
+      "Wait for confirmation message showing how many vendors and categories were created",
+      "Your system is now ready for CSV import without errors"
     ],
     tips: [
-      "Use logical groupings like 'Base Oils', 'Essential Oils', 'Packaging'",
-      "Choose distinct colors for easy visual identification",
-      "Keep category names short and descriptive"
+      "This feature creates vendors like 'Paramount Trading', 'Online purchase', 'Supermarket'",
+      "Categories include 'Soap Oils', 'Essential Oils', 'Packaging', 'Additives'",
+      "Setup only creates missing items - existing vendors/categories are not duplicated",
+      "You can still manually add additional vendors and categories as needed"
     ]
   },
   {
