@@ -52,52 +52,39 @@ export default function Login() {
 
   // Check for magic link token in URL 
   useEffect(() => {
-    console.log('Effect running - checking for reset token');
-    console.log('Current URL:', window.location.href);
-    console.log('Search params:', window.location.search);
-    
     const urlParams = new URLSearchParams(window.location.search);
     const token = urlParams.get('reset');
     
-    console.log('Token from URL:', token);
-    console.log('showPasswordResetForm:', showPasswordResetForm);
-    
     if (token) {
-      console.log('Token found, setting up password reset form');
-      
-      // Set reset form state immediately - don't wait for logout
+      // Set reset form state immediately
       setShowPasswordReset(true);
       setShowPasswordResetForm(true);
       setResetToken(token);
       setIsLogin(false);
       
-      // Force logout if user is logged in (but don't block the form)
+      // Force logout if user is logged in
       if (user) {
-        console.log('User logged in, logging out...');
         fetch("/api/auth/logout", {
           method: "POST",
           credentials: "include",
         }).then(() => {
           queryClient.clear();
           queryClient.invalidateQueries({ queryKey: ["/api/user"] });
-          console.log('Logout complete');
         });
       }
       
-      // Don't clean up URL immediately - let user see it worked
+      // Clean up URL after a delay
       setTimeout(() => {
         window.history.replaceState({}, document.title, window.location.pathname);
       }, 2000);
       
       toast({
         title: "Magic link worked!",
-        description: "Password reset form loaded. Token: " + token.substring(0, 8) + "...",
+        description: "Password reset form loaded.",
         duration: 5000,
       });
-    } else {
-      console.log('No token found in URL');
     }
-  }, []); // Only run on mount
+  }, []);
 
   // Always initialize forms at the top level
   const loginForm = useForm<LoginFormData>({
