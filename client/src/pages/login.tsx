@@ -184,11 +184,12 @@ export default function Login() {
         passwordResetForm.setValue("token", data.resetToken);
         setShowPasswordResetForm(true);
       } else {
-        // Production mode - email was sent, show instructions
+        // Production mode - email was sent, automatically show token entry form
+        setShowPasswordResetForm(true);
         toast({
           title: "Check your email",
-          description: "We've sent a password reset token to your email address. Copy the token from the email and return here to reset your password.",
-          duration: 10000, // Show for 10 seconds
+          description: "We've sent a password reset token to your email address. Copy the token from the email and paste it below.",
+          duration: 10000,
         });
       }
       passwordResetRequestForm.reset({ email: "" });
@@ -305,7 +306,7 @@ export default function Login() {
             <CardDescription className="text-sm sm:text-base">
               {showPasswordReset 
                 ? (showPasswordResetForm 
-                  ? "Enter the token and your new password" 
+                  ? "Check your email for the reset token, then enter it below with your new password" 
                   : "Enter your email to receive a reset token"
                 )
                 : (isLogin 
@@ -328,12 +329,48 @@ export default function Login() {
                           <FormItem>
                             <FormLabel>Reset Token</FormLabel>
                             <FormControl>
-                              <Input 
-                                type="text" 
-                                placeholder="Enter the reset token" 
-                                className="w-full"
-                                {...field} 
-                              />
+                              <div className="space-y-2">
+                                <Input 
+                                  type="text" 
+                                  placeholder="Paste the token from your email" 
+                                  className="w-full"
+                                  {...field} 
+                                />
+                                <Button
+                                  type="button"
+                                  variant="outline"
+                                  size="sm"
+                                  className="w-full"
+                                  onClick={async () => {
+                                    try {
+                                      const text = await navigator.clipboard.readText();
+                                      // Look for a token-like string (32+ hex characters)
+                                      const tokenMatch = text.match(/[a-f0-9]{32,}/i);
+                                      if (tokenMatch) {
+                                        passwordResetForm.setValue("token", tokenMatch[0]);
+                                        toast({
+                                          title: "Token pasted",
+                                          description: "Reset token has been automatically filled in.",
+                                        });
+                                      } else {
+                                        passwordResetForm.setValue("token", text.trim());
+                                        toast({
+                                          title: "Text pasted",
+                                          description: "Please verify the token is correct.",
+                                        });
+                                      }
+                                    } catch (error) {
+                                      toast({
+                                        title: "Paste failed",
+                                        description: "Please manually copy and paste the token.",
+                                        variant: "destructive",
+                                      });
+                                    }
+                                  }}
+                                >
+                                  Paste Token from Clipboard
+                                </Button>
+                              </div>
                             </FormControl>
                             <FormMessage />
                           </FormItem>
