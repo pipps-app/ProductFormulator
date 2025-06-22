@@ -877,6 +877,97 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json(auditLogs);
   });
 
+  // Import materials
+  app.post("/api/import/materials", requireAuth, async (req: any, res) => {
+    const userId = req.userId;
+    const { materials } = req.body;
+    
+    if (!Array.isArray(materials)) {
+      return res.status(400).json({ error: "Materials must be an array" });
+    }
+
+    let successful = 0;
+    let failed = 0;
+    const errors: string[] = [];
+
+    // Get all categories and vendors for validation
+    const categories = await storage.getMaterialCategories(userId);
+    const vendors = await storage.getVendors(userId);
+    
+    const categoryMap = new Map(categories.map(c => [c.name.toLowerCase(), c.id]));
+    const vendorMap = new Map(vendors.map(v => [v.name.toLowerCase(), v.id]));
+
+    for (const materialData of materials) {
+      try {
+        // Find category ID
+        const categoryId = categoryMap.get(materialData.categoryName?.toLowerCase());
+        if (!categoryId) {
+          failed++;
+          errors.push(`Category "${materialData.categoryName}" not found for material "${materialData.name}"`);
+          continue;
+        }
+
+        // Find vendor ID
+        const vendorId = vendorMap.get(materialData.vendorName?.toLowerCase());
+        if (!vendorId) {
+          failed++;
+          errors.push(`Vendor "${materialData.vendorName}" not found for material "${materialData.name}"`);
+          continue;
+        }
+
+        // Calculate unit cost
+        const totalCost = parseFloat(materialData.totalCost || '0');
+        const quantity = parseFloat(materialData.quantity || '1');
+        const unitCost = quantity > 0 ? (totalCost / quantity).toFixed(4) : "0.0000";
+
+        // Prepare material data
+        const newMaterial = {
+          name: materialData.name,
+          sku: materialData.sku || null,
+          categoryId,
+          vendorId,
+          totalCost: totalCost.toString(),
+          quantity: quantity.toString(),
+          unit: materialData.unit || 'pc',
+          unitCost,
+          notes: materialData.notes || null,
+          isActive: true,
+          userId
+        };
+
+        // Validate with schema
+        const validatedData = insertRawMaterialSchema.parse(newMaterial);
+        await storage.createRawMaterial(validatedData);
+        
+        successful++;
+        
+        // Create audit log
+        await storage.createAuditLog({
+          userId,
+          action: "create",
+          entityType: "material",
+          entityId: 0, // Will be updated after creation
+          changes: JSON.stringify({
+            description: `Imported raw material "${materialData.name}" via CSV import`,
+            data: validatedData
+          }),
+        });
+        
+      } catch (error) {
+        failed++;
+        const errorMsg = error instanceof Error ? error.message : 'Unknown error';
+        errors.push(`Failed to import "${materialData.name}": ${errorMsg}`);
+      }
+    }
+
+    res.json({
+      message: `Import completed: ${successful} successful, ${failed} failed`,
+      successful,
+      failed,
+      errors: errors.slice(0, 10) // Limit error messages
+    });
+  });
+
   // User endpoints
   app.get("/api/user", async (req, res) => {
     const userId = req.session?.userId;

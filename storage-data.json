@@ -29,7 +29,7 @@
       "id": 36,
       "username": "jc epiphany",
       "email": "jumelisa0204@gmail.com",
-      "password": "$2b$10$BlfbwlyOzwZtG5JaDu3Osu4U8rX.DyqTslGv7PgMRwSKT3w/JwZfK",
+      "password": "$2b$10$jVmsuubCMzvcpsf7B0iKN.qcWns7gRzJIs.tgEFLfI4N1QdFEs442",
       "company": "",
       "createdAt": "2025-06-22T17:32:19.517Z"
     }
@@ -285,14 +285,6 @@
   ],
   "passwordResetTokens": [
     {
-      "id": 41,
-      "userId": 36,
-      "token": "5754bcac8916193525a7671f7352a1b4d9c69d3144be7da7a6b45f93da3f5fce",
-      "expiresAt": "2025-06-22T17:55:39.964Z",
-      "used": false,
-      "createdAt": "2025-06-22T17:40:39.965Z"
-    },
-    {
       "id": 43,
       "userId": 1,
       "token": "a962b50277e4f2b40e772d7f4b21518d30c329dd9f37e55e93ab9098423c8a84",
@@ -331,7 +323,15 @@
       "expiresAt": "2025-06-22T18:09:42.375Z",
       "used": false,
       "createdAt": "2025-06-22T17:54:42.376Z"
+    },
+    {
+      "id": 50,
+      "userId": 36,
+      "token": "ab3e3eb11988663c30d4f9051d90634156d94543159af6d829ed7e3e664bf63f",
+      "expiresAt": "2025-06-22T18:11:36.953Z",
+      "used": true,
+      "createdAt": "2025-06-22T17:56:36.958Z"
     }
   ],
-  "nextId": 50
+  "nextId": 51
 }

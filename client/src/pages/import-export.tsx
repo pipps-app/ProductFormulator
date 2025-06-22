@@ -20,26 +20,99 @@ export default function ImportExport() {
     try {
       const file = files[0];
       const text = await file.text();
-      const data = JSON.parse(text);
+      
+      let materials = [];
+      
+      if (file.name.toLowerCase().endsWith('.csv')) {
+        // Parse CSV
+        const lines = text.split('\n').filter(line => line.trim());
+        if (lines.length < 2) {
+          throw new Error('CSV must have at least a header row and one data row');
+        }
+        
+        const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, ''));
+        console.log('CSV Headers:', headers);
+        
+        for (let i = 1; i < lines.length; i++) {
+          const values = [];
+          let currentValue = '';
+          let inQuotes = false;
+          
+          for (let char of lines[i]) {
+            if (char === '"') {
+              inQuotes = !inQuotes;
+            } else if (char === ',' && !inQuotes) {
+              values.push(currentValue.trim());
+              currentValue = '';
+            } else {
+              currentValue += char;
+            }
+          }
+          values.push(currentValue.trim());
+          
+          if (values.length >= headers.length) {
+            const material: any = {};
+            headers.forEach((header, index) => {
+              const value = values[index]?.replace(/"/g, '') || '';
+              switch (header.toLowerCase()) {
+                case 'name':
+                  material.name = value;
+                  break;
+                case 'sku':
+                  material.sku = value || null;
+                  break;
+                case 'categoryname':
+                  material.categoryName = value;
+                  break;
+                case 'vendorname':
+                  material.vendorName = value;
+                  break;
+                case 'totalcost':
+                  material.totalCost = value || '0';
+                  break;
+                case 'quantity':
+                  material.quantity = value || '1';
+                  break;
+                case 'unit':
+                  material.unit = value || 'pc';
+                  break;
+                case 'notes':
+                  material.notes = value || null;
+                  break;
+              }
+            });
+            
+            if (material.name && material.categoryName && material.vendorName) {
+              materials.push(material);
+            }
+          }
+        }
+      } else {
+        // Parse JSON
+        const data = JSON.parse(text);
+        materials = data.materials || [];
+      }
 
-      if (data.materials) {
-        const response = await apiRequest("POST", "/api/import/materials", { materials: data.materials });
+      if (materials.length > 0) {
+        console.log('Importing materials:', materials.slice(0, 3));
+        const response = await apiRequest("POST", "/api/import/materials", { materials });
         const result = await response.json();
         toast({ 
           title: "Import completed", 
-          description: result.message 
+          description: `${result.successful || 0} materials imported successfully. ${result.failed || 0} failed.`
         });
       } else {
         toast({ 
-          title: "Invalid file format", 
-          description: "Please upload a valid JSON file with materials data",
+          title: "No valid materials found", 
+          description: "Please check your file format and ensure it contains valid material data",
           variant: "destructive"
         });
       }
     } catch (error) {
+      console.error('Import error:', error);
       toast({ 
         title: "Import failed", 
-        description: "Please check your file format and try again",
+        description: error instanceof Error ? error.message : "Please check your file format and try again",
         variant: "destructive"
       });
     } finally {
@@ -192,7 +265,7 @@ export default function ImportExport() {
                     <div className="mt-2">
                       <p className="font-semibold text-amber-800">CSV Format Required:</p>
                       <p className="text-amber-700 font-mono text-xs bg-amber-100 p-2 rounded mt-1">
-                        name, sku, categoryName, vendorName, totalCost, quantity, unit, notes
+                        name,sku,categoryName,vendorName,totalCost,quantity,unit,notes
                       </p>
                     </div>
                     <p className="text-red-600 text-xs font-medium">
