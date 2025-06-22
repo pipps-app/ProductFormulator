@@ -33,10 +33,10 @@ class EmailService {
     this.config = {
       from: `PIPPS Maker Calc <${user}>`,
       user,
-      pass
+      pass: pass.replace(/\s+/g, '') // Remove all spaces from app password
     };
 
-    this.transporter = nodemailer.createTransporter({
+    this.transporter = nodemailer.createTransport({
       service: 'gmail',
       auth: {
         user: this.config.user,

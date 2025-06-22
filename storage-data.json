@@ -277,21 +277,13 @@
   ],
   "passwordResetTokens": [
     {
-      "id": 27,
+      "id": 32,
       "userId": 1,
-      "token": "e130c8c6709c0be0619bb2ce8b9d695e330b81d6630389a77eda5280d62b15b2",
-      "expiresAt": "2025-06-22T16:54:03.441Z",
+      "token": "62830ef8799285865cd193899c059f045f0ea49af18532925165310a10afcfae",
+      "expiresAt": "2025-06-22T17:28:48.028Z",
       "used": false,
-      "createdAt": "2025-06-22T16:39:03.442Z"
-    },
-    {
-      "id": 28,
-      "userId": 1,
-      "token": "9e2e731ae7faccd715dd2e53d35f299eee15609e89dea51016c42612792d3bf2",
-      "expiresAt": "2025-06-22T16:55:17.120Z",
-      "used": false,
-      "createdAt": "2025-06-22T16:40:17.120Z"
+      "createdAt": "2025-06-22T17:13:48.030Z"
     }
   ],
-  "nextId": 29
+  "nextId": 33
 }
