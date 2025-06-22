@@ -74,6 +74,7 @@ export default function Login() {
     defaultValues: {
       email: "",
     },
+    mode: "onChange",
   });
 
   const passwordResetForm = useForm<PasswordResetFormData>({
@@ -182,7 +183,7 @@ export default function Login() {
         passwordResetForm.setValue("token", data.resetToken);
         setShowPasswordResetForm(true);
       }
-      passwordResetRequestForm.reset();
+      passwordResetRequestForm.reset({ email: "" });
     },
     onError: (error: any) => {
       toast({
@@ -376,7 +377,11 @@ export default function Login() {
                                 placeholder="Enter your email" 
                                 className="w-full"
                                 autoComplete="email"
-                                {...field} 
+                                value={field.value || ""}
+                                onChange={field.onChange}
+                                onBlur={field.onBlur}
+                                name={field.name}
+                                disabled={passwordResetRequestMutation.isPending}
                               />
                             </FormControl>
                             <FormMessage />
@@ -585,8 +590,8 @@ export default function Login() {
                       setShowPasswordReset(false);
                       setShowPasswordResetForm(false);
                       setResetToken("");
-                      passwordResetRequestForm.reset();
-                      passwordResetForm.reset();
+                      passwordResetRequestForm.reset({ email: "" });
+                      passwordResetForm.reset({ token: "", newPassword: "" });
                     }}
                     className="block w-full text-sm text-blue-600 hover:text-blue-800 underline focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded px-2 py-1 transition-colors duration-200"
                   >
