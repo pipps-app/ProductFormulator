@@ -50,43 +50,40 @@ export default function Login() {
   const { data: user, isLoading } = useUser();
   const queryClient = useQueryClient();
 
-  // Check for magic link token in URL - run on every render to catch URL changes
+  // Check for magic link token in URL on mount
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const token = urlParams.get('reset');
-    if (token && !showPasswordResetForm) {
+    
+    if (token) {
       console.log('Magic link token detected:', token);
       
-      // Set reset form state immediately
-      setShowPasswordReset(true);
-      setShowPasswordResetForm(true);
-      setResetToken(token);
-      
-      // Set form value after a brief delay to ensure form is ready
-      setTimeout(() => {
-        passwordResetForm.setValue('token', token);
-      }, 50);
-      
-      // Force logout if user is logged in
+      // Force logout first if user is logged in
       if (user) {
         fetch("/api/auth/logout", {
           method: "POST",
           credentials: "include",
         }).then(() => {
           queryClient.clear();
-          queryClient.invalidateQueries({ queryKey: ["/api/user"] });
         });
       }
       
-      // Clean up URL
+      // Set reset form state
+      setShowPasswordReset(true);
+      setShowPasswordResetForm(true);
+      setResetToken(token);
+      setIsLogin(false); // Ensure we're not in login mode
+      
+      // Clean up URL immediately
       window.history.replaceState({}, document.title, window.location.pathname);
+      
       toast({
         title: "Password reset form ready",
-        description: "Token pre-filled. Enter your new password to complete the reset.",
+        description: "Token loaded. Enter your new password below.",
         duration: 5000,
       });
     }
-  });
+  }, []);
 
   // Always initialize forms at the top level
   const loginForm = useForm<LoginFormData>({
@@ -118,10 +115,17 @@ export default function Login() {
   const passwordResetForm = useForm<PasswordResetFormData>({
     resolver: zodResolver(passwordResetSchema),
     defaultValues: {
-      token: "",
+      token: resetToken,
       newPassword: "",
     },
   });
+
+  // Update form token when resetToken changes
+  useEffect(() => {
+    if (resetToken && passwordResetForm) {
+      passwordResetForm.setValue('token', resetToken);
+    }
+  }, [resetToken]);
 
   // Move mutations to top level to fix hooks rule violation
   const loginMutation = useMutation({
@@ -262,13 +266,20 @@ export default function Login() {
         title: "Password reset successful",
         description: "Your password has been updated. You can now log in with your new password.",
       });
-      // Reset all form states
+      // Reset all form states and force re-render
       setShowPasswordReset(false);
       setShowPasswordResetForm(false);
       setResetToken("");
-      passwordResetForm.reset({ token: "", newPassword: "" });
-      // Also reset login form to ensure it's fresh
-      loginForm.reset({ email: "", password: "" });
+      setIsLogin(true);
+      
+      // Reset forms completely
+      passwordResetForm.reset();
+      loginForm.reset();
+      
+      // Force page refresh to ensure clean state
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
     },
     onError: (error: any) => {
       toast({
@@ -532,10 +543,8 @@ export default function Login() {
                               placeholder="Enter your password" 
                               className="w-full"
                               autoComplete="current-password"
-                              value={field.value || ""}
-                              onChange={field.onChange}
-                              onBlur={field.onBlur}
-                              name={field.name}
+                              key="login-password-field"
+                              {...field}
                             />
                           </FormControl>
                           <FormMessage />
