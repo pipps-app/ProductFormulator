@@ -50,40 +50,51 @@ export default function Login() {
   const { data: user, isLoading } = useUser();
   const queryClient = useQueryClient();
 
-  // Check for magic link token in URL on mount
+  // Check for magic link token in URL 
   useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const token = urlParams.get('reset');
-    
-    if (token) {
-      console.log('Magic link token detected:', token);
+    const checkForResetToken = () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const token = urlParams.get('reset');
       
-      // Force logout first if user is logged in
-      if (user) {
-        fetch("/api/auth/logout", {
-          method: "POST",
-          credentials: "include",
-        }).then(() => {
-          queryClient.clear();
+      if (token && !showPasswordResetForm) {
+        console.log('Magic link token detected:', token);
+        
+        // Force logout first if user is logged in
+        if (user) {
+          fetch("/api/auth/logout", {
+            method: "POST",
+            credentials: "include",
+          }).then(() => {
+            queryClient.clear();
+            queryClient.invalidateQueries({ queryKey: ["/api/user"] });
+          });
+        }
+        
+        // Set reset form state immediately
+        setShowPasswordReset(true);
+        setShowPasswordResetForm(true);
+        setResetToken(token);
+        setIsLogin(false);
+        
+        // Clean up URL
+        window.history.replaceState({}, document.title, window.location.pathname);
+        
+        toast({
+          title: "Password reset form ready",
+          description: "Token loaded. Enter your new password below.",
+          duration: 5000,
         });
       }
-      
-      // Set reset form state
-      setShowPasswordReset(true);
-      setShowPasswordResetForm(true);
-      setResetToken(token);
-      setIsLogin(false); // Ensure we're not in login mode
-      
-      // Clean up URL immediately
-      window.history.replaceState({}, document.title, window.location.pathname);
-      
-      toast({
-        title: "Password reset form ready",
-        description: "Token loaded. Enter your new password below.",
-        duration: 5000,
-      });
-    }
-  }, []);
+    };
+
+    // Check immediately and also listen for URL changes
+    checkForResetToken();
+    window.addEventListener('popstate', checkForResetToken);
+    
+    return () => {
+      window.removeEventListener('popstate', checkForResetToken);
+    };
+  }, [user, showPasswordResetForm, queryClient]);
 
   // Always initialize forms at the top level
   const loginForm = useForm<LoginFormData>({
