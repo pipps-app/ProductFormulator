@@ -13,6 +13,26 @@ export default function ImportExport() {
   const [exporting, setExporting] = useState(false);
   const { toast } = useToast();
 
+  const handleSetupImportData = async () => {
+    setImporting(true);
+    try {
+      const response = await apiRequest("POST", "/api/setup-import-data", {});
+      const result = await response.json();
+      toast({
+        title: "Setup completed",
+        description: result.message
+      });
+    } catch (error) {
+      toast({
+        title: "Setup failed",
+        description: "Failed to setup vendors and categories",
+        variant: "destructive"
+      });
+    } finally {
+      setImporting(false);
+    }
+  };
+
   const handleImport = async (files: File[]) => {
     if (files.length === 0) return;
     
@@ -258,8 +278,8 @@ export default function ImportExport() {
                   <div className="space-y-3 text-sm">
                     <p><strong className="text-amber-800">⚠️ IMPORTANT: Setup Required Before Import</strong></p>
                     <ol className="list-decimal list-inside space-y-1 text-amber-700 ml-4">
-                      <li><strong>Create all vendors</strong> in the Vendors section first</li>
-                      <li><strong>Create all categories</strong> in the Categories section first</li>
+                      <li><strong>Click "Setup Vendors & Categories"</strong> to create all required vendors and categories automatically</li>
+                      <li>Or create vendors/categories manually in their respective sections</li>
                       <li>Ensure names in your CSV match exactly (case-sensitive)</li>
                     </ol>
                     <div className="mt-2">
@@ -286,10 +306,19 @@ export default function ImportExport() {
                 <Button 
                   variant="outline" 
                   size="sm"
+                  onClick={handleSetupImportData}
+                  disabled={importing}
+                >
+                  <Upload className="h-4 w-4 mr-2" />
+                  Setup Vendors & Categories
+                </Button>
+                <Button 
+                  variant="outline" 
+                  size="sm"
                   onClick={() => handleDownloadTemplate('materials')}
                 >
                   <FileText className="h-4 w-4 mr-2" />
-                  Download Materials Template
+                  Download Template
                 </Button>
               </div>
             </CardContent>

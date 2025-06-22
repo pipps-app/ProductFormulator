@@ -877,6 +877,73 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json(auditLogs);
   });
 
+  // Setup vendors and categories for CSV import
+  app.post("/api/setup-import-data", requireAuth, async (req: any, res) => {
+    const userId = req.userId;
+    
+    try {
+      // Define vendors from your CSV
+      const vendorsToCreate = [
+        "Caribbean producers", "Changs trading", "Earth Elements", "Grove Industries", 
+        "Hardware store", "Jamaica Packagaing", "Online purchase", "Paramount Trading", 
+        "Piedmont trading", "Poly pet", "Pricesmart", "Supermarket", "United Plastics", "Versachem"
+      ];
+      
+      // Define categories from your CSV
+      const categoriesToCreate = [
+        "Additives", "Bottles", "Boxes", "Concrete supplies", "Essential/Fragrance Oils", 
+        "Packaging", "Rapid Grow Products", "Soap Making Ingredients", "Soap Oils"
+      ];
+      
+      // Get existing data
+      const existingVendors = await storage.getVendors(userId);
+      const existingCategories = await storage.getMaterialCategories(userId);
+      
+      const existingVendorNames = new Set(existingVendors.map(v => v.name.toLowerCase()));
+      const existingCategoryNames = new Set(existingCategories.map(c => c.name.toLowerCase()));
+      
+      let vendorsCreated = 0;
+      let categoriesCreated = 0;
+      
+      // Create missing vendors
+      for (const vendorName of vendorsToCreate) {
+        if (!existingVendorNames.has(vendorName.toLowerCase())) {
+          await storage.createVendor({
+            name: vendorName,
+            email: null,
+            phone: null,
+            address: null,
+            userId
+          });
+          vendorsCreated++;
+        }
+      }
+      
+      // Create missing categories
+      for (const categoryName of categoriesToCreate) {
+        if (!existingCategoryNames.has(categoryName.toLowerCase())) {
+          await storage.createMaterialCategory({
+            name: categoryName,
+            description: `Category for ${categoryName}`,
+            userId
+          });
+          categoriesCreated++;
+        }
+      }
+      
+      res.json({
+        success: true,
+        message: `Setup complete: ${vendorsCreated} vendors and ${categoriesCreated} categories created`,
+        vendorsCreated,
+        categoriesCreated
+      });
+      
+    } catch (error) {
+      console.error("Setup error:", error);
+      res.status(500).json({ error: "Failed to setup import data" });
+    }
+  });
+
   // Import materials
   app.post("/api/import/materials", requireAuth, async (req: any, res) => {
     const userId = req.userId;
