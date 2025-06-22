@@ -50,12 +50,22 @@ export default function Login() {
   const { data: user, isLoading } = useUser();
   const queryClient = useQueryClient();
 
-  // Check for magic link token in URL
+  // Check for magic link token in URL - run on every render to catch URL changes
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const token = urlParams.get('reset');
-    if (token) {
+    if (token && !showPasswordResetForm) {
       console.log('Magic link token detected:', token);
+      
+      // Set reset form state immediately
+      setShowPasswordReset(true);
+      setShowPasswordResetForm(true);
+      setResetToken(token);
+      
+      // Set form value after a brief delay to ensure form is ready
+      setTimeout(() => {
+        passwordResetForm.setValue('token', token);
+      }, 50);
       
       // Force logout if user is logged in
       if (user) {
@@ -65,20 +75,7 @@ export default function Login() {
         }).then(() => {
           queryClient.clear();
           queryClient.invalidateQueries({ queryKey: ["/api/user"] });
-          // Set state after logout
-          setTimeout(() => {
-            setShowPasswordReset(true);
-            setShowPasswordResetForm(true);
-            passwordResetForm.setValue('token', token);
-            setResetToken(token);
-          }, 100);
         });
-      } else {
-        // User not logged in, proceed directly
-        setShowPasswordReset(true);
-        setShowPasswordResetForm(true);
-        passwordResetForm.setValue('token', token);
-        setResetToken(token);
       }
       
       // Clean up URL
@@ -89,7 +86,7 @@ export default function Login() {
         duration: 5000,
       });
     }
-  }, []);
+  });
 
   // Always initialize forms at the top level
   const loginForm = useForm<LoginFormData>({
@@ -265,10 +262,13 @@ export default function Login() {
         title: "Password reset successful",
         description: "Your password has been updated. You can now log in with your new password.",
       });
+      // Reset all form states
       setShowPasswordReset(false);
       setShowPasswordResetForm(false);
       setResetToken("");
-      passwordResetForm.reset();
+      passwordResetForm.reset({ token: "", newPassword: "" });
+      // Also reset login form to ensure it's fresh
+      loginForm.reset({ email: "", password: "" });
     },
     onError: (error: any) => {
       toast({
@@ -532,7 +532,10 @@ export default function Login() {
                               placeholder="Enter your password" 
                               className="w-full"
                               autoComplete="current-password"
-                              {...field} 
+                              value={field.value || ""}
+                              onChange={field.onChange}
+                              onBlur={field.onBlur}
+                              name={field.name}
                             />
                           </FormControl>
                           <FormMessage />

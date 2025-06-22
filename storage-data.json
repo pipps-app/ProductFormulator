@@ -29,7 +29,7 @@
       "id": 36,
       "username": "jc epiphany",
       "email": "jumelisa0204@gmail.com",
-      "password": "$2b$10$kuE8goqCfU8idWYm6VNf8uiL3eFLIYQEeISKALJNnst0xHIckflUa",
+      "password": "$2b$10$xmvU52DVs2Y.CrQPjuBK5.kOpdMQWHeoTykVkB09Yzirnfwy6sI1G",
       "company": "",
       "createdAt": "2025-06-22T17:32:19.517Z"
     }
@@ -301,21 +301,29 @@
       "createdAt": "2025-06-22T17:36:46.716Z"
     },
     {
-      "id": 39,
-      "userId": 36,
-      "token": "bd7b0f25c6964297635ddfe9b1467b069a3cfd8143bededa737dee79b3b4d196",
-      "expiresAt": "2025-06-22T17:52:58.831Z",
-      "used": false,
-      "createdAt": "2025-06-22T17:37:58.838Z"
-    },
-    {
       "id": 40,
       "userId": 1,
       "token": "517ff471430adf983c6db71bbfc91b941e9771d884228c08717c681c15d0fb1a",
       "expiresAt": "2025-06-22T17:54:19.952Z",
       "used": false,
       "createdAt": "2025-06-22T17:39:19.965Z"
+    },
+    {
+      "id": 41,
+      "userId": 36,
+      "token": "5754bcac8916193525a7671f7352a1b4d9c69d3144be7da7a6b45f93da3f5fce",
+      "expiresAt": "2025-06-22T17:55:39.964Z",
+      "used": false,
+      "createdAt": "2025-06-22T17:40:39.965Z"
+    },
+    {
+      "id": 43,
+      "userId": 1,
+      "token": "a962b50277e4f2b40e772d7f4b21518d30c329dd9f37e55e93ab9098423c8a84",
+      "expiresAt": "2025-06-22T18:00:02.560Z",
+      "used": false,
+      "createdAt": "2025-06-22T17:45:02.561Z"
     }
   ],
-  "nextId": 41
+  "nextId": 44
 }
