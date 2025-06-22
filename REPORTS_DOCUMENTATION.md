@@ -2,18 +2,18 @@
 
 ## Free Tier Reports
 
-### 1. Basic Cost Overview
-**Purpose**: Provides a simple summary of material costs and inventory values for small-scale operations.
+### 1. Basic Cost Summary
+**Purpose**: Provides a simple overview of material costs and formulation expenses for small-scale operations.
 
 **What it includes**:
-- Total material inventory value
+- Total material database value (sum of all material unit costs)
 - Average cost per material category
 - Most expensive vs least expensive materials
 - Basic cost distribution across categories
 
-**Who it's for**: New users, hobbyists, or small-scale makers who need basic cost visibility without complexity.
+**Who it's for**: New users, hobbyists, or small-scale makers who need basic cost visibility.
 
-**Business value**: Helps users understand their material investment and identify cost outliers.
+**Business value**: Helps users understand their material cost structure and identify expensive materials.
 
 **Frequency**: Generated on-demand, updated when materials are added/modified.
 
@@ -24,9 +24,9 @@
 
 **What it includes**:
 - Material costs per formulation
-- Labor/overhead allocations (if applicable)
-- Basic unit cost calculations
-- Simple profit margin display
+- Unit cost calculations based on batch size
+- Basic profit margin calculations
+- Cost per ingredient breakdown
 
 **Who it's for**: Makers who create products and need to understand what each formulation costs to produce.
 
@@ -36,35 +36,35 @@
 
 ---
 
-### 3. Total Inventory Value
-**Purpose**: Provides a snapshot of total investment in raw materials.
+### 3. Material Cost Database Summary
+**Purpose**: Provides an overview of all tracked materials and their associated costs.
 
 **What it includes**:
-- Current total inventory value
-- Value by category breakdown
-- Top 5 most valuable materials
-- Percentage of total value by vendor
+- Complete material cost listing
+- Cost per unit by category
+- Top 5 most expensive materials per unit
+- Vendor cost comparison for materials
 
-**Who it's for**: Users who need to track their material investment for budgeting or insurance purposes.
+**Who it's for**: Users who need to track their material cost database for pricing decisions.
 
-**Business value**: Helps with cash flow management and inventory investment decisions.
+**Business value**: Helps with cost-conscious material selection and vendor comparison.
 
-**Frequency**: Updated in real-time as materials are added, used, or prices change.
+**Frequency**: Updated in real-time as materials are added or costs are modified.
 
 ---
 
-### 4. Material Usage Frequency
-**Purpose**: Shows which materials are used most often across formulations.
+### 4. Formulation Usage Analysis
+**Purpose**: Shows which materials are used most often across formulations and their cost impact.
 
 **What it includes**:
-- List of materials ranked by usage frequency
+- Materials ranked by usage frequency across formulations
 - Number of formulations using each material
-- Basic usage patterns
+- Total cost contribution across all formulations
 - Unused materials identification
 
-**Who it's for**: Users optimizing their material inventory and purchasing decisions.
+**Who it's for**: Users optimizing their material selection and formulation efficiency.
 
-**Business value**: Identifies essential vs occasional materials, helping optimize inventory levels.
+**Business value**: Identifies essential vs occasional materials, helping focus on cost-critical ingredients.
 
 **Frequency**: Updated when formulations are created or modified.
 
@@ -72,20 +72,20 @@
 
 ## Pro Tier Reports
 
-### 5. Material Cost Trends Over Time
-**Purpose**: Tracks how material costs change over time to identify trends and seasonal patterns.
+### 5. Material Cost History Analysis
+**Purpose**: Tracks how material unit costs have changed over time as users update their material database.
 
 **What it includes**:
-- Monthly/quarterly cost trend charts
-- Price volatility indicators
-- Cost increase/decrease percentages
-- Seasonal pattern identification
+- Historical cost changes for materials
+- Cost update frequency tracking
+- Biggest cost changes identification
+- Price volatility indicators for materials
 
-**Who it's for**: Businesses that want to optimize purchasing timing and budget for cost fluctuations.
+**Who it's for**: Businesses that regularly update material costs and want to track cost inflation.
 
-**Business value**: Enables strategic purchasing decisions and accurate cost forecasting.
+**Business value**: Helps understand cost trends and plan for material cost increases.
 
-**Frequency**: Monthly generation with historical data analysis.
+**Frequency**: Generated when material costs are updated, with monthly summaries.
 
 ---
 
@@ -157,20 +157,20 @@
 
 ---
 
-### 10. Material Reorder Suggestions
-**Purpose**: Automated recommendations for when and how much to reorder based on usage patterns.
+### 10. Cost Optimization Suggestions
+**Purpose**: Automated recommendations for reducing formulation costs based on material analysis.
 
 **What it includes**:
-- Reorder point calculations
-- Economic order quantity suggestions
-- Lead time considerations
-- Seasonal adjustment factors
+- Alternative material suggestions with lower costs
+- Batch size optimization recommendations
+- High-impact cost reduction opportunities
+- Vendor switching cost savings potential
 
-**Who it's for**: Operations managers handling inventory procurement.
+**Who it's for**: Product developers and cost managers looking to optimize formulation costs.
 
-**Business value**: Prevents stockouts while minimizing inventory carrying costs.
+**Business value**: Identifies specific opportunities to reduce product costs without compromising quality.
 
-**Frequency**: Weekly monitoring with automated alerts.
+**Frequency**: Monthly analysis with quarterly deep-dive recommendations.
 
 ---
 
@@ -227,20 +227,20 @@
 
 ---
 
-### 14. Batch Size Efficiency Analysis
-**Purpose**: Optimizes production batch sizes for maximum efficiency and cost-effectiveness.
+### 14. Formulation Efficiency Analysis
+**Purpose**: Analyzes formulation structures to identify cost optimization opportunities.
 
 **What it includes**:
-- Optimal batch size calculations
-- Setup cost vs holding cost analysis
-- Efficiency curves by product
-- Resource utilization optimization
+- Cost per unit analysis across different batch sizes
+- Material utilization efficiency in formulations
+- Markup strategy effectiveness analysis
+- Formulation complexity vs profitability correlation
 
-**Who it's for**: Production managers and operations teams.
+**Who it's for**: Product developers and formulation managers optimizing recipes.
 
-**Business value**: Reduces production costs and improves operational efficiency.
+**Business value**: Improves formulation profitability through better ingredient selection and proportions.
 
-**Frequency**: Monthly with continuous optimization recommendations.
+**Frequency**: Monthly analysis with quarterly optimization reviews.
 
 ---
 
@@ -352,26 +352,26 @@
 
 ### Phase 1 (Free Tier)
 Start with basic reports that provide immediate value to new users:
-1. Basic Cost Overview
+1. Basic Cost Summary
 2. Basic Formulation Cost Breakdown
-3. Total Inventory Value
+3. Material Cost Database Summary
 
 ### Phase 2 (Pro Tier)
 Add analytical capabilities for growing businesses:
-1. Material Cost Trends
+1. Material Cost History Analysis
 2. Profit Margin Analysis
 3. Break-even Analysis
 
 ### Phase 3 (Business Tier)
 Implement advanced strategic planning tools:
-1. Multi-period Analysis
-2. Predictive Models
+1. Multi-period Cost Analysis
+2. Predictive Pricing Models
 3. Executive Dashboards
 
 ### Phase 4 (Enterprise Tier)
 Deploy sophisticated enterprise features:
-1. Multi-location Analysis
-2. Real-time Integration
+1. Multi-location Cost Analysis
+2. Real-time Market Integration
 3. Custom Analytics Platform
 
-Each report should be designed with clear visualizations, exportable formats (PDF, Excel, CSV), and actionable insights that drive business decisions.
+Each report should be designed with clear visualizations, exportable formats (PDF, Excel, CSV), and actionable insights that drive formulation and pricing decisions. All reports focus on cost analysis, profitability optimization, and pricing strategy rather than inventory management.
