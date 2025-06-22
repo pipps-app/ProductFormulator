@@ -363,42 +363,45 @@ export default function Login() {
                     </form>
                   </Form>
                 ) : (
-                  <Form {...passwordResetRequestForm}>
-                    <form onSubmit={passwordResetRequestForm.handleSubmit(onPasswordResetRequestSubmit)} className="space-y-4">
-                      <FormField
-                        control={passwordResetRequestForm.control}
-                        name="email"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Email</FormLabel>
-                            <FormControl>
-                              <Input 
-                                type="email" 
-                                placeholder="Enter your email" 
-                                className="w-full"
-                                autoComplete="email"
-                                value={field.value || ""}
-                                onChange={field.onChange}
-                                onBlur={field.onBlur}
-                                name={field.name}
-                                disabled={passwordResetRequestMutation.isPending}
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-
-                      <Button 
-                        type="submit" 
-                        className="w-full mt-4" 
+                  <div className="space-y-4">
+                    <div className="space-y-2">
+                      <label htmlFor="reset-email" className="text-sm font-medium">Email</label>
+                      <Input 
+                        id="reset-email"
+                        type="email" 
+                        placeholder="Enter your email" 
+                        className="w-full"
+                        autoComplete="email"
+                        value={passwordResetRequestForm.watch("email") || ""}
+                        onChange={(e) => passwordResetRequestForm.setValue("email", e.target.value)}
                         disabled={passwordResetRequestMutation.isPending}
-                        size="default"
-                      >
-                        {passwordResetRequestMutation.isPending ? "Sending..." : "Send Reset Link"}
-                      </Button>
-                    </form>
-                  </Form>
+                      />
+                      {passwordResetRequestForm.formState.errors.email && (
+                        <p className="text-sm text-red-600">
+                          {passwordResetRequestForm.formState.errors.email.message}
+                        </p>
+                      )}
+                    </div>
+
+                    <Button 
+                      onClick={() => {
+                        const email = passwordResetRequestForm.getValues("email");
+                        if (email) {
+                          onPasswordResetRequestSubmit({ email });
+                        } else {
+                          passwordResetRequestForm.setError("email", {
+                            type: "required",
+                            message: "Email is required"
+                          });
+                        }
+                      }}
+                      className="w-full mt-4" 
+                      disabled={passwordResetRequestMutation.isPending}
+                      size="default"
+                    >
+                      {passwordResetRequestMutation.isPending ? "Sending..." : "Send Reset Link"}
+                    </Button>
+                  </div>
                 )}
               </div>
             ) : isLogin ? (
