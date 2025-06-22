@@ -52,49 +52,52 @@ export default function Login() {
 
   // Check for magic link token in URL 
   useEffect(() => {
-    const checkForResetToken = () => {
-      const urlParams = new URLSearchParams(window.location.search);
-      const token = urlParams.get('reset');
+    console.log('Effect running - checking for reset token');
+    console.log('Current URL:', window.location.href);
+    console.log('Search params:', window.location.search);
+    
+    const urlParams = new URLSearchParams(window.location.search);
+    const token = urlParams.get('reset');
+    
+    console.log('Token from URL:', token);
+    console.log('showPasswordResetForm:', showPasswordResetForm);
+    
+    if (token) {
+      console.log('Token found, setting up password reset form');
       
-      if (token && !showPasswordResetForm) {
-        console.log('Magic link token detected:', token);
-        
-        // Force logout first if user is logged in
-        if (user) {
-          fetch("/api/auth/logout", {
-            method: "POST",
-            credentials: "include",
-          }).then(() => {
-            queryClient.clear();
-            queryClient.invalidateQueries({ queryKey: ["/api/user"] });
-          });
-        }
-        
-        // Set reset form state immediately
-        setShowPasswordReset(true);
-        setShowPasswordResetForm(true);
-        setResetToken(token);
-        setIsLogin(false);
-        
-        // Clean up URL
-        window.history.replaceState({}, document.title, window.location.pathname);
-        
-        toast({
-          title: "Password reset form ready",
-          description: "Token loaded. Enter your new password below.",
-          duration: 5000,
+      // Set reset form state immediately - don't wait for logout
+      setShowPasswordReset(true);
+      setShowPasswordResetForm(true);
+      setResetToken(token);
+      setIsLogin(false);
+      
+      // Force logout if user is logged in (but don't block the form)
+      if (user) {
+        console.log('User logged in, logging out...');
+        fetch("/api/auth/logout", {
+          method: "POST",
+          credentials: "include",
+        }).then(() => {
+          queryClient.clear();
+          queryClient.invalidateQueries({ queryKey: ["/api/user"] });
+          console.log('Logout complete');
         });
       }
-    };
-
-    // Check immediately and also listen for URL changes
-    checkForResetToken();
-    window.addEventListener('popstate', checkForResetToken);
-    
-    return () => {
-      window.removeEventListener('popstate', checkForResetToken);
-    };
-  }, [user, showPasswordResetForm, queryClient]);
+      
+      // Don't clean up URL immediately - let user see it worked
+      setTimeout(() => {
+        window.history.replaceState({}, document.title, window.location.pathname);
+      }, 2000);
+      
+      toast({
+        title: "Magic link worked!",
+        description: "Password reset form loaded. Token: " + token.substring(0, 8) + "...",
+        duration: 5000,
+      });
+    } else {
+      console.log('No token found in URL');
+    }
+  }, []); // Only run on mount
 
   // Always initialize forms at the top level
   const loginForm = useForm<LoginFormData>({

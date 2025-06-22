@@ -76,7 +76,7 @@ class EmailService {
   }
 
   async sendPasswordResetEmail(email: string, resetToken: string, baseUrl: string): Promise<boolean> {
-    const magicLink = `${baseUrl}/?reset=${resetToken}`;
+    const magicLink = `${baseUrl}/login?reset=${resetToken}`;
     
     const html = `
       <!DOCTYPE html>
