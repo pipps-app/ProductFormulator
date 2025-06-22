@@ -953,13 +953,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const nameMap = new Map();
       const duplicates = [];
       
-      // Find duplicates by name
+      // Find duplicates by name - keep only the first occurrence
+      const seen = new Set();
       for (const material of materials) {
         const key = material.name.toLowerCase().trim();
-        if (nameMap.has(key)) {
+        if (seen.has(key)) {
           duplicates.push(material.id);
         } else {
-          nameMap.set(key, material.id);
+          seen.add(key);
         }
       }
       
@@ -969,6 +970,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
         const success = await storage.deleteRawMaterial(duplicateId);
         if (success) deleted++;
       }
+      
+      // Add cache control headers to prevent stale data
+      res.set('Cache-Control', 'no-cache, no-store, must-revalidate');
+      res.set('Pragma', 'no-cache');
+      res.set('Expires', '0');
       
       res.json({
         success: true,

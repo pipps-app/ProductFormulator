@@ -38,6 +38,12 @@ export default function ImportExport() {
     try {
       const response = await apiRequest("POST", "/api/remove-duplicates", {});
       const result = await response.json();
+      
+      // Force refresh of all material-related queries
+      const { queryClient } = await import("@/lib/queryClient");
+      await queryClient.invalidateQueries({ queryKey: ["/api/raw-materials"] });
+      await queryClient.invalidateQueries({ queryKey: ["/api/dashboard/stats"] });
+      
       toast({
         title: "Duplicates removed",
         description: result.message
