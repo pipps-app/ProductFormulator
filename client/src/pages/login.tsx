@@ -174,14 +174,22 @@ export default function Login() {
     },
     onSuccess: (data) => {
       toast({
-        title: "Reset link sent",
+        title: "Reset request sent",
         description: data.message,
       });
-      // For demo purposes, auto-fill the token (remove in production)
+      // Check if we're in demo mode (token returned) or production mode (email sent)
       if (data.resetToken) {
+        // Demo mode - auto-fill the token
         setResetToken(data.resetToken);
         passwordResetForm.setValue("token", data.resetToken);
         setShowPasswordResetForm(true);
+      } else {
+        // Production mode - email was sent, show instructions
+        toast({
+          title: "Check your email",
+          description: "We've sent a password reset token to your email address. Copy the token from the email and return here to reset your password.",
+          duration: 10000, // Show for 10 seconds
+        });
       }
       passwordResetRequestForm.reset({ email: "" });
     },

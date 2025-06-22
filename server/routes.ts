@@ -149,14 +149,30 @@ export async function registerRoutes(app: Express): Promise<Server> {
         used: false
       });
 
-      // In a real app, you would send an email with the reset link
-      // For demo purposes, we'll return the token (remove this in production)
-      res.json({ 
-        success: true, 
-        message: "If an account with that email exists, we've sent a password reset link.",
-        // Remove this in production - only for demo
-        resetToken: token
-      });
+      // Import email service
+      const { emailService } = await import('./email');
+      
+      // Get base URL for the reset link
+      const baseUrl = req.headers.origin || `${req.protocol}://${req.get('host')}`;
+      
+      // Send email
+      const emailSent = await emailService.sendPasswordResetEmail(email, token, baseUrl);
+      
+      if (emailSent) {
+        res.json({ 
+          success: true, 
+          message: "Password reset email has been sent to your email address."
+        });
+      } else {
+        // If email service is not configured, fall back to demo mode
+        console.log('Email service not configured, using demo mode');
+        res.json({ 
+          success: true, 
+          message: "Email service not configured. Demo mode - token:",
+          // Demo mode - return token for testing
+          resetToken: token
+        });
+      }
     } catch (error) {
       console.error("Password reset request error:", error);
       res.status(500).json({ error: "Failed to process password reset request" });
