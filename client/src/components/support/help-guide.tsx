@@ -50,7 +50,7 @@ const helpTopics: HelpTopic[] = [
     ],
     tips: [
       "Start with 2-3 vendors that you commonly use",
-      "Create logical categories like 'Base Oils', 'Essential Oils', 'Packaging'",
+      "Create logical categories like 'Base Materials', 'Additives', 'Packaging'",
       "Always fill in the cost and quantity for accurate calculations"
     ]
   },
@@ -75,7 +75,7 @@ const helpTopics: HelpTopic[] = [
       "Remove Duplicates feature permanently deletes extra materials"
     ],
     tips: [
-      "The Setup feature works best with soap making and cosmetic supply data",
+      "The Setup feature works with manufacturing and supply chain data",
       "Download the template file to see correct CSV format",
       "Unit costs are automatically calculated from total cost and quantity",
       "Both CSV and JSON file formats are supported"
@@ -116,13 +116,13 @@ const helpTopics: HelpTopic[] = [
     steps: [
       "Go to Import/Export in the sidebar menu",
       "Click 'Setup Vendors & Categories' button",
-      "The system automatically creates common soap making vendors and categories",
+      "The system automatically creates common manufacturing vendors and categories",
       "Wait for confirmation message showing how many vendors and categories were created",
       "Your system is now ready for CSV import without errors"
     ],
     tips: [
       "This feature creates vendors like 'Paramount Trading', 'Online purchase', 'Supermarket'",
-      "Categories include 'Soap Oils', 'Essential Oils', 'Packaging', 'Additives'",
+      "Categories include 'Base Materials', 'Additives', 'Packaging', 'Ingredients'",
       "Setup only creates missing items - existing vendors/categories are not duplicated",
       "You can still manually add additional vendors and categories as needed"
     ]

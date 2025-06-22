@@ -892,7 +892,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Define categories from your CSV
       const categoriesToCreate = [
         "Additives", "Bottles", "Boxes", "Concrete supplies", "Essential/Fragrance Oils", 
-        "Packaging", "Rapid Grow Products", "Soap Making Ingredients", "Soap Oils"
+        "Packaging", "Rapid Grow Products", "Manufacturing Ingredients", "Base Materials"
       ];
       
       // Get existing data
