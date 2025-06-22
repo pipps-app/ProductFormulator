@@ -944,6 +944,44 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Remove duplicate materials
+  app.post("/api/remove-duplicates", requireAuth, async (req: any, res) => {
+    const userId = req.userId;
+    
+    try {
+      const materials = await storage.getRawMaterials(userId);
+      const nameMap = new Map();
+      const duplicates = [];
+      
+      // Find duplicates by name
+      for (const material of materials) {
+        const key = material.name.toLowerCase().trim();
+        if (nameMap.has(key)) {
+          duplicates.push(material.id);
+        } else {
+          nameMap.set(key, material.id);
+        }
+      }
+      
+      // Delete duplicates
+      let deleted = 0;
+      for (const duplicateId of duplicates) {
+        const success = await storage.deleteRawMaterial(duplicateId);
+        if (success) deleted++;
+      }
+      
+      res.json({
+        success: true,
+        message: `Removed ${deleted} duplicate materials`,
+        duplicatesRemoved: deleted
+      });
+      
+    } catch (error) {
+      console.error("Remove duplicates error:", error);
+      res.status(500).json({ error: "Failed to remove duplicates" });
+    }
+  });
+
   // Import materials
   app.post("/api/import/materials", requireAuth, async (req: any, res) => {
     const userId = req.userId;

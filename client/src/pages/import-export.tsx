@@ -33,6 +33,26 @@ export default function ImportExport() {
     }
   };
 
+  const handleRemoveDuplicates = async () => {
+    setImporting(true);
+    try {
+      const response = await apiRequest("POST", "/api/remove-duplicates", {});
+      const result = await response.json();
+      toast({
+        title: "Duplicates removed",
+        description: result.message
+      });
+    } catch (error) {
+      toast({
+        title: "Failed to remove duplicates",
+        description: "An error occurred while removing duplicate materials",
+        variant: "destructive"
+      });
+    } finally {
+      setImporting(false);
+    }
+  };
+
   const handleImport = async (files: File[]) => {
     if (files.length === 0) return;
     
@@ -311,6 +331,15 @@ export default function ImportExport() {
                 >
                   <Upload className="h-4 w-4 mr-2" />
                   Setup Vendors & Categories
+                </Button>
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={handleRemoveDuplicates}
+                  disabled={importing}
+                >
+                  <AlertCircle className="h-4 w-4 mr-2" />
+                  Remove Duplicates
                 </Button>
                 <Button 
                   variant="outline" 
