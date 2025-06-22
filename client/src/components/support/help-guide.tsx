@@ -171,7 +171,7 @@ const helpTopics: HelpTopic[] = [
       "Click 'Create Formulation'"
     ],
     tips: [
-      "Some ingredients (like packaging) might not be included in markup",
+      "Some components (like packaging) might not be included in markup",
       "The system calculates profit margin as % of selling price",
       "Use the suggested price as a starting point for pricing decisions"
     ]
