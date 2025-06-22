@@ -54,7 +54,18 @@ export default function Login() {
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const token = urlParams.get('reset');
-    if (token && !user) { // Only process if user is not already logged in
+    if (token) {
+      // Force logout if user is logged in
+      if (user) {
+        fetch("/api/auth/logout", {
+          method: "POST",
+          credentials: "include",
+        }).then(() => {
+          queryClient.clear();
+          queryClient.invalidateQueries({ queryKey: ["/api/user"] });
+        });
+      }
+      
       setShowPasswordReset(true);
       setShowPasswordResetForm(true);
       passwordResetForm.setValue('token', token);
@@ -62,12 +73,12 @@ export default function Login() {
       // Clean up URL
       window.history.replaceState({}, document.title, window.location.pathname);
       toast({
-        title: "Password reset link detected",
-        description: "Token automatically filled. Enter your new password below.",
+        title: "Password reset form ready",
+        description: "Token pre-filled. Enter your new password to complete the reset.",
         duration: 5000,
       });
     }
-  }, [user]);
+  }, [user, queryClient]);
 
   // Always initialize forms at the top level
   const loginForm = useForm<LoginFormData>({

@@ -108,11 +108,11 @@ class EmailService {
             <p>You requested a password reset for your PIPPS Maker Calc account.</p>
             
             <div class="highlight">
-              <strong>🚀 Easy Option:</strong> Click the button below to automatically reset your password!
+              <strong>🚀 Easy Option:</strong> Click the button below to open the password reset form with token pre-filled!
             </div>
             
             <div style="text-align: center;">
-              <a href="${magicLink}" class="button">Reset Password Automatically</a>
+              <a href="${magicLink}" class="button">Open Password Reset Form</a>
             </div>
             
             <p><strong>Alternative Option:</strong> If the button doesn't work, copy this token manually:</p>
