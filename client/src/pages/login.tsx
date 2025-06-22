@@ -54,7 +54,7 @@ export default function Login() {
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const token = urlParams.get('reset');
-    if (token) {
+    if (token && !user) { // Only process if user is not already logged in
       setShowPasswordReset(true);
       setShowPasswordResetForm(true);
       passwordResetForm.setValue('token', token);
@@ -67,7 +67,7 @@ export default function Login() {
         duration: 5000,
       });
     }
-  }, []);
+  }, [user]);
 
   // Always initialize forms at the top level
   const loginForm = useForm<LoginFormData>({
@@ -191,6 +191,9 @@ export default function Login() {
       }
       return response.json();
     },
+    // Prevent multiple requests by disabling retry and setting gcTime
+    retry: false,
+    gcTime: 30000, // Cache for 30 seconds
     onSuccess: (data) => {
       toast({
         title: "Reset request sent",
@@ -254,14 +257,14 @@ export default function Login() {
     },
   });
 
-  // Handle redirect to dashboard if user is authenticated
+  // Handle redirect to dashboard if user is authenticated (but not during password reset)
   useEffect(() => {
-    if (!isLoading && user) {
+    if (!isLoading && user && !showPasswordReset) {
       setLocation("/dashboard");
     }
-  }, [isLoading, user, setLocation]);
+  }, [isLoading, user, setLocation, showPasswordReset]);
 
-  // If user is already authenticated, redirect to dashboard
+  // If user is already authenticated and not resetting password, redirect to dashboard
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -270,7 +273,7 @@ export default function Login() {
     );
   }
 
-  if (user) {
+  if (user && !showPasswordReset) {
     return null; // Will redirect via useEffect
   }
 

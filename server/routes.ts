@@ -119,6 +119,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // In-memory cache to prevent duplicate requests
+  const recentResetRequests = new Map<string, number>();
+
   // Request password reset token
   app.post("/api/auth/request-password-reset", async (req, res) => {
     try {
@@ -128,11 +131,33 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ error: "Email is required" });
       }
 
+      // Prevent duplicate requests within 30 seconds
+      const now = Date.now();
+      const lastRequest = recentResetRequests.get(email);
+      if (lastRequest && (now - lastRequest) < 30000) {
+        return res.json({ 
+          success: true, 
+          message: "Password reset email has been sent to your email address." 
+        });
+      }
+
       const user = await storage.getUserByEmail(email);
       if (!user) {
         // Don't reveal if user exists or not for security
         return res.json({ success: true, message: "If an account with that email exists, we've sent a password reset link." });
       }
+
+      // Mark this request
+      recentResetRequests.set(email, now);
+      
+      // Clean up old requests (older than 5 minutes)
+      setTimeout(() => {
+        for (const [key, timestamp] of recentResetRequests.entries()) {
+          if (now - timestamp > 300000) {
+            recentResetRequests.delete(key);
+          }
+        }
+      }, 1000);
 
       // Generate secure token
       const token = crypto.randomBytes(32).toString('hex');
