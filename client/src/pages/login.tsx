@@ -50,6 +50,25 @@ export default function Login() {
   const { data: user, isLoading } = useUser();
   const queryClient = useQueryClient();
 
+  // Check for magic link token in URL
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const token = urlParams.get('reset');
+    if (token) {
+      setShowPasswordReset(true);
+      setShowPasswordResetForm(true);
+      passwordResetForm.setValue('token', token);
+      setResetToken(token);
+      // Clean up URL
+      window.history.replaceState({}, document.title, window.location.pathname);
+      toast({
+        title: "Password reset link detected",
+        description: "Token automatically filled. Enter your new password below.",
+        duration: 5000,
+      });
+    }
+  }, []);
+
   // Always initialize forms at the top level
   const loginForm = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),

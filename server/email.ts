@@ -76,7 +76,7 @@ class EmailService {
   }
 
   async sendPasswordResetEmail(email: string, resetToken: string, baseUrl: string): Promise<boolean> {
-    const resetLink = `${baseUrl}/reset-password?token=${resetToken}`;
+    const magicLink = `${baseUrl}/?reset=${resetToken}`;
     
     const html = `
       <!DOCTYPE html>
@@ -90,9 +90,11 @@ class EmailService {
           .container { max-width: 600px; margin: 0 auto; padding: 20px; }
           .header { background: #3b82f6; color: white; padding: 20px; text-align: center; border-radius: 8px 8px 0 0; }
           .content { background: #f9fafb; padding: 30px; border-radius: 0 0 8px 8px; }
-          .button { display: inline-block; background: #3b82f6; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; margin: 20px 0; }
-          .token { background: #e5e7eb; padding: 15px; border-radius: 6px; font-family: monospace; word-break: break-all; margin: 15px 0; }
+          .button { display: inline-block; background: #3b82f6; color: white; padding: 15px 30px; text-decoration: none; border-radius: 6px; margin: 20px 0; font-size: 16px; font-weight: bold; }
+          .button:hover { background: #2563eb; }
+          .token { background: #e5e7eb; padding: 15px; border-radius: 6px; font-family: monospace; word-break: break-all; margin: 15px 0; font-size: 12px; }
           .footer { margin-top: 30px; padding-top: 20px; border-top: 1px solid #e5e7eb; font-size: 14px; color: #6b7280; }
+          .highlight { background: #fef3c7; padding: 15px; border-radius: 6px; border-left: 4px solid #f59e0b; margin: 15px 0; }
         </style>
       </head>
       <body>
@@ -103,24 +105,33 @@ class EmailService {
           </div>
           <div class="content">
             <h2>Reset Your Password</h2>
-            <p>You requested a password reset for your PIPPS Maker Calc account. Use the token below to reset your password:</p>
+            <p>You requested a password reset for your PIPPS Maker Calc account.</p>
+            
+            <div class="highlight">
+              <strong>🚀 Easy Option:</strong> Click the button below to automatically reset your password!
+            </div>
+            
+            <div style="text-align: center;">
+              <a href="${magicLink}" class="button">Reset Password Automatically</a>
+            </div>
+            
+            <p><strong>Alternative Option:</strong> If the button doesn't work, copy this token manually:</p>
             
             <div class="token">
               <strong>Reset Token:</strong><br>
               ${resetToken}
             </div>
             
-            <p>This token will expire in 15 minutes for security purposes.</p>
-            
-            <p><strong>Steps to reset your password:</strong></p>
+            <p><strong>Manual steps:</strong></p>
             <ol>
-              <li>Go back to the password reset form</li>
-              <li>Copy and paste the token above</li>
+              <li>Go to the PIPPS login page</li>
+              <li>Click "Forgot your password?"</li>
+              <li>Enter your email and submit</li>
+              <li>Paste the token above</li>
               <li>Enter your new password</li>
-              <li>Click "Reset Password"</li>
             </ol>
             
-            <p>If you didn't request this password reset, you can safely ignore this email.</p>
+            <p><small>This link expires in 15 minutes for security. If you didn't request this reset, ignore this email.</small></p>
           </div>
           <div class="footer">
             <p>This email was sent from PIPPS Maker Calc. Please do not reply to this email.</p>

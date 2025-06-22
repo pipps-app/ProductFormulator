@@ -291,7 +291,15 @@
       "expiresAt": "2025-06-22T17:31:25.965Z",
       "used": false,
       "createdAt": "2025-06-22T17:16:25.966Z"
+    },
+    {
+      "id": 34,
+      "userId": 1,
+      "token": "2475e465ff95f963211f0b7ae93ba365cf81551fba181b6741cfdf11f80c8fd6",
+      "expiresAt": "2025-06-22T17:37:06.789Z",
+      "used": false,
+      "createdAt": "2025-06-22T17:22:06.791Z"
     }
   ],
-  "nextId": 34
+  "nextId": 35
 }
