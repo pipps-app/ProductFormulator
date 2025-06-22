@@ -285,22 +285,6 @@
   ],
   "passwordResetTokens": [
     {
-      "id": 34,
-      "userId": 1,
-      "token": "2475e465ff95f963211f0b7ae93ba365cf81551fba181b6741cfdf11f80c8fd6",
-      "expiresAt": "2025-06-22T17:37:06.789Z",
-      "used": false,
-      "createdAt": "2025-06-22T17:22:06.791Z"
-    },
-    {
-      "id": 35,
-      "userId": 1,
-      "token": "3c98f35e417ad928172a53560ef53ce9e56433f8e1c3e621b30f116be0218384",
-      "expiresAt": "2025-06-22T17:38:42.971Z",
-      "used": false,
-      "createdAt": "2025-06-22T17:23:42.973Z"
-    },
-    {
       "id": 37,
       "userId": 36,
       "token": "3824a6ae90c6b54c42a66bc89d1572c84733c83fe387c76235b4646ae5f60071",
@@ -315,7 +299,23 @@
       "expiresAt": "2025-06-22T17:51:46.711Z",
       "used": false,
       "createdAt": "2025-06-22T17:36:46.716Z"
+    },
+    {
+      "id": 39,
+      "userId": 36,
+      "token": "bd7b0f25c6964297635ddfe9b1467b069a3cfd8143bededa737dee79b3b4d196",
+      "expiresAt": "2025-06-22T17:52:58.831Z",
+      "used": false,
+      "createdAt": "2025-06-22T17:37:58.838Z"
+    },
+    {
+      "id": 40,
+      "userId": 1,
+      "token": "517ff471430adf983c6db71bbfc91b941e9771d884228c08717c681c15d0fb1a",
+      "expiresAt": "2025-06-22T17:54:19.952Z",
+      "used": false,
+      "createdAt": "2025-06-22T17:39:19.965Z"
     }
   ],
-  "nextId": 39
+  "nextId": 41
 }

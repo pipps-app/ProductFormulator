@@ -55,6 +55,8 @@ export default function Login() {
     const urlParams = new URLSearchParams(window.location.search);
     const token = urlParams.get('reset');
     if (token) {
+      console.log('Magic link token detected:', token);
+      
       // Force logout if user is logged in
       if (user) {
         fetch("/api/auth/logout", {
@@ -63,13 +65,22 @@ export default function Login() {
         }).then(() => {
           queryClient.clear();
           queryClient.invalidateQueries({ queryKey: ["/api/user"] });
+          // Set state after logout
+          setTimeout(() => {
+            setShowPasswordReset(true);
+            setShowPasswordResetForm(true);
+            passwordResetForm.setValue('token', token);
+            setResetToken(token);
+          }, 100);
         });
+      } else {
+        // User not logged in, proceed directly
+        setShowPasswordReset(true);
+        setShowPasswordResetForm(true);
+        passwordResetForm.setValue('token', token);
+        setResetToken(token);
       }
       
-      setShowPasswordReset(true);
-      setShowPasswordResetForm(true);
-      passwordResetForm.setValue('token', token);
-      setResetToken(token);
       // Clean up URL
       window.history.replaceState({}, document.title, window.location.pathname);
       toast({
@@ -78,7 +89,7 @@ export default function Login() {
         duration: 5000,
       });
     }
-  }, [user, queryClient]);
+  }, []);
 
   // Always initialize forms at the top level
   const loginForm = useForm<LoginFormData>({
@@ -270,7 +281,10 @@ export default function Login() {
 
   // Handle redirect to dashboard if user is authenticated (but not during password reset)
   useEffect(() => {
-    if (!isLoading && user && !showPasswordReset) {
+    const urlParams = new URLSearchParams(window.location.search);
+    const hasResetToken = urlParams.get('reset');
+    
+    if (!isLoading && user && !showPasswordReset && !hasResetToken) {
       setLocation("/dashboard");
     }
   }, [isLoading, user, setLocation, showPasswordReset]);
