@@ -342,8 +342,8 @@ export class ReportsService {
       const category = categories.find(c => c.id === m.categoryId);
       return {
         name: m.name,
-        unitCost: `$${m.unitCost}/${m.unit}`,
-        unit: m.unit,
+        unitCost: `$${m.unitCost || '0.0000'}/${m.unit || 'unit'}`,
+        unit: m.unit || 'Not specified',
         category: category?.name || 'Uncategorized',
         type: 'Most Expensive'
       };
@@ -353,8 +353,8 @@ export class ReportsService {
       const category = categories.find(c => c.id === m.categoryId);
       return {
         name: m.name,
-        unitCost: `$${m.unitCost}/${m.unit}`,
-        unit: m.unit,
+        unitCost: `$${m.unitCost || '0.0000'}/${m.unit || 'unit'}`,
+        unit: m.unit || 'Not specified',
         category: category?.name || 'Uncategorized',
         type: 'Least Expensive'
       };
@@ -445,9 +445,9 @@ export class ReportsService {
         
         return {
           formulation: formulation.name,
-          materialName: material?.name || 'Unknown',
-          quantity: `${quantity} ${material?.unit || ''}`,
-          unit: material?.unit || '',
+          materialName: material?.name || 'Unknown Material',
+          quantity: `${quantity} ${material?.unit || 'units'}`,
+          unit: material?.unit || 'Not specified',
           unitCost: `$${unitCost.toFixed(4)}`,
           totalCost: `$${totalCost.toFixed(4)}`
         };
@@ -482,14 +482,14 @@ export class ReportsService {
       
       return {
         name: material.name,
-        sku: material.sku,
+        sku: material.sku || 'Not specified',
         category: category?.name || 'Uncategorized',
-        vendor: vendor?.name || 'No Vendor',
-        totalCost: material.totalCost,
-        quantity: material.quantity,
-        unit: material.unit,
-        unitCost: material.unitCost,
-        notes: material.notes
+        vendor: vendor?.name || 'No Vendor Assigned',
+        totalCost: `$${material.totalCost || '0.00'}`,
+        quantity: material.quantity || 'Not specified',
+        unit: material.unit || 'Not specified',
+        unitCost: `$${material.unitCost || '0.0000'}`,
+        notes: material.notes || 'No notes'
       };
     }).sort((a, b) => parseFloat(b.unitCost) - parseFloat(a.unitCost));
   }
@@ -525,8 +525,8 @@ export class ReportsService {
         maxUnitCost: `$${maxCost.toFixed(4)}`,
         materials: categoryMaterials.map(m => ({
           name: m.name,
-          unitCost: `$${m.unitCost}/${m.unit}`,
-          unit: m.unit
+          unitCost: `$${m.unitCost || '0.0000'}/${m.unit || 'unit'}`,
+          unit: m.unit || 'Not specified'
         })).sort((a, b) => parseFloat(b.unitCost.replace(/[^0-9.-]/g, '')) - parseFloat(a.unitCost.replace(/[^0-9.-]/g, '')))
       };
     });
@@ -774,11 +774,11 @@ export class ReportsService {
       
       comparisons.push({
         materialName: material.name,
-        vendorName: vendor?.name || 'No Vendor',
+        vendorName: vendor?.name || 'No Vendor Assigned',
         category: category?.name || 'Uncategorized',
-        unitCost: `$${material.unitCost}/${material.unit}`,
-        unit: material.unit,
-        totalCost: `$${material.totalCost}`
+        unitCost: `$${material.unitCost || '0.0000'}/${material.unit || 'unit'}`,
+        unit: material.unit || 'Not specified',
+        totalCost: `$${material.totalCost || '0.00'}`
       });
     });
     
