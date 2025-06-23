@@ -11,6 +11,35 @@ export interface ReportData {
 
 export class ReportsService {
   
+  // Generate all reports for a tier (including lower tier reports)
+  async generateAllReportsForTier(userId: number, tier: string): Promise<ReportData[]> {
+    const allReports: ReportData[] = [];
+    
+    // Always include free tier reports
+    const freeReports = await this.generateFreeReports(userId);
+    allReports.push(...freeReports);
+    
+    // Include pro tier reports if tier is pro or higher
+    if (['pro', 'business', 'enterprise'].includes(tier)) {
+      const proReports = await this.generateProReports(userId);
+      allReports.push(...proReports);
+    }
+    
+    // Include business tier reports if tier is business or higher
+    if (['business', 'enterprise'].includes(tier)) {
+      const businessReports = await this.generateBusinessReports(userId);
+      allReports.push(...businessReports);
+    }
+    
+    // Include enterprise tier reports if tier is enterprise
+    if (tier === 'enterprise') {
+      const enterpriseReports = await this.generateEnterpriseReports(userId);
+      allReports.push(...enterpriseReports);
+    }
+    
+    return allReports;
+  }
+  
   // Free Tier Reports
   async generateFreeReports(userId: number): Promise<ReportData[]> {
     const reports: ReportData[] = [];

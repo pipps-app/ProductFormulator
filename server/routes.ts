@@ -3,6 +3,13 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { createPaypalOrder, capturePaypalOrder, loadPaypalDefault } from "./paypal";
 import { reportsService } from "./reports";
+
+function hasAccessToTier(userTier: string, requiredTier: string): boolean {
+  const tierHierarchy = ['free', 'pro', 'business', 'enterprise'];
+  const userTierIndex = tierHierarchy.indexOf(userTier);
+  const requiredTierIndex = tierHierarchy.indexOf(requiredTier);
+  return userTierIndex >= requiredTierIndex;
+}
 import { checkMaterialsLimit, checkFormulationsLimit, checkVendorsLimit, getUserSubscriptionInfo } from "./subscription-middleware";
 import { 
   insertVendorSchema, insertMaterialCategorySchema, insertRawMaterialSchema,
@@ -1928,22 +1935,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       let reports = [];
       
-      switch (tier) {
-        case 'free':
-          reports = await reportsService.generateFreeReports(userId);
-          break;
-        case 'pro':
-          reports = await reportsService.generateProReports(userId);
-          break;
-        case 'business':
-          reports = await reportsService.generateBusinessReports(userId);
-          break;
-        case 'enterprise':
-          reports = await reportsService.generateEnterpriseReports(userId);
-          break;
-        default:
-          return res.status(400).json({ error: "Invalid tier specified" });
-      }
+      // Get user's subscription info
+      const user = await storage.getUser(userId);
+      const userTier = user?.subscriptionPlan || 'free';
+      
+      reports = await reportsService.generateAllReportsForTier(userId, tier);
+      
+      // Add access control information to each report
+      reports = reports.map(report => ({
+        ...report,
+        hasAccess: hasAccessToTier(userTier, report.tier)
+      }));
       
       res.json(reports);
     } catch (error) {

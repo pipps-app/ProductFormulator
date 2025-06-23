@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import jsPDF from 'jspdf';
 import { 
   FileText, 
   TrendingUp, 
@@ -30,6 +31,7 @@ interface ReportData {
   data: any;
   generatedAt: string;
   tier: string;
+  hasAccess?: boolean;
 }
 
 export default function Reports() {
@@ -64,16 +66,106 @@ export default function Reports() {
     }
   };
 
-  const handleDownloadReport = (report: ReportData) => {
-    const dataStr = JSON.stringify(report, null, 2);
-    const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
-    
-    const exportFileDefaultName = `${report.title.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.json`;
-    
-    const linkElement = document.createElement('a');
-    linkElement.setAttribute('href', dataUri);
-    linkElement.setAttribute('download', exportFileDefaultName);
-    linkElement.click();
+  const handleDownloadReport = (report: ReportData, format: 'pdf' | 'json' = 'pdf') => {
+    if (format === 'pdf') {
+      generatePDF(report);
+    } else {
+      const dataStr = JSON.stringify(report, null, 2);
+      const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+      
+      const exportFileDefaultName = `${report.title.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.json`;
+      
+      const linkElement = document.createElement('a');
+      linkElement.setAttribute('href', dataUri);
+      linkElement.setAttribute('download', exportFileDefaultName);
+      linkElement.click();
+    }
+  };
+
+  const generatePDF = (report: ReportData) => {
+    const pdf = new jsPDF();
+    const pageWidth = pdf.internal.pageSize.getWidth();
+    const margin = 20;
+    let yPosition = margin;
+
+    // Header with client info
+    pdf.setFontSize(16);
+    pdf.setFont(undefined, 'bold');
+    pdf.text('PIPPS Maker Calc - Report', margin, yPosition);
+    yPosition += 10;
+
+    // Client and report info
+    pdf.setFontSize(10);
+    pdf.setFont(undefined, 'normal');
+    pdf.text(`Client: ${userInfo?.username || 'Unknown User'}`, margin, yPosition);
+    yPosition += 6;
+    pdf.text(`Company: ${userInfo?.company || 'Not specified'}`, margin, yPosition);
+    yPosition += 6;
+    pdf.text(`Generated: ${new Date().toLocaleString()}`, margin, yPosition);
+    yPosition += 6;
+    pdf.text(`Report: ${report.title}`, margin, yPosition);
+    yPosition += 15;
+
+    // Report title and description
+    pdf.setFontSize(14);
+    pdf.setFont(undefined, 'bold');
+    pdf.text(report.title, margin, yPosition);
+    yPosition += 10;
+
+    pdf.setFontSize(10);
+    pdf.setFont(undefined, 'normal');
+    const splitDescription = pdf.splitTextToSize(report.description, pageWidth - 2 * margin);
+    pdf.text(splitDescription, margin, yPosition);
+    yPosition += splitDescription.length * 6 + 10;
+
+    // Report data
+    pdf.setFontSize(12);
+    pdf.setFont(undefined, 'bold');
+    pdf.text('Report Data:', margin, yPosition);
+    yPosition += 10;
+
+    pdf.setFontSize(9);
+    pdf.setFont(undefined, 'normal');
+
+    const formatDataForPDF = (data: any, indent = 0): string[] => {
+      const lines: string[] = [];
+      if (Array.isArray(data)) {
+        data.forEach((item, index) => {
+          if (typeof item === 'object' && item !== null) {
+            lines.push(`${' '.repeat(indent)}${index + 1}. ${item.name || item.materialName || item.category || 'Item'}`);
+            Object.entries(item).forEach(([key, value]) => {
+              if (key !== 'name' && key !== 'materialName' && key !== 'category') {
+                lines.push(`${' '.repeat(indent + 2)}${key}: ${value}`);
+              }
+            });
+          } else {
+            lines.push(`${' '.repeat(indent)}${index + 1}. ${item}`);
+          }
+        });
+      } else if (typeof data === 'object' && data !== null) {
+        Object.entries(data).forEach(([key, value]) => {
+          lines.push(`${' '.repeat(indent)}${key}: ${value}`);
+        });
+      } else {
+        lines.push(`${' '.repeat(indent)}${data}`);
+      }
+      return lines;
+    };
+
+    const dataLines = formatDataForPDF(report.data);
+    dataLines.forEach(line => {
+      if (yPosition > pdf.internal.pageSize.getHeight() - margin) {
+        pdf.addPage();
+        yPosition = margin;
+      }
+      const splitLine = pdf.splitTextToSize(line, pageWidth - 2 * margin);
+      pdf.text(splitLine, margin, yPosition);
+      yPosition += splitLine.length * 5;
+    });
+
+    // Download
+    const fileName = `${report.title.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.pdf`;
+    pdf.save(fileName);
   };
 
   const getTierIcon = (tier: string) => {
@@ -104,39 +196,87 @@ export default function Reports() {
     return userTierIndex >= requiredTierIndex;
   };
 
-  const renderReportCard = (report: ReportData) => (
-    <Card key={report.title} className="h-full">
-      <CardHeader>
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-2">
-            {getTierIcon(report.tier)}
-            <CardTitle className="text-lg">{report.title}</CardTitle>
+  const renderReportItem = (report: ReportData, index: number) => {
+    const hasAccess = report.hasAccess !== false;
+    
+    return (
+      <div key={report.title} className={`border rounded-lg ${hasAccess ? 'bg-white' : 'bg-gray-50 opacity-60'}`}>
+        <div className="p-4">
+          <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center space-x-2">
+              {getTierIcon(report.tier)}
+              <h3 className={`text-lg font-semibold ${hasAccess ? 'text-gray-900' : 'text-gray-500'}`}>
+                {report.title}
+              </h3>
+              {!hasAccess && (
+                <Badge variant="secondary" className="text-xs">
+                  Upgrade Required
+                </Badge>
+              )}
+            </div>
+            <div className="flex items-center space-x-2">
+              <Badge className={getTierColor(report.tier)}>
+                {report.tier.charAt(0).toUpperCase() + report.tier.slice(1)}
+              </Badge>
+              {hasAccess && (
+                <div className="flex space-x-1">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleDownloadReport(report, 'pdf')}
+                    title="Download as PDF"
+                  >
+                    <Download className="h-4 w-4" />
+                    PDF
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleDownloadReport(report, 'json')}
+                    title="Download as JSON"
+                  >
+                    <Download className="h-4 w-4" />
+                    JSON
+                  </Button>
+                </div>
+              )}
+            </div>
           </div>
-          <div className="flex items-center space-x-2">
-            <Badge className={getTierColor(report.tier)}>
-              {report.tier.charAt(0).toUpperCase() + report.tier.slice(1)}
-            </Badge>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => handleDownloadReport(report)}
-            >
-              <Download className="h-4 w-4" />
-            </Button>
-          </div>
+          
+          <p className={`text-sm mb-2 ${hasAccess ? 'text-gray-600' : 'text-gray-500'}`}>
+            {report.description}
+          </p>
+          
+          <p className="text-xs text-gray-500 mb-3">
+            Generated: {new Date(report.generatedAt).toLocaleString()}
+          </p>
+
+          {hasAccess ? (
+            <Collapsible>
+              <CollapsibleTrigger className="flex items-center space-x-2 text-sm text-blue-600 hover:text-blue-800">
+                <ChevronRight className="h-4 w-4" />
+                <span>View Report Data</span>
+              </CollapsibleTrigger>
+              <CollapsibleContent className="mt-3">
+                <div className="bg-gray-50 rounded-lg p-3">
+                  {renderReportData(report)}
+                </div>
+              </CollapsibleContent>
+            </Collapsible>
+          ) : (
+            <div className="bg-gray-100 rounded-lg p-3 text-center">
+              <p className="text-sm text-gray-500">
+                Upgrade to {report.tier.charAt(0).toUpperCase() + report.tier.slice(1)} to view this report
+              </p>
+              <Button size="sm" className="mt-2">
+                Upgrade Now
+              </Button>
+            </div>
+          )}
         </div>
-        <p className="text-sm text-gray-600">{report.description}</p>
-        <p className="text-xs text-gray-500">
-          Generated: {new Date(report.generatedAt).toLocaleString()}
-        </p>
-      </CardHeader>
-      <CardContent>
-        <div className="space-y-4">
-          {renderReportData(report)}
-        </div>
-      </CardContent>
-    </Card>
-  );
+      </div>
+    );
+  };
 
   const renderReportData = (report: ReportData) => {
     const data = report.data;
@@ -190,22 +330,7 @@ export default function Reports() {
     );
   };
 
-  const renderTierUpgrade = (tier: string) => (
-    <Card className="h-full border-dashed border-2 border-gray-300">
-      <CardContent className="flex flex-col items-center justify-center h-full p-6 text-center">
-        <AlertCircle className="h-12 w-12 text-gray-400 mb-4" />
-        <h3 className="text-lg font-semibold mb-2">
-          {tier.charAt(0).toUpperCase() + tier.slice(1)} Tier Required
-        </h3>
-        <p className="text-sm text-gray-600 mb-4">
-          Upgrade your subscription to access {tier} tier reports with advanced analytics and insights.
-        </p>
-        <Button>
-          Upgrade to {tier.charAt(0).toUpperCase() + tier.slice(1)}
-        </Button>
-      </CardContent>
-    </Card>
-  );
+
 
   return (
     <div className="max-w-7xl mx-auto p-6 space-y-6">
@@ -249,89 +374,73 @@ export default function Reports() {
         </TabsList>
 
         <TabsContent value="free">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {canAccessTier("free") ? (
-              isLoading ? (
-                <div className="col-span-full text-center py-8">
-                  <RefreshCw className="h-8 w-8 animate-spin mx-auto mb-4 text-gray-400" />
-                  <p className="text-gray-600">Generating reports...</p>
-                </div>
-              ) : reports && reports.length > 0 ? (
-                reports.map((report: ReportData) => renderReportCard(report))
-              ) : (
-                <div className="col-span-full text-center py-8">
-                  <FileText className="h-12 w-12 mx-auto mb-4 text-gray-400" />
-                  <p className="text-gray-600">No reports available</p>
-                </div>
-              )
+          <div className="space-y-4">
+            {isLoading ? (
+              <div className="text-center py-8">
+                <RefreshCw className="h-8 w-8 animate-spin mx-auto mb-4 text-gray-400" />
+                <p className="text-gray-600">Generating reports...</p>
+              </div>
+            ) : reports && reports.length > 0 ? (
+              reports.map((report: ReportData, index) => renderReportItem(report, index))
             ) : (
-              renderTierUpgrade("free")
+              <div className="text-center py-8">
+                <FileText className="h-12 w-12 mx-auto mb-4 text-gray-400" />
+                <p className="text-gray-600">No reports available</p>
+              </div>
             )}
           </div>
         </TabsContent>
 
         <TabsContent value="pro">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {canAccessTier("pro") ? (
-              isLoading ? (
-                <div className="col-span-full text-center py-8">
-                  <RefreshCw className="h-8 w-8 animate-spin mx-auto mb-4 text-gray-400" />
-                  <p className="text-gray-600">Generating reports...</p>
-                </div>
-              ) : reports && reports.length > 0 ? (
-                reports.map((report: ReportData) => renderReportCard(report))
-              ) : (
-                <div className="col-span-full text-center py-8">
-                  <FileText className="h-12 w-12 mx-auto mb-4 text-gray-400" />
-                  <p className="text-gray-600">No reports available</p>
-                </div>
-              )
+          <div className="space-y-4">
+            {isLoading ? (
+              <div className="text-center py-8">
+                <RefreshCw className="h-8 w-8 animate-spin mx-auto mb-4 text-gray-400" />
+                <p className="text-gray-600">Generating reports...</p>
+              </div>
+            ) : reports && reports.length > 0 ? (
+              reports.map((report: ReportData, index) => renderReportItem(report, index))
             ) : (
-              renderTierUpgrade("pro")
+              <div className="text-center py-8">
+                <FileText className="h-12 w-12 mx-auto mb-4 text-gray-400" />
+                <p className="text-gray-600">No reports available</p>
+              </div>
             )}
           </div>
         </TabsContent>
 
         <TabsContent value="business">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {canAccessTier("business") ? (
-              isLoading ? (
-                <div className="col-span-full text-center py-8">
-                  <RefreshCw className="h-8 w-8 animate-spin mx-auto mb-4 text-gray-400" />
-                  <p className="text-gray-600">Generating reports...</p>
-                </div>
-              ) : reports && reports.length > 0 ? (
-                reports.map((report: ReportData) => renderReportCard(report))
-              ) : (
-                <div className="col-span-full text-center py-8">
-                  <FileText className="h-12 w-12 mx-auto mb-4 text-gray-400" />
-                  <p className="text-gray-600">No reports available</p>
-                </div>
-              )
+          <div className="space-y-4">
+            {isLoading ? (
+              <div className="text-center py-8">
+                <RefreshCw className="h-8 w-8 animate-spin mx-auto mb-4 text-gray-400" />
+                <p className="text-gray-600">Generating reports...</p>
+              </div>
+            ) : reports && reports.length > 0 ? (
+              reports.map((report: ReportData, index) => renderReportItem(report, index))
             ) : (
-              renderTierUpgrade("business")
+              <div className="text-center py-8">
+                <FileText className="h-12 w-12 mx-auto mb-4 text-gray-400" />
+                <p className="text-gray-600">No reports available</p>
+              </div>
             )}
           </div>
         </TabsContent>
 
         <TabsContent value="enterprise">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {canAccessTier("enterprise") ? (
-              isLoading ? (
-                <div className="col-span-full text-center py-8">
-                  <RefreshCw className="h-8 w-8 animate-spin mx-auto mb-4 text-gray-400" />
-                  <p className="text-gray-600">Generating reports...</p>
-                </div>
-              ) : reports && reports.length > 0 ? (
-                reports.map((report: ReportData) => renderReportCard(report))
-              ) : (
-                <div className="col-span-full text-center py-8">
-                  <FileText className="h-12 w-12 mx-auto mb-4 text-gray-400" />
-                  <p className="text-gray-600">No reports available</p>
-                </div>
-              )
+          <div className="space-y-4">
+            {isLoading ? (
+              <div className="text-center py-8">
+                <RefreshCw className="h-8 w-8 animate-spin mx-auto mb-4 text-gray-400" />
+                <p className="text-gray-600">Generating reports...</p>
+              </div>
+            ) : reports && reports.length > 0 ? (
+              reports.map((report: ReportData, index) => renderReportItem(report, index))
             ) : (
-              renderTierUpgrade("enterprise")
+              <div className="text-center py-8">
+                <FileText className="h-12 w-12 mx-auto mb-4 text-gray-400" />
+                <p className="text-gray-600">No reports available</p>
+              </div>
             )}
           </div>
         </TabsContent>
