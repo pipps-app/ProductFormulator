@@ -493,6 +493,34 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/material-categories", requireAuth, async (req: any, res) => {
     try {
       const userId = req.userId;
+      
+      // Validate category name is not empty
+      if (!req.body.name || req.body.name.trim() === '') {
+        return res.status(400).json({ error: "Category name is required" });
+      }
+      
+      // Check subscription limits
+      const user = await storage.getUser(userId);
+      const userTier = user?.subscriptionPlan || 'free';
+      const existingCategories = await storage.getMaterialCategories(userId);
+      
+      const tierLimits = {
+        free: 5,
+        pro: 20,
+        business: 50,
+        enterprise: Infinity
+      };
+      
+      const limit = tierLimits[userTier];
+      if (existingCategories.length >= limit) {
+        return res.status(403).json({ 
+          error: "Plan limit reached", 
+          message: `Your ${userTier} plan allows up to ${limit} categories. You currently have ${existingCategories.length}.`,
+          currentCount: existingCategories.length,
+          limit: limit
+        });
+      }
+      
       const categoryData = insertMaterialCategorySchema.parse({ ...req.body, userId });
       const category = await storage.createMaterialCategory(categoryData);
       

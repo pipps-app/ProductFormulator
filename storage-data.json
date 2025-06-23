@@ -499,6 +499,34 @@
       "color": "blue",
       "userId": 1,
       "createdAt": "2025-06-23T16:53:52.430Z"
+    },
+    {
+      "id": 1625,
+      "name": "Bottle and cap - Gallon bottles & caps",
+      "color": "blue",
+      "userId": 1597,
+      "createdAt": "2025-06-23T16:58:07.328Z"
+    },
+    {
+      "id": 1627,
+      "name": "Jamaica Packaging",
+      "color": "blue",
+      "userId": 1597,
+      "createdAt": "2025-06-23T16:58:12.290Z"
+    },
+    {
+      "id": 1629,
+      "name": "Concrete - Square Coasters x 2 Units; Airmail Delivery",
+      "color": "blue",
+      "userId": 1597,
+      "createdAt": "2025-06-23T16:58:17.307Z"
+    },
+    {
+      "id": 1631,
+      "name": "",
+      "color": "blue",
+      "userId": 1597,
+      "createdAt": "2025-06-23T16:58:21.875Z"
     }
   ],
   "rawMaterials": [
@@ -9350,6 +9378,46 @@
       "changes": "{\"description\":\"Created new category \\\"Concrete - Square Coasters x 2 Units; Airmail Delivery\\\" with blue color\",\"data\":{\"id\":1623,\"name\":\"Concrete - Square Coasters x 2 Units; Airmail Delivery\",\"color\":\"blue\",\"userId\":1,\"createdAt\":\"2025-06-23T16:53:52.430Z\"}}",
       "createdAt": "2025-06-23T16:53:52.445Z",
       "timestamp": "2025-06-23T16:53:52.445Z"
+    },
+    {
+      "id": 1626,
+      "userId": 1597,
+      "action": "create",
+      "entityType": "category",
+      "entityId": 1625,
+      "changes": "{\"description\":\"Created new category \\\"Bottle and cap - Gallon bottles & caps\\\" with blue color\",\"data\":{\"id\":1625,\"name\":\"Bottle and cap - Gallon bottles & caps\",\"color\":\"blue\",\"userId\":1597,\"createdAt\":\"2025-06-23T16:58:07.328Z\"}}",
+      "createdAt": "2025-06-23T16:58:07.337Z",
+      "timestamp": "2025-06-23T16:58:07.337Z"
+    },
+    {
+      "id": 1628,
+      "userId": 1597,
+      "action": "create",
+      "entityType": "category",
+      "entityId": 1627,
+      "changes": "{\"description\":\"Created new category \\\"Jamaica Packaging\\\" with blue color\",\"data\":{\"id\":1627,\"name\":\"Jamaica Packaging\",\"color\":\"blue\",\"userId\":1597,\"createdAt\":\"2025-06-23T16:58:12.290Z\"}}",
+      "createdAt": "2025-06-23T16:58:12.296Z",
+      "timestamp": "2025-06-23T16:58:12.296Z"
+    },
+    {
+      "id": 1630,
+      "userId": 1597,
+      "action": "create",
+      "entityType": "category",
+      "entityId": 1629,
+      "changes": "{\"description\":\"Created new category \\\"Concrete - Square Coasters x 2 Units; Airmail Delivery\\\" with blue color\",\"data\":{\"id\":1629,\"name\":\"Concrete - Square Coasters x 2 Units; Airmail Delivery\",\"color\":\"blue\",\"userId\":1597,\"createdAt\":\"2025-06-23T16:58:17.307Z\"}}",
+      "createdAt": "2025-06-23T16:58:17.315Z",
+      "timestamp": "2025-06-23T16:58:17.315Z"
+    },
+    {
+      "id": 1632,
+      "userId": 1597,
+      "action": "create",
+      "entityType": "category",
+      "entityId": 1631,
+      "changes": "{\"description\":\"Created new category \\\"\\\" with blue color\",\"data\":{\"id\":1631,\"name\":\"\",\"color\":\"blue\",\"userId\":1597,\"createdAt\":\"2025-06-23T16:58:21.875Z\"}}",
+      "createdAt": "2025-06-23T16:58:21.882Z",
+      "timestamp": "2025-06-23T16:58:21.882Z"
     }
   ],
   "passwordResetTokens": [
@@ -9370,6 +9438,6 @@
       "createdAt": "2025-06-23T16:33:29.469Z"
     }
   ],
-  "nextId": 1625,
+  "nextId": 1633,
   "payments": []
 }
