@@ -393,7 +393,7 @@ export class ReportsService {
           batchSellingPrice: `$${batchSellingPrice.toFixed(2)}`,
           batchProfit: `$${batchProfit.toFixed(2)}`,
           profitMargin: `${effectiveMargin.toFixed(2)}%`,
-          hasTargetPrice: targetPrice > 0
+          hasTargetPrice: targetPrice > 0 ? 'Yes' : 'No'
         });
       }
     }
@@ -423,7 +423,7 @@ export class ReportsService {
         sellingPrice: `$${sellingPrice.toFixed(4)}`,
         profit: `$${profit.toFixed(4)}`,
         actualMarginPercent: `${actualMarginPercent.toFixed(2)}%`,
-        hasTargetPrice: targetPrice > 0
+        hasTargetPrice: targetPrice > 0 ? 'Yes' : 'No'
       };
     });
   }
