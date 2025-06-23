@@ -213,7 +213,7 @@
     },
     {
       "id": 672,
-      "name": "Jamaica Packaging",
+      "name": "Jamaica Packagaing",
       "contactEmail": "",
       "contactPhone": "",
       "address": "",
@@ -431,6 +431,33 @@
       "color": "blue",
       "userId": 1,
       "createdAt": "2025-06-23T10:29:52.627Z"
+    },
+    {
+      "id": 1152,
+      "name": "Additives",
+      "description": "Category for Additives",
+      "color": null,
+      "userId": 1,
+      "createdAt": "2025-06-23T10:40:55.492Z",
+      "updatedAt": "2025-06-23T10:40:55.493Z"
+    },
+    {
+      "id": 1153,
+      "name": "Packaging",
+      "description": "Category for Packaging",
+      "color": null,
+      "userId": 1,
+      "createdAt": "2025-06-23T10:40:55.503Z",
+      "updatedAt": "2025-06-23T10:40:55.503Z"
+    },
+    {
+      "id": 1154,
+      "name": "Concrete supplies",
+      "description": "Category for Concrete supplies",
+      "color": null,
+      "userId": 1,
+      "createdAt": "2025-06-23T10:40:55.503Z",
+      "updatedAt": "2025-06-23T10:40:55.503Z"
     }
   ],
   "rawMaterials": [
@@ -4959,6 +4986,666 @@
       "changes": "{\"description\":\"Imported raw material \\\"Shipping - SAL - USA up to 10kg\\\" via CSV import\",\"data\":{\"name\":\"Shipping - SAL - USA up to 10kg\",\"sku\":null,\"categoryId\":656,\"vendorId\":682,\"totalCost\":\"2340\",\"quantity\":\"1\",\"unit\":\"pcs\",\"notes\":null,\"isActive\":true,\"userId\":1}}",
       "createdAt": "2025-06-23T10:33:49.493Z",
       "timestamp": "2025-06-23T10:33:49.493Z"
+    },
+    {
+      "id": 1021,
+      "userId": 1,
+      "action": "create",
+      "entityType": "material",
+      "entityId": 0,
+      "changes": "{\"description\":\"Imported raw material \\\"Palm oil\\\" via CSV import\",\"data\":{\"name\":\"Palm oil\",\"sku\":null,\"categoryId\":660,\"vendorId\":662,\"totalCost\":\"6500\",\"quantity\":\"16150\",\"unit\":\"g\",\"notes\":\"$6000/16000mls i.e weight = 85% volume 18.8, Seprod / Caribbean products\",\"isActive\":true,\"userId\":1}}",
+      "createdAt": "2025-06-23T10:39:53.503Z",
+      "timestamp": "2025-06-23T10:39:53.503Z"
+    },
+    {
+      "id": 1023,
+      "userId": 1,
+      "action": "create",
+      "entityType": "material",
+      "entityId": 0,
+      "changes": "{\"description\":\"Imported raw material \\\"charcoal powder per gram\\\" via CSV import\",\"data\":{\"name\":\"charcoal powder per gram\",\"sku\":null,\"categoryId\":658,\"vendorId\":666,\"totalCost\":\"2000\",\"quantity\":\"116\",\"unit\":\"g\",\"notes\":\"Earth element -4 oz (116g) = $1600; 1T weighs 5g\",\"isActive\":true,\"userId\":1}}",
+      "createdAt": "2025-06-23T10:39:53.528Z",
+      "timestamp": "2025-06-23T10:39:53.528Z"
+    },
+    {
+      "id": 1025,
+      "userId": 1,
+      "action": "create",
+      "entityType": "material",
+      "entityId": 0,
+      "changes": "{\"description\":\"Imported raw material \\\"Cement - grey 40kg bag\\\" via CSV import\",\"data\":{\"name\":\"Cement - grey 40kg bag\",\"sku\":null,\"categoryId\":648,\"vendorId\":670,\"totalCost\":\"2500\",\"quantity\":\"40000\",\"unit\":\"pcs\",\"notes\":\"42.4 kg = 40000g\",\"isActive\":true,\"userId\":1}}",
+      "createdAt": "2025-06-23T10:39:53.537Z",
+      "timestamp": "2025-06-23T10:39:53.537Z"
+    },
+    {
+      "id": 1027,
+      "userId": 1,
+      "action": "create",
+      "entityType": "material",
+      "entityId": 0,
+      "changes": "{\"description\":\"Imported raw material \\\"Cement - white 40kg bag\\\" via CSV import\",\"data\":{\"name\":\"Cement - white 40kg bag\",\"sku\":null,\"categoryId\":648,\"vendorId\":670,\"totalCost\":\"4400\",\"quantity\":\"40000\",\"unit\":\"g\",\"notes\":null,\"isActive\":true,\"userId\":1}}",
+      "createdAt": "2025-06-23T10:39:53.552Z",
+      "timestamp": "2025-06-23T10:39:53.552Z"
+    },
+    {
+      "id": 1029,
+      "userId": 1,
+      "action": "create",
+      "entityType": "material",
+      "entityId": 0,
+      "changes": "{\"description\":\"Imported raw material \\\"Sand\\\" via CSV import\",\"data\":{\"name\":\"Sand\",\"sku\":null,\"categoryId\":648,\"vendorId\":670,\"totalCost\":\"700\",\"quantity\":\"90000\",\"unit\":\"g\",\"notes\":\"approx 200 pound bag = 90000g\",\"isActive\":true,\"userId\":1}}",
+      "createdAt": "2025-06-23T10:39:53.563Z",
+      "timestamp": "2025-06-23T10:39:53.563Z"
+    },
+    {
+      "id": 1031,
+      "userId": 1,
+      "action": "create",
+      "entityType": "material",
+      "entityId": 0,
+      "changes": "{\"description\":\"Imported raw material \\\"eucalyptus\\\" via CSV import\",\"data\":{\"name\":\"eucalyptus\",\"sku\":null,\"categoryId\":650,\"vendorId\":674,\"totalCost\":\"18.67\",\"quantity\":\"102\",\"unit\":\"g\",\"notes\":null,\"isActive\":true,\"userId\":1}}",
+      "createdAt": "2025-06-23T10:39:53.577Z",
+      "timestamp": "2025-06-23T10:39:53.577Z"
+    },
+    {
+      "id": 1033,
+      "userId": 1,
+      "action": "create",
+      "entityType": "material",
+      "entityId": 0,
+      "changes": "{\"description\":\"Imported raw material \\\"Fragrance oils - Plant guru\\\" via CSV import\",\"data\":{\"name\":\"Fragrance oils - Plant guru\",\"sku\":null,\"categoryId\":650,\"vendorId\":674,\"totalCost\":\"9420\",\"quantity\":\"828\",\"unit\":\"g\",\"notes\":\"4oz bottle - $12 USD each, pay for 4 = $48, get 7; total 7 x 4 oz = 828mls; mail pack = $1500\",\"isActive\":true,\"userId\":1}}",
+      "createdAt": "2025-06-23T10:39:53.585Z",
+      "timestamp": "2025-06-23T10:39:53.585Z"
+    },
+    {
+      "id": 1035,
+      "userId": 1,
+      "action": "create",
+      "entityType": "material",
+      "entityId": 0,
+      "changes": "{\"description\":\"Imported raw material \\\"lavender\\\" via CSV import\",\"data\":{\"name\":\"lavender\",\"sku\":null,\"categoryId\":650,\"vendorId\":674,\"totalCost\":\"4\",\"quantity\":\"102\",\"unit\":\"g\",\"notes\":null,\"isActive\":true,\"userId\":1}}",
+      "createdAt": "2025-06-23T10:39:53.593Z",
+      "timestamp": "2025-06-23T10:39:53.593Z"
+    },
+    {
+      "id": 1037,
+      "userId": 1,
+      "action": "create",
+      "entityType": "material",
+      "entityId": 0,
+      "changes": "{\"description\":\"Imported raw material \\\"lemon\\\" via CSV import\",\"data\":{\"name\":\"lemon\",\"sku\":null,\"categoryId\":650,\"vendorId\":674,\"totalCost\":\"3\",\"quantity\":\"102\",\"unit\":\"g\",\"notes\":null,\"isActive\":true,\"userId\":1}}",
+      "createdAt": "2025-06-23T10:39:53.600Z",
+      "timestamp": "2025-06-23T10:39:53.600Z"
+    },
+    {
+      "id": 1039,
+      "userId": 1,
+      "action": "create",
+      "entityType": "material",
+      "entityId": 0,
+      "changes": "{\"description\":\"Imported raw material \\\"lemongrass\\\" via CSV import\",\"data\":{\"name\":\"lemongrass\",\"sku\":null,\"categoryId\":650,\"vendorId\":674,\"totalCost\":\"4\",\"quantity\":\"102\",\"unit\":\"g\",\"notes\":null,\"isActive\":true,\"userId\":1}}",
+      "createdAt": "2025-06-23T10:39:53.608Z",
+      "timestamp": "2025-06-23T10:39:53.608Z"
+    },
+    {
+      "id": 1041,
+      "userId": 1,
+      "action": "create",
+      "entityType": "material",
+      "entityId": 0,
+      "changes": "{\"description\":\"Imported raw material \\\"orange\\\" via CSV import\",\"data\":{\"name\":\"orange\",\"sku\":null,\"categoryId\":650,\"vendorId\":674,\"totalCost\":\"3\",\"quantity\":\"102\",\"unit\":\"g\",\"notes\":null,\"isActive\":true,\"userId\":1}}",
+      "createdAt": "2025-06-23T10:39:53.616Z",
+      "timestamp": "2025-06-23T10:39:53.616Z"
+    },
+    {
+      "id": 1043,
+      "userId": 1,
+      "action": "create",
+      "entityType": "material",
+      "entityId": 0,
+      "changes": "{\"description\":\"Imported raw material \\\"peppermint\\\" via CSV import\",\"data\":{\"name\":\"peppermint\",\"sku\":null,\"categoryId\":650,\"vendorId\":674,\"totalCost\":\"3\",\"quantity\":\"102\",\"unit\":\"g\",\"notes\":null,\"isActive\":true,\"userId\":1}}",
+      "createdAt": "2025-06-23T10:39:53.624Z",
+      "timestamp": "2025-06-23T10:39:53.624Z"
+    },
+    {
+      "id": 1045,
+      "userId": 1,
+      "action": "create",
+      "entityType": "material",
+      "entityId": 0,
+      "changes": "{\"description\":\"Imported raw material \\\"rosemary\\\" via CSV import\",\"data\":{\"name\":\"rosemary\",\"sku\":null,\"categoryId\":650,\"vendorId\":674,\"totalCost\":\"4\",\"quantity\":\"102\",\"unit\":\"g\",\"notes\":null,\"isActive\":true,\"userId\":1}}",
+      "createdAt": "2025-06-23T10:39:53.631Z",
+      "timestamp": "2025-06-23T10:39:53.631Z"
+    },
+    {
+      "id": 1047,
+      "userId": 1,
+      "action": "create",
+      "entityType": "material",
+      "entityId": 0,
+      "changes": "{\"description\":\"Imported raw material \\\"tto\\\" via CSV import\",\"data\":{\"name\":\"tto\",\"sku\":null,\"categoryId\":650,\"vendorId\":674,\"totalCost\":\"4\",\"quantity\":\"102\",\"unit\":\"g\",\"notes\":null,\"isActive\":true,\"userId\":1}}",
+      "createdAt": "2025-06-23T10:39:53.637Z",
+      "timestamp": "2025-06-23T10:39:53.637Z"
+    },
+    {
+      "id": 1049,
+      "userId": 1,
+      "action": "create",
+      "entityType": "material",
+      "entityId": 0,
+      "changes": "{\"description\":\"Imported raw material \\\"Bentonite clay per gram\\\" via CSV import\",\"data\":{\"name\":\"Bentonite clay per gram\",\"sku\":null,\"categoryId\":658,\"vendorId\":674,\"totalCost\":\"3675\",\"quantity\":\"454\",\"unit\":\"g\",\"notes\":\"aztec clay mask - 1 lbs =454g =$15USD plus $1200 JMD courier\",\"isActive\":true,\"userId\":1}}",
+      "createdAt": "2025-06-23T10:39:53.645Z",
+      "timestamp": "2025-06-23T10:39:53.645Z"
+    },
+    {
+      "id": 1051,
+      "userId": 1,
+      "action": "create",
+      "entityType": "material",
+      "entityId": 0,
+      "changes": "{\"description\":\"Imported raw material \\\"almond oil - USD plus courier\\\" via CSV import\",\"data\":{\"name\":\"almond oil - USD plus courier\",\"sku\":null,\"categoryId\":660,\"vendorId\":674,\"totalCost\":\"10930\",\"quantity\":\"3217.25\",\"unit\":\"g\",\"notes\":\"$42 USD for 1 gallon plus $4000 JMD courier\",\"isActive\":true,\"userId\":1}}",
+      "createdAt": "2025-06-23T10:39:53.652Z",
+      "timestamp": "2025-06-23T10:39:53.652Z"
+    },
+    {
+      "id": 1053,
+      "userId": 1,
+      "action": "create",
+      "entityType": "material",
+      "entityId": 0,
+      "changes": "{\"description\":\"Imported raw material \\\"Castor oil\\\" via CSV import\",\"data\":{\"name\":\"Castor oil\",\"sku\":null,\"categoryId\":660,\"vendorId\":674,\"totalCost\":\"10930\",\"quantity\":\"3217.25\",\"unit\":\"g\",\"notes\":\"$42 USD per gallon plus $4000 courier\",\"isActive\":true,\"userId\":1}}",
+      "createdAt": "2025-06-23T10:39:53.659Z",
+      "timestamp": "2025-06-23T10:39:53.659Z"
+    },
+    {
+      "id": 1055,
+      "userId": 1,
+      "action": "create",
+      "entityType": "material",
+      "entityId": 0,
+      "changes": "{\"description\":\"Imported raw material \\\"jojoba oil - USD plus courier\\\" via CSV import\",\"data\":{\"name\":\"jojoba oil - USD plus courier\",\"sku\":null,\"categoryId\":660,\"vendorId\":674,\"totalCost\":\"6950\",\"quantity\":\"788.8\",\"unit\":\"g\",\"notes\":\"$30 USD for 32 fl. oz plus $2000 JMD  courier\",\"isActive\":true,\"userId\":1}}",
+      "createdAt": "2025-06-23T10:39:53.668Z",
+      "timestamp": "2025-06-23T10:39:53.668Z"
+    },
+    {
+      "id": 1057,
+      "userId": 1,
+      "action": "create",
+      "entityType": "material",
+      "entityId": 0,
+      "changes": "{\"description\":\"Imported raw material \\\"neem oil 64 fl. oz - USD plus courier\\\" via CSV import\",\"data\":{\"name\":\"neem oil 64 fl. oz - USD plus courier\",\"sku\":null,\"categoryId\":660,\"vendorId\":674,\"totalCost\":\"10764\",\"quantity\":\"1670.4\",\"unit\":\"g\",\"notes\":null,\"isActive\":true,\"userId\":1}}",
+      "createdAt": "2025-06-23T10:39:53.676Z",
+      "timestamp": "2025-06-23T10:39:53.676Z"
+    },
+    {
+      "id": 1059,
+      "userId": 1,
+      "action": "create",
+      "entityType": "material",
+      "entityId": 0,
+      "changes": "{\"description\":\"Imported raw material \\\"ROE\\\" via CSV import\",\"data\":{\"name\":\"ROE\",\"sku\":null,\"categoryId\":660,\"vendorId\":674,\"totalCost\":\"8000\",\"quantity\":\"204\",\"unit\":\"g\",\"notes\":\"$44 US + 6 US courier = $50; $9000JA / 240mls\",\"isActive\":true,\"userId\":1}}",
+      "createdAt": "2025-06-23T10:39:53.684Z",
+      "timestamp": "2025-06-23T10:39:53.684Z"
+    },
+    {
+      "id": 1061,
+      "userId": 1,
+      "action": "create",
+      "entityType": "material",
+      "entityId": 0,
+      "changes": "{\"description\":\"Imported raw material \\\"Glycerin per ml\\\" via CSV import\",\"data\":{\"name\":\"Glycerin per ml\",\"sku\":null,\"categoryId\":658,\"vendorId\":676,\"totalCost\":\"22000\",\"quantity\":\"19000\",\"unit\":\"g\",\"notes\":\"Paramount - $22000 per 19000mls\",\"isActive\":true,\"userId\":1}}",
+      "createdAt": "2025-06-23T10:39:53.692Z",
+      "timestamp": "2025-06-23T10:39:53.692Z"
+    },
+    {
+      "id": 1063,
+      "userId": 1,
+      "action": "create",
+      "entityType": "material",
+      "entityId": 0,
+      "changes": "{\"description\":\"Imported raw material \\\"HEC - Cellulose\\\" via CSV import\",\"data\":{\"name\":\"HEC - Cellulose\",\"sku\":null,\"categoryId\":658,\"vendorId\":676,\"totalCost\":\"77100\",\"quantity\":\"25000\",\"unit\":\"g\",\"notes\":\"Cellulose - paramount $77000 / 25000g purchased Feb 9 2024\",\"isActive\":true,\"userId\":1}}",
+      "createdAt": "2025-06-23T10:39:53.698Z",
+      "timestamp": "2025-06-23T10:39:53.698Z"
+    },
+    {
+      "id": 1065,
+      "userId": 1,
+      "action": "create",
+      "entityType": "material",
+      "entityId": 0,
+      "changes": "{\"description\":\"Imported raw material \\\"Potassium hydroxide\\\" via CSV import\",\"data\":{\"name\":\"Potassium hydroxide\",\"sku\":null,\"categoryId\":658,\"vendorId\":676,\"totalCost\":\"41000\",\"quantity\":\"25000\",\"unit\":\"g\",\"notes\":\"Paramount Trading\",\"isActive\":true,\"userId\":1}}",
+      "createdAt": "2025-06-23T10:39:53.805Z",
+      "timestamp": "2025-06-23T10:39:53.805Z"
+    },
+    {
+      "id": 1067,
+      "userId": 1,
+      "action": "create",
+      "entityType": "material",
+      "entityId": 0,
+      "changes": "{\"description\":\"Imported raw material \\\"Sodium hydroxide\\\" via CSV import\",\"data\":{\"name\":\"Sodium hydroxide\",\"sku\":null,\"categoryId\":658,\"vendorId\":676,\"totalCost\":\"6800\",\"quantity\":\"25000\",\"unit\":\"g\",\"notes\":\"Paramount Trading\",\"isActive\":true,\"userId\":1}}",
+      "createdAt": "2025-06-23T10:39:53.813Z",
+      "timestamp": "2025-06-23T10:39:53.813Z"
+    },
+    {
+      "id": 1069,
+      "userId": 1,
+      "action": "create",
+      "entityType": "material",
+      "entityId": 0,
+      "changes": "{\"description\":\"Imported raw material \\\"oxides - black\\\" via CSV import\",\"data\":{\"name\":\"oxides - black\",\"sku\":null,\"categoryId\":648,\"vendorId\":678,\"totalCost\":\"21000\",\"quantity\":\"24000\",\"unit\":\"pcs\",\"notes\":\"for 55lbs = 24000g\",\"isActive\":true,\"userId\":1}}",
+      "createdAt": "2025-06-23T10:39:53.824Z",
+      "timestamp": "2025-06-23T10:39:53.824Z"
+    },
+    {
+      "id": 1071,
+      "userId": 1,
+      "action": "create",
+      "entityType": "material",
+      "entityId": 0,
+      "changes": "{\"description\":\"Imported raw material \\\"oxides - blue\\\" via CSV import\",\"data\":{\"name\":\"oxides - blue\",\"sku\":null,\"categoryId\":648,\"vendorId\":678,\"totalCost\":\"1000\",\"quantity\":\"454\",\"unit\":\"pcs\",\"notes\":\"estimated\",\"isActive\":true,\"userId\":1}}",
+      "createdAt": "2025-06-23T10:39:53.831Z",
+      "timestamp": "2025-06-23T10:39:53.831Z"
+    },
+    {
+      "id": 1073,
+      "userId": 1,
+      "action": "create",
+      "entityType": "material",
+      "entityId": 0,
+      "changes": "{\"description\":\"Imported raw material \\\"oxides - green\\\" via CSV import\",\"data\":{\"name\":\"oxides - green\",\"sku\":null,\"categoryId\":648,\"vendorId\":678,\"totalCost\":\"25000\",\"quantity\":\"24000\",\"unit\":\"pcs\",\"notes\":\"for 55lbs = 24000g\",\"isActive\":true,\"userId\":1}}",
+      "createdAt": "2025-06-23T10:39:53.839Z",
+      "timestamp": "2025-06-23T10:39:53.839Z"
+    },
+    {
+      "id": 1075,
+      "userId": 1,
+      "action": "create",
+      "entityType": "material",
+      "entityId": 0,
+      "changes": "{\"description\":\"Imported raw material \\\"oxides - red\\\" via CSV import\",\"data\":{\"name\":\"oxides - red\",\"sku\":null,\"categoryId\":648,\"vendorId\":678,\"totalCost\":\"21000\",\"quantity\":\"24000\",\"unit\":\"pcs\",\"notes\":\"for 55lbs = 24000g\",\"isActive\":true,\"userId\":1}}",
+      "createdAt": "2025-06-23T10:39:53.845Z",
+      "timestamp": "2025-06-23T10:39:53.845Z"
+    },
+    {
+      "id": 1077,
+      "userId": 1,
+      "action": "create",
+      "entityType": "material",
+      "entityId": 0,
+      "changes": "{\"description\":\"Imported raw material \\\"oxides - yellow\\\" via CSV import\",\"data\":{\"name\":\"oxides - yellow\",\"sku\":null,\"categoryId\":648,\"vendorId\":678,\"totalCost\":\"18000\",\"quantity\":\"19000\",\"unit\":\"pcs\",\"notes\":\"for 44lbs = 19000g\",\"isActive\":true,\"userId\":1}}",
+      "createdAt": "2025-06-23T10:39:53.852Z",
+      "timestamp": "2025-06-23T10:39:53.852Z"
+    },
+    {
+      "id": 1079,
+      "userId": 1,
+      "action": "create",
+      "entityType": "material",
+      "entityId": 0,
+      "changes": "{\"description\":\"Imported raw material \\\"coconut milk powder\\\" via CSV import\",\"data\":{\"name\":\"coconut milk powder\",\"sku\":null,\"categoryId\":658,\"vendorId\":684,\"totalCost\":\"1600\",\"quantity\":\"600\",\"unit\":\"g\",\"notes\":\"Pricesmart - $1600 for 50g x 12 packs\",\"isActive\":true,\"userId\":1}}",
+      "createdAt": "2025-06-23T10:39:53.858Z",
+      "timestamp": "2025-06-23T10:39:53.858Z"
+    },
+    {
+      "id": 1081,
+      "userId": 1,
+      "action": "create",
+      "entityType": "material",
+      "entityId": 0,
+      "changes": "{\"description\":\"Imported raw material \\\"Salt\\\" via CSV import\",\"data\":{\"name\":\"Salt\",\"sku\":null,\"categoryId\":658,\"vendorId\":684,\"totalCost\":\"300\",\"quantity\":\"2000\",\"unit\":\"g\",\"notes\":\"Pricesmart -$300 for 2 kg\",\"isActive\":true,\"userId\":1}}",
+      "createdAt": "2025-06-23T10:39:53.876Z",
+      "timestamp": "2025-06-23T10:39:53.876Z"
+    },
+    {
+      "id": 1083,
+      "userId": 1,
+      "action": "create",
+      "entityType": "material",
+      "entityId": 0,
+      "changes": "{\"description\":\"Imported raw material \\\"Coconut Oil\\\" via CSV import\",\"data\":{\"name\":\"Coconut Oil\",\"sku\":null,\"categoryId\":660,\"vendorId\":684,\"totalCost\":\"4700\",\"quantity\":\"3400\",\"unit\":\"g\",\"notes\":\"Pricesmart - $4500 / 3400mls i.e weight = 85% volume 4L\",\"isActive\":true,\"userId\":1}}",
+      "createdAt": "2025-06-23T10:39:53.882Z",
+      "timestamp": "2025-06-23T10:39:53.882Z"
+    },
+    {
+      "id": 1085,
+      "userId": 1,
+      "action": "create",
+      "entityType": "material",
+      "entityId": 0,
+      "changes": "{\"description\":\"Imported raw material \\\"Sunflower Oil;\\\" via CSV import\",\"data\":{\"name\":\"Sunflower Oil;\",\"sku\":null,\"categoryId\":660,\"vendorId\":684,\"totalCost\":\"3000\",\"quantity\":\"4250\",\"unit\":\"g\",\"notes\":\"Pricesmart $3000/ 4250mls i.e weight = 85% volume 5L\",\"isActive\":true,\"userId\":1}}",
+      "createdAt": "2025-06-23T10:39:53.890Z",
+      "timestamp": "2025-06-23T10:39:53.890Z"
+    },
+    {
+      "id": 1087,
+      "userId": 1,
+      "action": "create",
+      "entityType": "material",
+      "entityId": 0,
+      "changes": "{\"description\":\"Imported raw material \\\"Epsom Salt\\\" via CSV import\",\"data\":{\"name\":\"Epsom Salt\",\"sku\":null,\"categoryId\":654,\"vendorId\":686,\"totalCost\":\"500\",\"quantity\":\"454\",\"unit\":\"pcs\",\"notes\":null,\"isActive\":true,\"userId\":1}}",
+      "createdAt": "2025-06-23T10:39:53.897Z",
+      "timestamp": "2025-06-23T10:39:53.897Z"
+    },
+    {
+      "id": 1089,
+      "userId": 1,
+      "action": "create",
+      "entityType": "material",
+      "entityId": 0,
+      "changes": "{\"description\":\"Imported raw material \\\"Fish Head\\\" via CSV import\",\"data\":{\"name\":\"Fish Head\",\"sku\":null,\"categoryId\":654,\"vendorId\":686,\"totalCost\":\"250\",\"quantity\":\"454\",\"unit\":\"pcs\",\"notes\":\"cost - 1lb =454g = $250\",\"isActive\":true,\"userId\":1}}",
+      "createdAt": "2025-06-23T10:39:53.904Z",
+      "timestamp": "2025-06-23T10:39:53.904Z"
+    },
+    {
+      "id": 1091,
+      "userId": 1,
+      "action": "create",
+      "entityType": "material",
+      "entityId": 0,
+      "changes": "{\"description\":\"Imported raw material \\\"Garlic\\\" via CSV import\",\"data\":{\"name\":\"Garlic\",\"sku\":null,\"categoryId\":654,\"vendorId\":686,\"totalCost\":\"2\",\"quantity\":\"1\",\"unit\":\"g\",\"notes\":\"$700 per lb (454g) approx $2 per gram\",\"isActive\":true,\"userId\":1}}",
+      "createdAt": "2025-06-23T10:39:53.913Z",
+      "timestamp": "2025-06-23T10:39:53.913Z"
+    },
+    {
+      "id": 1093,
+      "userId": 1,
+      "action": "create",
+      "entityType": "material",
+      "entityId": 0,
+      "changes": "{\"description\":\"Imported raw material \\\"Molasses\\\" via CSV import\",\"data\":{\"name\":\"Molasses\",\"sku\":null,\"categoryId\":654,\"vendorId\":686,\"totalCost\":\"600\",\"quantity\":\"1000\",\"unit\":\"g\",\"notes\":null,\"isActive\":true,\"userId\":1}}",
+      "createdAt": "2025-06-23T10:39:53.926Z",
+      "timestamp": "2025-06-23T10:39:53.926Z"
+    },
+    {
+      "id": 1095,
+      "userId": 1,
+      "action": "create",
+      "entityType": "material",
+      "entityId": 0,
+      "changes": "{\"description\":\"Imported raw material \\\"Onion\\\" via CSV import\",\"data\":{\"name\":\"Onion\",\"sku\":null,\"categoryId\":654,\"vendorId\":686,\"totalCost\":\"1\",\"quantity\":\"1\",\"unit\":\"g\",\"notes\":\"$500 per pound (454g) approx $1 per gram\",\"isActive\":true,\"userId\":1}}",
+      "createdAt": "2025-06-23T10:39:53.937Z",
+      "timestamp": "2025-06-23T10:39:53.937Z"
+    },
+    {
+      "id": 1097,
+      "userId": 1,
+      "action": "create",
+      "entityType": "material",
+      "entityId": 0,
+      "changes": "{\"description\":\"Imported raw material \\\"Scotch bonnet pepper\\\" via CSV import\",\"data\":{\"name\":\"Scotch bonnet pepper\",\"sku\":null,\"categoryId\":654,\"vendorId\":686,\"totalCost\":\"1\",\"quantity\":\"1\",\"unit\":\"g\",\"notes\":\"$500 per pound (454g) approx $1 per gram\",\"isActive\":true,\"userId\":1}}",
+      "createdAt": "2025-06-23T10:39:53.944Z",
+      "timestamp": "2025-06-23T10:39:53.944Z"
+    },
+    {
+      "id": 1099,
+      "userId": 1,
+      "action": "create",
+      "entityType": "material",
+      "entityId": 0,
+      "changes": "{\"description\":\"Imported raw material \\\"Seaweed\\\" via CSV import\",\"data\":{\"name\":\"Seaweed\",\"sku\":null,\"categoryId\":654,\"vendorId\":686,\"totalCost\":\"0.6\",\"quantity\":\"1\",\"unit\":\"ml\",\"notes\":\"cost calculated after collecting and processing\",\"isActive\":true,\"userId\":1}}",
+      "createdAt": "2025-06-23T10:39:53.953Z",
+      "timestamp": "2025-06-23T10:39:53.953Z"
+    },
+    {
+      "id": 1101,
+      "userId": 1,
+      "action": "create",
+      "entityType": "material",
+      "entityId": 0,
+      "changes": "{\"description\":\"Imported raw material \\\"Sugar\\\" via CSV import\",\"data\":{\"name\":\"Sugar\",\"sku\":null,\"categoryId\":658,\"vendorId\":686,\"totalCost\":\"1500\",\"quantity\":\"3000\",\"unit\":\"g\",\"notes\":\"Pricesmart $1500 for 3kg\",\"isActive\":true,\"userId\":1}}",
+      "createdAt": "2025-06-23T10:39:53.961Z",
+      "timestamp": "2025-06-23T10:39:53.961Z"
+    },
+    {
+      "id": 1103,
+      "userId": 1,
+      "action": "create",
+      "entityType": "material",
+      "entityId": 0,
+      "changes": "{\"description\":\"Imported raw material \\\"Olive oil\\\" via CSV import\",\"data\":{\"name\":\"Olive oil\",\"sku\":null,\"categoryId\":660,\"vendorId\":686,\"totalCost\":\"7300\",\"quantity\":\"3400\",\"unit\":\"g\",\"notes\":\"Hi -Lo - O.O pomace - $7300\",\"isActive\":true,\"userId\":1}}",
+      "createdAt": "2025-06-23T10:39:53.968Z",
+      "timestamp": "2025-06-23T10:39:53.968Z"
+    },
+    {
+      "id": 1105,
+      "userId": 1,
+      "action": "create",
+      "entityType": "material",
+      "entityId": 0,
+      "changes": "{\"description\":\"Imported raw material \\\"Gallon bottles and caps F-style clear\\\" via CSV import\",\"data\":{\"name\":\"Gallon bottles and caps F-style clear\",\"sku\":null,\"categoryId\":644,\"vendorId\":688,\"totalCost\":\"3\",\"quantity\":\"24\",\"unit\":\"pcs\",\"notes\":null,\"isActive\":true,\"userId\":1}}",
+      "createdAt": "2025-06-23T10:39:53.975Z",
+      "timestamp": "2025-06-23T10:39:53.975Z"
+    },
+    {
+      "id": 1107,
+      "userId": 1,
+      "action": "create",
+      "entityType": "material",
+      "entityId": 0,
+      "changes": "{\"description\":\"Imported raw material \\\"Gallon bottles and caps white round\\\" via CSV import\",\"data\":{\"name\":\"Gallon bottles and caps white round\",\"sku\":null,\"categoryId\":644,\"vendorId\":688,\"totalCost\":\"2\",\"quantity\":\"24\",\"unit\":\"pcs\",\"notes\":null,\"isActive\":true,\"userId\":1}}",
+      "createdAt": "2025-06-23T10:39:53.982Z",
+      "timestamp": "2025-06-23T10:39:53.982Z"
+    },
+    {
+      "id": 1109,
+      "userId": 1,
+      "action": "create",
+      "entityType": "material",
+      "entityId": 0,
+      "changes": "{\"description\":\"Imported raw material \\\"Half Gallon bottles - clear\\\" via CSV import\",\"data\":{\"name\":\"Half Gallon bottles - clear\",\"sku\":null,\"categoryId\":644,\"vendorId\":688,\"totalCost\":\"127\",\"quantity\":\"1\",\"unit\":\"pcs\",\"notes\":null,\"isActive\":true,\"userId\":1}}",
+      "createdAt": "2025-06-23T10:39:53.989Z",
+      "timestamp": "2025-06-23T10:39:53.989Z"
+    },
+    {
+      "id": 1111,
+      "userId": 1,
+      "action": "create",
+      "entityType": "material",
+      "entityId": 0,
+      "changes": "{\"description\":\"Imported raw material \\\"Half Gallon bottles - white\\\" via CSV import\",\"data\":{\"name\":\"Half Gallon bottles - white\",\"sku\":null,\"categoryId\":644,\"vendorId\":688,\"totalCost\":\"127\",\"quantity\":\"1\",\"unit\":\"pcs\",\"notes\":null,\"isActive\":true,\"userId\":1}}",
+      "createdAt": "2025-06-23T10:39:54.000Z",
+      "timestamp": "2025-06-23T10:39:54.000Z"
+    },
+    {
+      "id": 1113,
+      "userId": 1,
+      "action": "create",
+      "entityType": "material",
+      "entityId": 0,
+      "changes": "{\"description\":\"Imported raw material \\\"Quart bottles - clear\\\" via CSV import\",\"data\":{\"name\":\"Quart bottles - clear\",\"sku\":null,\"categoryId\":644,\"vendorId\":688,\"totalCost\":\"127\",\"quantity\":\"1\",\"unit\":\"pcs\",\"notes\":null,\"isActive\":true,\"userId\":1}}",
+      "createdAt": "2025-06-23T10:39:54.008Z",
+      "timestamp": "2025-06-23T10:39:54.008Z"
+    },
+    {
+      "id": 1115,
+      "userId": 1,
+      "action": "create",
+      "entityType": "material",
+      "entityId": 0,
+      "changes": "{\"description\":\"Imported raw material \\\"Quart bottles - white\\\" via CSV import\",\"data\":{\"name\":\"Quart bottles - white\",\"sku\":null,\"categoryId\":644,\"vendorId\":688,\"totalCost\":\"127\",\"quantity\":\"1\",\"unit\":\"pcs\",\"notes\":null,\"isActive\":true,\"userId\":1}}",
+      "createdAt": "2025-06-23T10:39:54.020Z",
+      "timestamp": "2025-06-23T10:39:54.020Z"
+    },
+    {
+      "id": 1117,
+      "userId": 1,
+      "action": "create",
+      "entityType": "material",
+      "entityId": 0,
+      "changes": "{\"description\":\"Imported raw material \\\"Bottle caps 24-410 (VERS)\\\" via CSV import\",\"data\":{\"name\":\"Bottle caps 24-410 (VERS)\",\"sku\":null,\"categoryId\":644,\"vendorId\":690,\"totalCost\":\"10.9135\",\"quantity\":\"1\",\"unit\":\"pcs\",\"notes\":\"use for verschem 8oz and 16oz bottles\",\"isActive\":true,\"userId\":1}}",
+      "createdAt": "2025-06-23T10:39:54.028Z",
+      "timestamp": "2025-06-23T10:39:54.028Z"
+    },
+    {
+      "id": 1119,
+      "userId": 1,
+      "action": "create",
+      "entityType": "material",
+      "entityId": 0,
+      "changes": "{\"description\":\"Imported raw material \\\"bottles - 4oz white\\\" via CSV import\",\"data\":{\"name\":\"bottles - 4oz white\",\"sku\":null,\"categoryId\":644,\"vendorId\":690,\"totalCost\":\"50\",\"quantity\":\"1\",\"unit\":\"pcs\",\"notes\":null,\"isActive\":true,\"userId\":1}}",
+      "createdAt": "2025-06-23T10:39:54.036Z",
+      "timestamp": "2025-06-23T10:39:54.036Z"
+    },
+    {
+      "id": 1121,
+      "userId": 1,
+      "action": "create",
+      "entityType": "material",
+      "entityId": 0,
+      "changes": "{\"description\":\"Imported raw material \\\"bottles - trigger spray bottle white 22oz\\\" via CSV import\",\"data\":{\"name\":\"bottles - trigger spray bottle white 22oz\",\"sku\":null,\"categoryId\":644,\"vendorId\":690,\"totalCost\":\"13000.75\",\"quantity\":\"250\",\"unit\":\"pcs\",\"notes\":\"purchase approx. 5 bags of 250's in 2022\",\"isActive\":true,\"userId\":1}}",
+      "createdAt": "2025-06-23T10:39:54.043Z",
+      "timestamp": "2025-06-23T10:39:54.043Z"
+    },
+    {
+      "id": 1123,
+      "userId": 1,
+      "action": "create",
+      "entityType": "material",
+      "entityId": 0,
+      "changes": "{\"description\":\"Imported raw material \\\"Bottles 16 oz clear\\\" via CSV import\",\"data\":{\"name\":\"Bottles 16 oz clear\",\"sku\":null,\"categoryId\":644,\"vendorId\":690,\"totalCost\":\"11500\",\"quantity\":\"300\",\"unit\":\"pcs\",\"notes\":null,\"isActive\":true,\"userId\":1}}",
+      "createdAt": "2025-06-23T10:39:54.053Z",
+      "timestamp": "2025-06-23T10:39:54.053Z"
+    },
+    {
+      "id": 1125,
+      "userId": 1,
+      "action": "create",
+      "entityType": "material",
+      "entityId": 0,
+      "changes": "{\"description\":\"Imported raw material \\\"Bottles 8oz white\\\" via CSV import\",\"data\":{\"name\":\"Bottles 8oz white\",\"sku\":null,\"categoryId\":644,\"vendorId\":690,\"totalCost\":\"15525.9775\",\"quantity\":\"600\",\"unit\":\"pcs\",\"notes\":\"use Versachems 24-410 whien pricing\",\"isActive\":true,\"userId\":1}}",
+      "createdAt": "2025-06-23T10:39:54.062Z",
+      "timestamp": "2025-06-23T10:39:54.062Z"
+    },
+    {
+      "id": 1127,
+      "userId": 1,
+      "action": "create",
+      "entityType": "material",
+      "entityId": 0,
+      "changes": "{\"description\":\"Imported raw material \\\"Gallon bottles and caps natural round\\\" via CSV import\",\"data\":{\"name\":\"Gallon bottles and caps natural round\",\"sku\":null,\"categoryId\":644,\"vendorId\":690,\"totalCost\":\"2\",\"quantity\":\"24\",\"unit\":\"pcs\",\"notes\":\"price estimated from 2022 with inflation\",\"isActive\":true,\"userId\":1}}",
+      "createdAt": "2025-06-23T10:39:54.069Z",
+      "timestamp": "2025-06-23T10:39:54.069Z"
+    },
+    {
+      "id": 1129,
+      "userId": 1,
+      "action": "create",
+      "entityType": "material",
+      "entityId": 0,
+      "changes": "{\"description\":\"Imported raw material \\\"Trigger sprayers\\\" via CSV import\",\"data\":{\"name\":\"Trigger sprayers\",\"sku\":null,\"categoryId\":644,\"vendorId\":690,\"totalCost\":\"55.2\",\"quantity\":\"1\",\"unit\":\"pcs\",\"notes\":null,\"isActive\":true,\"userId\":1}}",
+      "createdAt": "2025-06-23T10:39:54.079Z",
+      "timestamp": "2025-06-23T10:39:54.079Z"
+    },
+    {
+      "id": 1131,
+      "userId": 1,
+      "action": "create",
+      "entityType": "material",
+      "entityId": 0,
+      "changes": "{\"description\":\"Imported raw material \\\"glydant\\\" via CSV import\",\"data\":{\"name\":\"glydant\",\"sku\":null,\"categoryId\":658,\"vendorId\":690,\"totalCost\":\"8000\",\"quantity\":\"1000\",\"unit\":\"g\",\"notes\":\"$8000 for 1000g - $8 per gram. Usage 0.0075%\",\"isActive\":true,\"userId\":1}}",
+      "createdAt": "2025-06-23T10:39:54.087Z",
+      "timestamp": "2025-06-23T10:39:54.087Z"
+    },
+    {
+      "id": 1133,
+      "userId": 1,
+      "action": "create",
+      "entityType": "material",
+      "entityId": 0,
+      "changes": "{\"description\":\"Imported raw material \\\"Shipping - Airmail up to 500g\\\" via CSV import\",\"data\":{\"name\":\"Shipping - Airmail up to 500g\",\"sku\":null,\"categoryId\":656,\"vendorId\":682,\"totalCost\":\"250\",\"quantity\":\"1\",\"unit\":\"pcs\",\"notes\":null,\"isActive\":true,\"userId\":1}}",
+      "createdAt": "2025-06-23T10:39:54.094Z",
+      "timestamp": "2025-06-23T10:39:54.094Z"
+    },
+    {
+      "id": 1135,
+      "userId": 1,
+      "action": "create",
+      "entityType": "material",
+      "entityId": 0,
+      "changes": "{\"description\":\"Imported raw material \\\"Shipping - Airmail up to 1kg\\\" via CSV import\",\"data\":{\"name\":\"Shipping - Airmail up to 1kg\",\"sku\":null,\"categoryId\":656,\"vendorId\":682,\"totalCost\":\"500\",\"quantity\":\"1\",\"unit\":\"pcs\",\"notes\":null,\"isActive\":true,\"userId\":1}}",
+      "createdAt": "2025-06-23T10:39:54.101Z",
+      "timestamp": "2025-06-23T10:39:54.101Z"
+    },
+    {
+      "id": 1137,
+      "userId": 1,
+      "action": "create",
+      "entityType": "material",
+      "entityId": 0,
+      "changes": "{\"description\":\"Imported raw material \\\"Shipping - Airmail up to 1.5kg\\\" via CSV import\",\"data\":{\"name\":\"Shipping - Airmail up to 1.5kg\",\"sku\":null,\"categoryId\":656,\"vendorId\":682,\"totalCost\":\"750\",\"quantity\":\"1\",\"unit\":\"pcs\",\"notes\":null,\"isActive\":true,\"userId\":1}}",
+      "createdAt": "2025-06-23T10:39:54.108Z",
+      "timestamp": "2025-06-23T10:39:54.108Z"
+    },
+    {
+      "id": 1139,
+      "userId": 1,
+      "action": "create",
+      "entityType": "material",
+      "entityId": 0,
+      "changes": "{\"description\":\"Imported raw material \\\"Shipping - Airmail up to 2kg\\\" via CSV import\",\"data\":{\"name\":\"Shipping - Airmail up to 2kg\",\"sku\":null,\"categoryId\":656,\"vendorId\":682,\"totalCost\":\"1000\",\"quantity\":\"1\",\"unit\":\"pcs\",\"notes\":null,\"isActive\":true,\"userId\":1}}",
+      "createdAt": "2025-06-23T10:39:54.117Z",
+      "timestamp": "2025-06-23T10:39:54.117Z"
+    },
+    {
+      "id": 1141,
+      "userId": 1,
+      "action": "create",
+      "entityType": "material",
+      "entityId": 0,
+      "changes": "{\"description\":\"Imported raw material \\\"Shipping - Airmail up to 2.5kg\\\" via CSV import\",\"data\":{\"name\":\"Shipping - Airmail up to 2.5kg\",\"sku\":null,\"categoryId\":656,\"vendorId\":682,\"totalCost\":\"1250\",\"quantity\":\"1\",\"unit\":\"pcs\",\"notes\":null,\"isActive\":true,\"userId\":1}}",
+      "createdAt": "2025-06-23T10:39:54.125Z",
+      "timestamp": "2025-06-23T10:39:54.125Z"
+    },
+    {
+      "id": 1143,
+      "userId": 1,
+      "action": "create",
+      "entityType": "material",
+      "entityId": 0,
+      "changes": "{\"description\":\"Imported raw material \\\"Shipping - Airmail up to 3kg\\\" via CSV import\",\"data\":{\"name\":\"Shipping - Airmail up to 3kg\",\"sku\":null,\"categoryId\":656,\"vendorId\":682,\"totalCost\":\"1500\",\"quantity\":\"1\",\"unit\":\"pcs\",\"notes\":null,\"isActive\":true,\"userId\":1}}",
+      "createdAt": "2025-06-23T10:39:54.132Z",
+      "timestamp": "2025-06-23T10:39:54.132Z"
+    },
+    {
+      "id": 1145,
+      "userId": 1,
+      "action": "create",
+      "entityType": "material",
+      "entityId": 0,
+      "changes": "{\"description\":\"Imported raw material \\\"Shipping - Airmail up to 3.5kg\\\" via CSV import\",\"data\":{\"name\":\"Shipping - Airmail up to 3.5kg\",\"sku\":null,\"categoryId\":656,\"vendorId\":682,\"totalCost\":\"1750\",\"quantity\":\"1\",\"unit\":\"pcs\",\"notes\":null,\"isActive\":true,\"userId\":1}}",
+      "createdAt": "2025-06-23T10:39:54.148Z",
+      "timestamp": "2025-06-23T10:39:54.148Z"
+    },
+    {
+      "id": 1147,
+      "userId": 1,
+      "action": "create",
+      "entityType": "material",
+      "entityId": 0,
+      "changes": "{\"description\":\"Imported raw material \\\"Shipping - SAL - USA up to 3kg\\\" via CSV import\",\"data\":{\"name\":\"Shipping - SAL - USA up to 3kg\",\"sku\":null,\"categoryId\":656,\"vendorId\":682,\"totalCost\":\"860\",\"quantity\":\"1\",\"unit\":\"pcs\",\"notes\":null,\"isActive\":true,\"userId\":1}}",
+      "createdAt": "2025-06-23T10:39:54.155Z",
+      "timestamp": "2025-06-23T10:39:54.155Z"
+    },
+    {
+      "id": 1149,
+      "userId": 1,
+      "action": "create",
+      "entityType": "material",
+      "entityId": 0,
+      "changes": "{\"description\":\"Imported raw material \\\"Shipping - SAL - USA up to 5kg\\\" via CSV import\",\"data\":{\"name\":\"Shipping - SAL - USA up to 5kg\",\"sku\":null,\"categoryId\":656,\"vendorId\":682,\"totalCost\":\"1300\",\"quantity\":\"1\",\"unit\":\"pcs\",\"notes\":null,\"isActive\":true,\"userId\":1}}",
+      "createdAt": "2025-06-23T10:39:54.163Z",
+      "timestamp": "2025-06-23T10:39:54.163Z"
+    },
+    {
+      "id": 1151,
+      "userId": 1,
+      "action": "create",
+      "entityType": "material",
+      "entityId": 0,
+      "changes": "{\"description\":\"Imported raw material \\\"Shipping - SAL - USA up to 10kg\\\" via CSV import\",\"data\":{\"name\":\"Shipping - SAL - USA up to 10kg\",\"sku\":null,\"categoryId\":656,\"vendorId\":682,\"totalCost\":\"2340\",\"quantity\":\"1\",\"unit\":\"pcs\",\"notes\":null,\"isActive\":true,\"userId\":1}}",
+      "createdAt": "2025-06-23T10:39:54.170Z",
+      "timestamp": "2025-06-23T10:39:54.170Z"
     }
   ],
   "passwordResetTokens": [
@@ -4971,5 +5658,5 @@
       "createdAt": "2025-06-22T18:26:22.092Z"
     }
   ],
-  "nextId": 1020
+  "nextId": 1155
 }
