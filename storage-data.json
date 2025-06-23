@@ -1974,7 +1974,7 @@
       "categoryId": 646,
       "vendorId": 672,
       "totalCost": "1245",
-      "quantity": "100",
+      "quantity": "10",
       "unit": "pcs",
       "notes": "Used for lining boxes - divided by 10 to account for usage. therefore total pieces are 10 sheets x 10 cuts per sheet = 100",
       "isActive": true,
@@ -2946,17 +2946,18 @@
   "formulations": [
     {
       "id": 1506,
-      "name": "Cooncrete - Square Coasters x 2 Units; Airmail Delivery",
-      "description": "4\" coasters with oxide, includes packaging and shipping",
+      "name": "Concrete - Square Coasters x 2 Units; Airmail Delivery",
+      "description": "4\" coasters with oxide, includes packaging and shipping; sold for 18.99 USD = $3000 JMD",
       "batchSize": "1.000",
       "batchUnit": "unit",
       "markupPercentage": "30.00",
       "isActive": true,
       "userId": 1,
       "createdAt": "2025-06-23T11:10:14.228Z",
-      "totalCost": "501.95",
-      "unitCost": "501.9522",
-      "profitMargin": "150.59"
+      "totalCost": "277.85",
+      "unitCost": "277.8522",
+      "profitMargin": "83.36",
+      "targetPrice": "3000"
     }
   ],
   "formulationIngredients": [
@@ -2997,34 +2998,34 @@
       "includeInMarkup": true
     },
     {
-      "id": 1509,
+      "id": 1531,
       "formulationId": 1506,
       "materialId": 1207,
       "quantity": "330",
       "unit": "g",
-      "costContribution": "36.3",
+      "costContribution": "36.30",
       "includeInMarkup": true
     },
     {
-      "id": 1510,
+      "id": 1532,
       "formulationId": 1506,
       "materialId": 1209,
       "quantity": "170",
       "unit": "g",
-      "costContribution": "1.3259999999999998",
+      "costContribution": "1.33",
       "includeInMarkup": true
     },
     {
-      "id": 1511,
+      "id": 1533,
       "formulationId": 1506,
       "materialId": 1213,
       "quantity": "25",
       "unit": "pcs",
-      "costContribution": "55.065",
+      "costContribution": "55.06",
       "includeInMarkup": true
     },
     {
-      "id": 1512,
+      "id": 1534,
       "formulationId": 1506,
       "materialId": 1201,
       "quantity": "1",
@@ -3033,21 +3034,21 @@
       "includeInMarkup": true
     },
     {
-      "id": 1513,
+      "id": 1535,
       "formulationId": 1506,
       "materialId": 1255,
       "quantity": "2",
       "unit": "pcs",
-      "costContribution": "21.1112",
+      "costContribution": "21.11",
       "includeInMarkup": true
     },
     {
-      "id": 1514,
+      "id": 1536,
       "formulationId": 1506,
       "materialId": 1203,
       "quantity": "2",
       "unit": "pcs",
-      "costContribution": "249",
+      "costContribution": "24.90",
       "includeInMarkup": true
     }
   ],
@@ -8894,6 +8895,66 @@
       "changes": "{\"description\":\"Updated raw material \\\"Boxes - slip sheet\\\" - total cost is now $1245 for 100 pcs\",\"before\":{\"id\":1203,\"name\":\"Boxes - slip sheet\",\"sku\":null,\"categoryId\":646,\"vendorId\":672,\"totalCost\":\"1245\",\"quantity\":\"10\",\"unit\":\"pcs\",\"notes\":\"Used for lining boxes - divided by 10 to account for usage\",\"isActive\":true,\"userId\":1,\"createdAt\":\"2025-06-23T10:51:41.061Z\"},\"after\":{\"id\":1203,\"name\":\"Boxes - slip sheet\",\"sku\":\"\",\"categoryId\":646,\"vendorId\":672,\"totalCost\":\"1245\",\"quantity\":\"100\",\"unit\":\"pcs\",\"notes\":\"Used for lining boxes - divided by 10 to account for usage. therefore total pieces are 10 sheets x 10 cuts per sheet = 100\",\"isActive\":true,\"userId\":1,\"createdAt\":\"2025-06-23T10:51:41.061Z\"}}",
       "createdAt": "2025-06-23T11:14:51.962Z",
       "timestamp": "2025-06-23T11:14:51.962Z"
+    },
+    {
+      "id": 1523,
+      "userId": 1,
+      "action": "update",
+      "entityType": "formulation",
+      "entityId": 1506,
+      "changes": "{\"description\":\"Updated formulation \\\"Cooncrete - Square Coasters x 2 Units; Airmail Delivery\\\" - batch size is now 1.000 unit with 30.00% markup\",\"before\":{\"id\":1506,\"name\":\"Cooncrete - Square Coasters x 2 Units; Airmail Delivery\",\"description\":\"4\\\" coasters with oxide, includes packaging and shipping\",\"batchSize\":\"1.000\",\"batchUnit\":\"unit\",\"markupPercentage\":\"30.00\",\"isActive\":true,\"userId\":1,\"createdAt\":\"2025-06-23T11:10:14.228Z\",\"totalCost\":\"501.95\",\"unitCost\":\"501.9522\",\"profitMargin\":\"150.59\"},\"after\":{\"id\":1506,\"name\":\"Cooncrete - Square Coasters x 2 Units; Airmail Delivery\",\"description\":\"4\\\" coasters with oxide, includes packaging and shipping; sold for 18.99 USD = $3000 JMD\",\"batchSize\":\"1.000\",\"batchUnit\":\"unit\",\"markupPercentage\":\"30.00\",\"isActive\":true,\"userId\":1,\"createdAt\":\"2025-06-23T11:10:14.228Z\",\"totalCost\":\"501.95\",\"unitCost\":\"501.9522\",\"profitMargin\":\"150.59\",\"targetPrice\":\"0.04\"},\"ingredients\":[{\"materialId\":1207,\"quantity\":\"330\",\"unit\":\"g\",\"costContribution\":\"36.3\",\"includeInMarkup\":true},{\"materialId\":1209,\"quantity\":\"170\",\"unit\":\"g\",\"costContribution\":\"1.3259999999999998\",\"includeInMarkup\":true},{\"materialId\":1213,\"quantity\":\"25\",\"unit\":\"pcs\",\"costContribution\":\"55.065\",\"includeInMarkup\":true},{\"materialId\":1201,\"quantity\":\"1\",\"unit\":\"pcs\",\"costContribution\":\"139.15\",\"includeInMarkup\":true},{\"materialId\":1255,\"quantity\":\"2\",\"unit\":\"pcs\",\"costContribution\":\"21.1112\",\"includeInMarkup\":true},{\"materialId\":1203,\"quantity\":\"2\",\"unit\":\"pcs\",\"costContribution\":\"249\",\"includeInMarkup\":true}]}",
+      "createdAt": "2025-06-23T11:30:23.416Z",
+      "timestamp": "2025-06-23T11:30:23.416Z"
+    },
+    {
+      "id": 1530,
+      "userId": 1,
+      "action": "update",
+      "entityType": "formulation",
+      "entityId": 1506,
+      "changes": "{\"description\":\"Updated formulation \\\"Cooncrete - Square Coasters x 2 Units; Airmail Delivery\\\" - batch size is now 1.000 unit with 30.00% markup\",\"before\":{\"id\":1506,\"name\":\"Cooncrete - Square Coasters x 2 Units; Airmail Delivery\",\"description\":\"4\\\" coasters with oxide, includes packaging and shipping; sold for 18.99 USD = $3000 JMD\",\"batchSize\":\"1.000\",\"batchUnit\":\"unit\",\"markupPercentage\":\"30.00\",\"isActive\":true,\"userId\":1,\"createdAt\":\"2025-06-23T11:10:14.228Z\",\"totalCost\":\"501.95\",\"unitCost\":\"501.9522\",\"profitMargin\":\"150.59\",\"targetPrice\":\"0.04\"},\"after\":{\"id\":1506,\"name\":\"Cooncrete - Square Coasters x 2 Units; Airmail Delivery\",\"description\":\"4\\\" coasters with oxide, includes packaging and shipping; sold for 18.99 USD = $3000 JMD\",\"batchSize\":\"1.000\",\"batchUnit\":\"unit\",\"markupPercentage\":\"30.00\",\"isActive\":true,\"userId\":1,\"createdAt\":\"2025-06-23T11:10:14.228Z\",\"totalCost\":\"501.95\",\"unitCost\":\"501.9522\",\"profitMargin\":\"150.59\",\"targetPrice\":\"3000\"},\"ingredients\":[{\"materialId\":1207,\"quantity\":\"330\",\"unit\":\"g\",\"costContribution\":\"36.3\",\"includeInMarkup\":true},{\"materialId\":1209,\"quantity\":\"170\",\"unit\":\"g\",\"costContribution\":\"1.3259999999999998\",\"includeInMarkup\":true},{\"materialId\":1213,\"quantity\":\"25\",\"unit\":\"pcs\",\"costContribution\":\"55.065\",\"includeInMarkup\":true},{\"materialId\":1201,\"quantity\":\"1\",\"unit\":\"pcs\",\"costContribution\":\"139.15\",\"includeInMarkup\":true},{\"materialId\":1255,\"quantity\":\"2\",\"unit\":\"pcs\",\"costContribution\":\"21.1112\",\"includeInMarkup\":true},{\"materialId\":1203,\"quantity\":\"2\",\"unit\":\"pcs\",\"costContribution\":\"249\",\"includeInMarkup\":true}]}",
+      "createdAt": "2025-06-23T11:30:44.997Z",
+      "timestamp": "2025-06-23T11:30:44.997Z"
+    },
+    {
+      "id": 1537,
+      "userId": 1,
+      "action": "update",
+      "entityType": "formulation",
+      "entityId": 1506,
+      "changes": "{\"description\":\"Updated formulation \\\"Concrete - Square Coasters x 2 Units; Airmail Delivery\\\" - batch size is now 1.000 unit with 30.00% markup\",\"before\":{\"id\":1506,\"name\":\"Cooncrete - Square Coasters x 2 Units; Airmail Delivery\",\"description\":\"4\\\" coasters with oxide, includes packaging and shipping; sold for 18.99 USD = $3000 JMD\",\"batchSize\":\"1.000\",\"batchUnit\":\"unit\",\"markupPercentage\":\"30.00\",\"isActive\":true,\"userId\":1,\"createdAt\":\"2025-06-23T11:10:14.228Z\",\"totalCost\":\"501.95\",\"unitCost\":\"501.9522\",\"profitMargin\":\"150.59\",\"targetPrice\":\"3000\"},\"after\":{\"id\":1506,\"name\":\"Concrete - Square Coasters x 2 Units; Airmail Delivery\",\"description\":\"4\\\" coasters with oxide, includes packaging and shipping; sold for 18.99 USD = $3000 JMD\",\"batchSize\":\"1.000\",\"batchUnit\":\"unit\",\"markupPercentage\":\"30.00\",\"isActive\":true,\"userId\":1,\"createdAt\":\"2025-06-23T11:10:14.228Z\",\"totalCost\":\"501.95\",\"unitCost\":\"501.9522\",\"profitMargin\":\"150.59\",\"targetPrice\":\"3000\"},\"ingredients\":[{\"materialId\":1207,\"quantity\":\"330\",\"unit\":\"g\",\"costContribution\":\"36.3\",\"includeInMarkup\":true},{\"materialId\":1209,\"quantity\":\"170\",\"unit\":\"g\",\"costContribution\":\"1.3259999999999998\",\"includeInMarkup\":true},{\"materialId\":1213,\"quantity\":\"25\",\"unit\":\"pcs\",\"costContribution\":\"55.065\",\"includeInMarkup\":true},{\"materialId\":1201,\"quantity\":\"1\",\"unit\":\"pcs\",\"costContribution\":\"139.15\",\"includeInMarkup\":true},{\"materialId\":1255,\"quantity\":\"2\",\"unit\":\"pcs\",\"costContribution\":\"21.1112\",\"includeInMarkup\":true},{\"materialId\":1203,\"quantity\":\"2\",\"unit\":\"pcs\",\"costContribution\":\"249\",\"includeInMarkup\":true}]}",
+      "createdAt": "2025-06-23T11:31:54.284Z",
+      "timestamp": "2025-06-23T11:31:54.284Z"
+    },
+    {
+      "id": 1538,
+      "userId": 1,
+      "action": "update",
+      "entityType": "material",
+      "entityId": 116,
+      "changes": "{\"description\":\"Updated raw material \\\"Boxes - slip sheet\\\" - total cost is now $1245 for 10 pc\",\"before\":{\"id\":116,\"name\":\"Boxes - slip sheet\",\"sku\":null,\"categoryId\":67,\"vendorId\":56,\"totalCost\":\"1245\",\"quantity\":\"10\",\"unit\":\"pc\",\"notes\":\"Used for lining boxes - divided by 10 to account for usage\",\"isActive\":true,\"userId\":36,\"createdAt\":\"2025-06-22T18:02:45.147Z\",\"unitCost\":\"124.5000\"},\"after\":{\"id\":116,\"name\":\"Boxes - slip sheet\",\"sku\":null,\"categoryId\":67,\"vendorId\":56,\"totalCost\":\"1245\",\"quantity\":\"10\",\"unit\":\"pc\",\"notes\":\"Used for lining boxes - divided by 10 to account for usage\",\"isActive\":true,\"userId\":36,\"createdAt\":\"2025-06-22T18:02:45.147Z\",\"unitCost\":\"124.5000\"}}",
+      "createdAt": "2025-06-23T11:33:34.129Z",
+      "timestamp": "2025-06-23T11:33:34.129Z"
+    },
+    {
+      "id": 1539,
+      "userId": 1,
+      "action": "update",
+      "entityType": "formulation",
+      "entityId": 1506,
+      "changes": "{\"description\":\"Automatically updated formulation \\\"Concrete - Square Coasters x 2 Units; Airmail Delivery\\\" costs due to material price change. New total cost: $277.85\",\"reason\":\"Material price change\",\"materialId\":1203}",
+      "createdAt": "2025-06-23T11:33:44.554Z",
+      "timestamp": "2025-06-23T11:33:44.554Z"
+    },
+    {
+      "id": 1540,
+      "userId": 1,
+      "action": "update",
+      "entityType": "material",
+      "entityId": 1203,
+      "changes": "{\"description\":\"Updated raw material \\\"Boxes - slip sheet\\\" - total cost is now $1245 for 10 pcs\",\"before\":{\"id\":1203,\"name\":\"Boxes - slip sheet\",\"sku\":\"\",\"categoryId\":646,\"vendorId\":672,\"totalCost\":\"1245\",\"quantity\":\"100\",\"unit\":\"pcs\",\"notes\":\"Used for lining boxes - divided by 10 to account for usage. therefore total pieces are 10 sheets x 10 cuts per sheet = 100\",\"isActive\":true,\"userId\":1,\"createdAt\":\"2025-06-23T10:51:41.061Z\",\"unitCost\":\"12.4500\"},\"after\":{\"id\":1203,\"name\":\"Boxes - slip sheet\",\"sku\":\"\",\"categoryId\":646,\"vendorId\":672,\"totalCost\":\"1245\",\"quantity\":\"10\",\"unit\":\"pcs\",\"notes\":\"Used for lining boxes - divided by 10 to account for usage. therefore total pieces are 10 sheets x 10 cuts per sheet = 100\",\"isActive\":true,\"userId\":1,\"createdAt\":\"2025-06-23T10:51:41.061Z\",\"unitCost\":\"12.4500\"}}",
+      "createdAt": "2025-06-23T11:33:44.562Z",
+      "timestamp": "2025-06-23T11:33:44.562Z"
     }
   ],
   "passwordResetTokens": [
@@ -8906,5 +8967,5 @@
       "createdAt": "2025-06-22T18:26:22.092Z"
     }
   ],
-  "nextId": 1517
+  "nextId": 1541
 }
