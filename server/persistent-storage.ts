@@ -512,4 +512,42 @@ export class PersistentStorage implements IStorage {
     this.data.passwordResetTokens = this.data.passwordResetTokens.filter(t => t.expiresAt > now && !t.used);
     await this.saveData();
   }
+
+  // Payment management methods
+  async createPayment(payment: InsertPayment): Promise<Payment> {
+    const newPayment: Payment = {
+      id: this.data.nextId++,
+      ...payment,
+      createdAt: new Date()
+    } as Payment;
+    this.data.payments.push(newPayment);
+    await this.saveData();
+    return newPayment;
+  }
+
+  async getPayment(id: number): Promise<Payment | undefined> {
+    return this.data.payments.find(p => p.id === id);
+  }
+
+  async getPaymentByTransactionId(transactionId: string): Promise<Payment | undefined> {
+    return this.data.payments.find(p => p.transactionId === transactionId);
+  }
+
+  async getUserPayments(userId: number): Promise<Payment[]> {
+    return this.data.payments.filter(p => p.userId === userId);
+  }
+
+  async updatePaymentStatus(id: number, status: string, refundAmount?: string): Promise<boolean> {
+    const payment = this.data.payments.find(p => p.id === id);
+    if (!payment) return false;
+
+    payment.paymentStatus = status;
+    if (status === 'refunded' && refundAmount) {
+      payment.refundAmount = refundAmount;
+      payment.refundDate = new Date();
+    }
+    
+    await this.saveData();
+    return true;
+  }
 }

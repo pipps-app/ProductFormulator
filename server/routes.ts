@@ -3,6 +3,7 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { createPaypalOrder, capturePaypalOrder, loadPaypalDefault } from "./paypal";
 import { reportsService } from "./reports";
+import { registerPaymentRoutes } from "./routes/payments";
 
 function hasAccessToTier(userTier: string, requiredTier: string): boolean {
   const tierHierarchy = ['free', 'pro', 'business', 'enterprise'];
@@ -1984,6 +1985,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ error: "Failed to generate reports" });
     }
   });
+
+  // Register payment routes
+  registerPaymentRoutes(app);
 
   const httpServer = createServer(app);
   return httpServer;
