@@ -1437,10 +1437,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         role: 'user'
       });
 
-      // Set free plan
+      // Set starter plan
       await storage.updateUser(user.id, {
         subscriptionStatus: 'active',
-        subscriptionPlan: 'free',
+        subscriptionPlan: 'starter',
         subscriptionStartDate: new Date(),
         subscriptionEndDate: null
       } as any);

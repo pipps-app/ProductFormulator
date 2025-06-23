@@ -26,25 +26,26 @@ interface SubscriptionPlan {
 
 const plans: SubscriptionPlan[] = [
   {
-    id: "free",
-    name: "Free",
-    price: 0,
-    interval: "forever",
-    maxMaterials: 5,
-    maxFormulations: 1,
-    maxVendors: 2,
-    maxCategories: 2,
-    maxFileAttachments: 1,
-    maxStorageSize: 5,
-    support: "Help documentation",
+    id: "starter",
+    name: "Starter",
+    price: 9,
+    interval: "month",
+    maxMaterials: 25,
+    maxFormulations: 5,
+    maxVendors: 5,
+    maxCategories: 5,
+    maxFileAttachments: 5,
+    maxStorageSize: 25,
+    support: "Email support",
     features: [
-      "Up to 5 raw materials",
-      "Up to 1 formulation",
-      "2 vendors & 2 categories",
+      "Up to 25 raw materials",
+      "Up to 5 formulations",
+      "5 vendors & 5 categories",
       "Basic cost calculations",
-      "1 file attachment",
-      "5MB storage",
-      "Help documentation"
+      "5 file attachments",
+      "25MB storage",
+      "Email support",
+      "14-day money-back guarantee"
     ]
   },
   {
@@ -206,9 +207,12 @@ export default function Subscription() {
       {/* Header */}
       <div className="text-center space-y-4">
         <h1 className="text-3xl font-bold text-slate-900">Choose Your Plan</h1>
-        <p className="text-lg text-slate-600 max-w-2xl mx-auto">
-          Scale your formulation business with the right tools. Start with a plan that fits your needs and upgrade as you grow.
+        <p className="text-slate-600 max-w-2xl mx-auto">
+          All plans include our core features with different usage limits. 14-day money-back guarantee on all paid plans.
         </p>
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 max-w-2xl mx-auto">
+          <p className="text-blue-800 font-medium">💳 Payment: PayPal only • 💰 14-day money-back guarantee</p>
+        </div>
       </div>
 
       {/* Current Subscription Status */}
@@ -338,7 +342,7 @@ export default function Subscription() {
                     ) : (
                       <>
                         <CreditCard className="h-4 w-4 mr-2" />
-                        {subscribeMutation.isPending ? "Processing..." : "Subscribe Now"}
+                        {subscribeMutation.isPending ? "Processing..." : `Subscribe for $${plan.price}/${plan.interval}`}
                       </>
                     )}
                   </Button>
@@ -443,11 +447,15 @@ export default function Subscription() {
           </div>
           <div>
             <h4 className="font-medium text-slate-900 mb-2">What payment methods do you accept?</h4>
-            <p className="text-slate-600">We accept all major credit cards and PayPal for convenient, secure payments.</p>
+            <p className="text-slate-600">We accept PayPal for convenient, secure payments. PayPal supports all major credit cards.</p>
           </div>
           <div>
             <h4 className="font-medium text-slate-900 mb-2">Is there a free trial?</h4>
-            <p className="text-slate-600">We offer a 14-day free trial with full access to all features on any plan.</p>
+            <p className="text-slate-600">We offer a 14-day money-back guarantee instead. Try any plan risk-free with full refund if you're not satisfied.</p>
+          </div>
+          <div>
+            <h4 className="font-medium text-slate-900 mb-2">How do refunds work?</h4>
+            <p className="text-slate-600">Contact support within 14 days of payment for a full refund. No questions asked, processed through PayPal.</p>
           </div>
         </CardContent>
       </Card>
