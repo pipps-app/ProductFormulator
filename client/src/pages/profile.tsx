@@ -15,7 +15,6 @@ import { User, Lock, Building, LogOut } from "lucide-react";
 import { useLocation } from "wouter";
 
 const profileSchema = z.object({
-  username: z.string().min(1, "Username is required"),
   email: z.string().email("Invalid email address"),
   company: z.string().optional(),
 });
@@ -44,7 +43,6 @@ export default function Profile() {
   const profileForm = useForm<ProfileForm>({
     resolver: zodResolver(profileSchema),
     values: {
-      username: user?.username || "",
       email: user?.email || "",
       company: user?.company || "",
     },
@@ -222,20 +220,6 @@ export default function Profile() {
           <CardContent>
             <Form {...profileForm}>
               <form onSubmit={profileForm.handleSubmit(onProfileSubmit)} className="space-y-4">
-                <FormField
-                  control={profileForm.control}
-                  name="username"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Username</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Enter username" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
                 <FormField
                   control={profileForm.control}
                   name="email"

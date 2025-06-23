@@ -97,7 +97,7 @@ export default function Reports() {
     // Client and report info
     pdf.setFontSize(10);
     pdf.setFont(undefined, 'normal');
-    pdf.text(`Client: ${userInfo?.username || 'Unknown User'}`, margin, yPosition);
+    pdf.text(`Client: ${userInfo?.email || 'Unknown User'}`, margin, yPosition);
     yPosition += 6;
     pdf.text(`Company: ${userInfo?.company || 'Not specified'}`, margin, yPosition);
     yPosition += 6;
