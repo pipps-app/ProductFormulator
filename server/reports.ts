@@ -307,9 +307,9 @@ export class ReportsService {
     }, 0);
     
     return {
-      totalValue: totalValue.toFixed(2),
-      materialCount: materials.length,
-      averageValue: materials.length > 0 ? (totalValue / materials.length).toFixed(2) : '0.00'
+      totalValue: `$${totalValue.toFixed(2)}`,
+      materialCount: `${materials.length} materials`,
+      averageValue: materials.length > 0 ? `$${(totalValue / materials.length).toFixed(2)}` : '$0.00'
     };
   }
 
@@ -324,9 +324,9 @@ export class ReportsService {
       
       return {
         category: category.name,
-        averageCost: avgCost.toFixed(4),
-        materialCount: categoryMaterials.length,
-        totalCost: totalCost.toFixed(2)
+        averageCost: `$${avgCost.toFixed(4)}`,
+        materialCount: `${categoryMaterials.length} materials`,
+        totalCost: `$${totalCost.toFixed(2)}`
       };
     });
 
@@ -342,7 +342,7 @@ export class ReportsService {
       const category = categories.find(c => c.id === m.categoryId);
       return {
         name: m.name,
-        unitCost: m.unitCost,
+        unitCost: `$${m.unitCost}/${m.unit}`,
         unit: m.unit,
         category: category?.name || 'Uncategorized',
         type: 'Most Expensive'
@@ -353,7 +353,7 @@ export class ReportsService {
       const category = categories.find(c => c.id === m.categoryId);
       return {
         name: m.name,
-        unitCost: m.unitCost,
+        unitCost: `$${m.unitCost}/${m.unit}`,
         unit: m.unit,
         category: category?.name || 'Uncategorized',
         type: 'Least Expensive'
@@ -386,13 +386,13 @@ export class ReportsService {
         
         allCalculations.push({
           formulation: formulation.name,
-          batchSize: size,
-          unitCost: unitCost.toFixed(4),
-          batchTotalCost: batchTotalCost.toFixed(2),
-          unitSellingPrice: unitSellingPrice.toFixed(4),
-          batchSellingPrice: batchSellingPrice.toFixed(2),
-          batchProfit: batchProfit.toFixed(2),
-          profitMargin: effectiveMargin.toFixed(2),
+          batchSize: `${size} units`,
+          unitCost: `$${unitCost.toFixed(4)}`,
+          batchTotalCost: `$${batchTotalCost.toFixed(2)}`,
+          unitSellingPrice: `$${unitSellingPrice.toFixed(4)}`,
+          batchSellingPrice: `$${batchSellingPrice.toFixed(2)}`,
+          batchProfit: `$${batchProfit.toFixed(2)}`,
+          profitMargin: `${effectiveMargin.toFixed(2)}%`,
           hasTargetPrice: targetPrice > 0
         });
       }
@@ -417,12 +417,12 @@ export class ReportsService {
       
       return {
         name: formulation.name,
-        totalCost: totalCost.toFixed(2),
-        unitCost: unitCost.toFixed(4),
-        profitMargin: profitMargin.toFixed(2),
-        sellingPrice: sellingPrice.toFixed(4),
-        profit: profit.toFixed(4),
-        actualMarginPercent: actualMarginPercent.toFixed(2),
+        totalCost: `$${totalCost.toFixed(2)}`,
+        unitCost: `$${unitCost.toFixed(4)}`,
+        profitMargin: `${profitMargin.toFixed(2)}%`,
+        sellingPrice: `$${sellingPrice.toFixed(4)}`,
+        profit: `$${profit.toFixed(4)}`,
+        actualMarginPercent: `${actualMarginPercent.toFixed(2)}%`,
         hasTargetPrice: targetPrice > 0
       };
     });
@@ -446,10 +446,10 @@ export class ReportsService {
         return {
           formulation: formulation.name,
           materialName: material?.name || 'Unknown',
-          quantity: quantity,
+          quantity: `${quantity} ${material?.unit || ''}`,
           unit: material?.unit || '',
-          unitCost: unitCost.toFixed(4),
-          totalCost: totalCost.toFixed(4)
+          unitCost: `$${unitCost.toFixed(4)}`,
+          totalCost: `$${totalCost.toFixed(4)}`
         };
       });
       
@@ -462,8 +462,8 @@ export class ReportsService {
         
         allIngredients.push({
           ...ing,
-          percentage,
-          formulationTotalCost: totalFormulationCost.toFixed(4)
+          percentage: `${percentage}%`,
+          formulationTotalCost: `$${totalFormulationCost.toFixed(4)}`
         });
       });
     }
@@ -519,15 +519,15 @@ export class ReportsService {
       
       return {
         category: category.name,
-        materialCount: categoryMaterials.length,
-        averageUnitCost: avgCost.toFixed(4),
-        minUnitCost: minCost.toFixed(4),
-        maxUnitCost: maxCost.toFixed(4),
+        materialCount: `${categoryMaterials.length} materials`,
+        averageUnitCost: `$${avgCost.toFixed(4)}`,
+        minUnitCost: `$${minCost.toFixed(4)}`,
+        maxUnitCost: `$${maxCost.toFixed(4)}`,
         materials: categoryMaterials.map(m => ({
           name: m.name,
-          unitCost: m.unitCost,
+          unitCost: `$${m.unitCost}/${m.unit}`,
           unit: m.unit
-        })).sort((a, b) => parseFloat(b.unitCost) - parseFloat(a.unitCost))
+        })).sort((a, b) => parseFloat(b.unitCost.replace(/[^0-9.-]/g, '')) - parseFloat(a.unitCost.replace(/[^0-9.-]/g, '')))
       };
     });
     
@@ -776,9 +776,9 @@ export class ReportsService {
         materialName: material.name,
         vendorName: vendor?.name || 'No Vendor',
         category: category?.name || 'Uncategorized',
-        unitCost: material.unitCost,
+        unitCost: `$${material.unitCost}/${material.unit}`,
         unit: material.unit,
-        totalCost: material.totalCost
+        totalCost: `$${material.totalCost}`
       });
     });
     
