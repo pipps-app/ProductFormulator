@@ -246,8 +246,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Helper function to recalculate formulation costs when material prices change
   async function updateFormulationsUsingMaterial(materialId: number) {
     try {
+      console.log(`Updating formulations that use material ${materialId}`);
+      
       // Get all formulations for user (using mock user ID 1)
       const formulations = await storage.getFormulations(1);
+      console.log(`Found ${formulations.length} formulations to check`);
       
       for (const formulation of formulations) {
         // Get ingredients for this formulation
@@ -257,6 +260,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         const usesUpdatedMaterial = ingredients.some(ing => ing.materialId === materialId);
         
         if (usesUpdatedMaterial) {
+          console.log(`Updating formulation "${formulation.name}" which uses material ${materialId}`);
+          
           // Recalculate costs for this formulation
           let totalMaterialCost = 0;
           
@@ -266,6 +271,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
               if (material) {
                 const costContribution = Number(ingredient.quantity) * Number(material.unitCost);
                 totalMaterialCost += costContribution;
+                
+                console.log(`Ingredient ${ingredient.id}: ${ingredient.quantity} x ${material.unitCost} = ${costContribution}`);
                 
                 // Update the ingredient's cost contribution
                 await storage.updateFormulationIngredient(ingredient.id, {
@@ -547,11 +554,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ error: "Material not found" });
       }
 
-      const materialData = insertRawMaterialSchema.partial().parse(req.body);
+      // Calculate unitCost if needed
+      const requestData = { ...req.body };
+      if (requestData.totalCost && requestData.quantity) {
+        const totalCost = parseFloat(requestData.totalCost);
+        const quantity = parseFloat(requestData.quantity);
+        if (quantity > 0) {
+          requestData.unitCost = (totalCost / quantity).toFixed(4);
+        }
+      }
+      
+      const materialData = insertRawMaterialSchema.partial().parse(requestData);
       const material = await storage.updateRawMaterial(id, materialData);
       
-      // If unit cost changed, update all formulations that use this material
-      if (material && originalMaterial.unitCost !== material.unitCost) {
+      // If any cost-related field changed, update all formulations that use this material
+      if (material && (originalMaterial.unitCost !== material.unitCost || 
+                       originalMaterial.totalCost !== material.totalCost ||
+                       originalMaterial.quantity !== material.quantity)) {
+        console.log(`Material ${id} cost changed, updating formulations...`);
         await updateFormulationsUsingMaterial(id);
       }
       

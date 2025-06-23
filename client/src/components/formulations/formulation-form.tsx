@@ -297,9 +297,22 @@ export default function FormulationForm({ formulation, onSuccess }: FormulationF
                     placeholder="0.000"
                     value={ingredientQuantity}
                     onChange={(e) => setIngredientQuantity(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        e.preventDefault();
+                        addIngredient();
+                      }
+                    }}
                   />
                 </div>
-                <Button type="button" onClick={addIngredient} disabled={!selectedMaterialId || !ingredientQuantity}>
+                <Button 
+                  type="button" 
+                  onClick={(e) => {
+                    e.preventDefault();
+                    addIngredient();
+                  }}
+                  disabled={!selectedMaterialId || !ingredientQuantity}
+                >
                   <Plus className="h-4 w-4 mr-2" />
                   Add
                 </Button>

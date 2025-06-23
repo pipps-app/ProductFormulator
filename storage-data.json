@@ -464,7 +464,8 @@
       "notes": "$6000/16000mls i.e weight = 85% volume 18.8, Seprod / Caribbean products",
       "isActive": true,
       "userId": 36,
-      "createdAt": "2025-06-22T18:02:45.044Z"
+      "createdAt": "2025-06-22T18:02:45.044Z",
+      "unitCost": "0.4025"
     },
     {
       "id": 76,
@@ -478,7 +479,8 @@
       "notes": "use to bag gallon bottles",
       "isActive": true,
       "userId": 36,
-      "createdAt": "2025-06-22T18:02:45.096Z"
+      "createdAt": "2025-06-22T18:02:45.096Z",
+      "unitCost": "5.4000"
     },
     {
       "id": 78,
@@ -492,7 +494,8 @@
       "notes": "used to bag 4oz bottles.",
       "isActive": true,
       "userId": 36,
-      "createdAt": "2025-06-22T18:02:45.098Z"
+      "createdAt": "2025-06-22T18:02:45.098Z",
+      "unitCost": "0.5635"
     },
     {
       "id": 80,
@@ -506,7 +509,8 @@
       "notes": "used to bag 8oz bottles, etc",
       "isActive": true,
       "userId": 36,
-      "createdAt": "2025-06-22T18:02:45.100Z"
+      "createdAt": "2025-06-22T18:02:45.100Z",
+      "unitCost": "0.8395"
     },
     {
       "id": 82,
@@ -520,7 +524,8 @@
       "notes": null,
       "isActive": true,
       "userId": 36,
-      "createdAt": "2025-06-22T18:02:45.102Z"
+      "createdAt": "2025-06-22T18:02:45.102Z",
+      "unitCost": "1.6100"
     },
     {
       "id": 84,
@@ -534,7 +539,8 @@
       "notes": null,
       "isActive": true,
       "userId": 36,
-      "createdAt": "2025-06-22T18:02:45.104Z"
+      "createdAt": "2025-06-22T18:02:45.104Z",
+      "unitCost": "2.8865"
     },
     {
       "id": 86,
@@ -548,7 +554,8 @@
       "notes": "medium size brown bags",
       "isActive": true,
       "userId": 36,
-      "createdAt": "2025-06-22T18:02:45.105Z"
+      "createdAt": "2025-06-22T18:02:45.105Z",
+      "unitCost": "8.5330"
     },
     {
       "id": 88,
@@ -562,7 +569,8 @@
       "notes": null,
       "isActive": true,
       "userId": 36,
-      "createdAt": "2025-06-22T18:02:45.108Z"
+      "createdAt": "2025-06-22T18:02:45.108Z",
+      "unitCost": "15.4675"
     },
     {
       "id": 90,
@@ -576,7 +584,8 @@
       "notes": null,
       "isActive": true,
       "userId": 36,
-      "createdAt": "2025-06-22T18:02:45.110Z"
+      "createdAt": "2025-06-22T18:02:45.110Z",
+      "unitCost": "0.3277"
     },
     {
       "id": 92,
@@ -590,7 +599,8 @@
       "notes": "Earth element -4 oz (116g) = $1600; 1T weighs 5g",
       "isActive": true,
       "userId": 36,
-      "createdAt": "2025-06-22T18:02:45.112Z"
+      "createdAt": "2025-06-22T18:02:45.112Z",
+      "unitCost": "17.2414"
     },
     {
       "id": 94,
@@ -604,7 +614,8 @@
       "notes": "300y yard roll = 900 feet; divide units into 1 foot pieces",
       "isActive": true,
       "userId": 36,
-      "createdAt": "2025-06-22T18:02:45.115Z"
+      "createdAt": "2025-06-22T18:02:45.115Z",
+      "unitCost": "10.5556"
     },
     {
       "id": 96,
@@ -618,7 +629,8 @@
       "notes": "42.4 kg = 40000g",
       "isActive": true,
       "userId": 36,
-      "createdAt": "2025-06-22T18:02:45.119Z"
+      "createdAt": "2025-06-22T18:02:45.119Z",
+      "unitCost": "0.0625"
     },
     {
       "id": 98,
@@ -632,7 +644,8 @@
       "notes": null,
       "isActive": true,
       "userId": 36,
-      "createdAt": "2025-06-22T18:02:45.122Z"
+      "createdAt": "2025-06-22T18:02:45.122Z",
+      "unitCost": "0.1100"
     },
     {
       "id": 100,
@@ -646,7 +659,8 @@
       "notes": "approx 200 pound bag = 90000g",
       "isActive": true,
       "userId": 36,
-      "createdAt": "2025-06-22T18:02:45.123Z"
+      "createdAt": "2025-06-22T18:02:45.123Z",
+      "unitCost": "0.0078"
     },
     {
       "id": 102,
@@ -660,7 +674,8 @@
       "notes": "called 'spice jar carton' ; 11 x 7 x 4 ; used for small orders eg soap 8oz 16oz, paperclip holders, etc",
       "isActive": true,
       "userId": 36,
-      "createdAt": "2025-06-22T18:02:45.127Z"
+      "createdAt": "2025-06-22T18:02:45.127Z",
+      "unitCost": "100.0500"
     },
     {
       "id": 104,
@@ -674,7 +689,8 @@
       "notes": "called 'Jamaica cosmetics' ; 12 x 8 x 6 ;",
       "isActive": true,
       "userId": 36,
-      "createdAt": "2025-06-22T18:02:45.129Z"
+      "createdAt": "2025-06-22T18:02:45.129Z",
+      "unitCost": "143.7500"
     },
     {
       "id": 106,
@@ -688,7 +704,8 @@
       "notes": "called 'bacon' ; 13 x 9 x 6.7; medium size box",
       "isActive": true,
       "userId": 36,
-      "createdAt": "2025-06-22T18:02:45.133Z"
+      "createdAt": "2025-06-22T18:02:45.133Z",
+      "unitCost": "165.6000"
     },
     {
       "id": 108,
@@ -702,7 +719,8 @@
       "notes": "called - '24 x 240mls' ; medium size box; 13.5 x 9 x 5.8",
       "isActive": true,
       "userId": 36,
-      "createdAt": "2025-06-22T18:02:45.135Z"
+      "createdAt": "2025-06-22T18:02:45.135Z",
+      "unitCost": "133.4000"
     },
     {
       "id": 110,
@@ -716,7 +734,8 @@
       "notes": "called 'corrugated case 24 x 16oz'; '16oz x24' printed on box; 15.7 x 10.5 x 7.5; large box",
       "isActive": true,
       "userId": 36,
-      "createdAt": "2025-06-22T18:02:45.138Z"
+      "createdAt": "2025-06-22T18:02:45.138Z",
+      "unitCost": "141.4500"
     },
     {
       "id": 112,
@@ -730,7 +749,8 @@
       "notes": "Used for bookends x 2, coasters x4, etc.",
       "isActive": true,
       "userId": 36,
-      "createdAt": "2025-06-22T18:02:45.140Z"
+      "createdAt": "2025-06-22T18:02:45.140Z",
+      "unitCost": "120.1600"
     },
     {
       "id": 114,
@@ -744,7 +764,8 @@
       "notes": "box with flaps - not used often",
       "isActive": true,
       "userId": 36,
-      "createdAt": "2025-06-22T18:02:45.145Z"
+      "createdAt": "2025-06-22T18:02:45.145Z",
+      "unitCost": "139.1500"
     },
     {
       "id": 116,
@@ -758,7 +779,8 @@
       "notes": "Used for lining boxes - divided by 10 to account for usage",
       "isActive": true,
       "userId": 36,
-      "createdAt": "2025-06-22T18:02:45.147Z"
+      "createdAt": "2025-06-22T18:02:45.147Z",
+      "unitCost": "124.5000"
     },
     {
       "id": 118,
@@ -772,7 +794,8 @@
       "notes": null,
       "isActive": true,
       "userId": 36,
-      "createdAt": "2025-06-22T18:02:45.150Z"
+      "createdAt": "2025-06-22T18:02:45.150Z",
+      "unitCost": "0.1176"
     },
     {
       "id": 120,
@@ -786,7 +809,8 @@
       "notes": "4oz bottle - $12 USD each, pay for 4 = $48, get 7; total 7 x 4 oz = 828mls; mail pack = $1500",
       "isActive": true,
       "userId": 36,
-      "createdAt": "2025-06-22T18:02:45.151Z"
+      "createdAt": "2025-06-22T18:02:45.151Z",
+      "unitCost": "11.3768"
     },
     {
       "id": 122,
@@ -800,7 +824,8 @@
       "notes": null,
       "isActive": true,
       "userId": 36,
-      "createdAt": "2025-06-22T18:02:45.154Z"
+      "createdAt": "2025-06-22T18:02:45.154Z",
+      "unitCost": "0.2909"
     },
     {
       "id": 124,
@@ -814,7 +839,8 @@
       "notes": null,
       "isActive": true,
       "userId": 36,
-      "createdAt": "2025-06-22T18:02:45.161Z"
+      "createdAt": "2025-06-22T18:02:45.161Z",
+      "unitCost": "0.1373"
     },
     {
       "id": 126,
@@ -828,7 +854,8 @@
       "notes": null,
       "isActive": true,
       "userId": 36,
-      "createdAt": "2025-06-22T18:02:45.163Z"
+      "createdAt": "2025-06-22T18:02:45.163Z",
+      "unitCost": "0.1765"
     },
     {
       "id": 128,
@@ -842,7 +869,8 @@
       "notes": null,
       "isActive": true,
       "userId": 36,
-      "createdAt": "2025-06-22T18:02:45.167Z"
+      "createdAt": "2025-06-22T18:02:45.167Z",
+      "unitCost": "0.1176"
     },
     {
       "id": 130,
@@ -856,7 +884,8 @@
       "notes": null,
       "isActive": true,
       "userId": 36,
-      "createdAt": "2025-06-22T18:02:45.170Z"
+      "createdAt": "2025-06-22T18:02:45.170Z",
+      "unitCost": "0.2321"
     },
     {
       "id": 132,
@@ -870,7 +899,8 @@
       "notes": null,
       "isActive": true,
       "userId": 36,
-      "createdAt": "2025-06-22T18:02:45.172Z"
+      "createdAt": "2025-06-22T18:02:45.172Z",
+      "unitCost": "0.1961"
     },
     {
       "id": 134,
@@ -884,7 +914,8 @@
       "notes": null,
       "isActive": true,
       "userId": 36,
-      "createdAt": "2025-06-22T18:02:45.175Z"
+      "createdAt": "2025-06-22T18:02:45.175Z",
+      "unitCost": "0.1765"
     },
     {
       "id": 136,
@@ -898,7 +929,8 @@
       "notes": "aztec clay mask - 1 lbs =454g =$15USD plus $1200 JMD courier",
       "isActive": true,
       "userId": 36,
-      "createdAt": "2025-06-22T18:02:45.178Z"
+      "createdAt": "2025-06-22T18:02:45.178Z",
+      "unitCost": "8.0947"
     },
     {
       "id": 138,
@@ -912,7 +944,8 @@
       "notes": "$42 USD for 1 gallon plus $4000 JMD courier",
       "isActive": true,
       "userId": 36,
-      "createdAt": "2025-06-22T18:02:45.180Z"
+      "createdAt": "2025-06-22T18:02:45.180Z",
+      "unitCost": "3.3973"
     },
     {
       "id": 140,
@@ -926,7 +959,8 @@
       "notes": "$42 USD per gallon plus $4000 courier",
       "isActive": true,
       "userId": 36,
-      "createdAt": "2025-06-22T18:02:45.186Z"
+      "createdAt": "2025-06-22T18:02:45.186Z",
+      "unitCost": "3.3973"
     },
     {
       "id": 142,
@@ -940,7 +974,8 @@
       "notes": "$30 USD for 32 fl. oz plus $2000 JMD  courier",
       "isActive": true,
       "userId": 36,
-      "createdAt": "2025-06-22T18:02:45.189Z"
+      "createdAt": "2025-06-22T18:02:45.189Z",
+      "unitCost": "8.8109"
     },
     {
       "id": 144,
@@ -954,7 +989,8 @@
       "notes": null,
       "isActive": true,
       "userId": 36,
-      "createdAt": "2025-06-22T18:02:45.192Z"
+      "createdAt": "2025-06-22T18:02:45.192Z",
+      "unitCost": "6.4440"
     },
     {
       "id": 146,
@@ -968,7 +1004,8 @@
       "notes": "$44 US + 6 US courier = $50; $9000JA / 240mls",
       "isActive": true,
       "userId": 36,
-      "createdAt": "2025-06-22T18:02:45.195Z"
+      "createdAt": "2025-06-22T18:02:45.195Z",
+      "unitCost": "39.2157"
     },
     {
       "id": 148,
@@ -982,7 +1019,8 @@
       "notes": "Paramount - $9500 per 25000g",
       "isActive": true,
       "userId": 36,
-      "createdAt": "2025-06-22T18:02:45.198Z"
+      "createdAt": "2025-06-22T18:02:45.198Z",
+      "unitCost": "0.3800"
     },
     {
       "id": 150,
@@ -996,7 +1034,8 @@
       "notes": "CHECK !!! Paramount - $17200 per 5 gallon - 18925",
       "isActive": true,
       "userId": 36,
-      "createdAt": "2025-06-22T18:02:45.201Z"
+      "createdAt": "2025-06-22T18:02:45.201Z",
+      "unitCost": "0.9089"
     },
     {
       "id": 152,
@@ -1010,7 +1049,8 @@
       "notes": "Paramount - $22000 per 19000mls",
       "isActive": true,
       "userId": 36,
-      "createdAt": "2025-06-22T18:02:45.205Z"
+      "createdAt": "2025-06-22T18:02:45.205Z",
+      "unitCost": "1.1579"
     },
     {
       "id": 154,
@@ -1024,7 +1064,8 @@
       "notes": "Cellulose - paramount $77000 / 25000g purchased Feb 9 2024",
       "isActive": true,
       "userId": 36,
-      "createdAt": "2025-06-22T18:02:45.209Z"
+      "createdAt": "2025-06-22T18:02:45.209Z",
+      "unitCost": "3.0840"
     },
     {
       "id": 156,
@@ -1038,7 +1079,8 @@
       "notes": "Paramount Trading",
       "isActive": true,
       "userId": 36,
-      "createdAt": "2025-06-22T18:02:45.211Z"
+      "createdAt": "2025-06-22T18:02:45.211Z",
+      "unitCost": "1.6400"
     },
     {
       "id": 158,
@@ -1052,7 +1094,8 @@
       "notes": "Paramount Trading",
       "isActive": true,
       "userId": 36,
-      "createdAt": "2025-06-22T18:02:45.215Z"
+      "createdAt": "2025-06-22T18:02:45.215Z",
+      "unitCost": "0.2720"
     },
     {
       "id": 160,
@@ -1066,7 +1109,8 @@
       "notes": "for 55lbs = 24000g",
       "isActive": true,
       "userId": 36,
-      "createdAt": "2025-06-22T18:02:45.218Z"
+      "createdAt": "2025-06-22T18:02:45.218Z",
+      "unitCost": "0.8750"
     },
     {
       "id": 162,
@@ -1080,7 +1124,8 @@
       "notes": "estimated",
       "isActive": true,
       "userId": 36,
-      "createdAt": "2025-06-22T18:02:45.221Z"
+      "createdAt": "2025-06-22T18:02:45.221Z",
+      "unitCost": "2.2026"
     },
     {
       "id": 164,
@@ -1094,7 +1139,8 @@
       "notes": "for 55lbs = 24000g",
       "isActive": true,
       "userId": 36,
-      "createdAt": "2025-06-22T18:02:45.225Z"
+      "createdAt": "2025-06-22T18:02:45.225Z",
+      "unitCost": "1.0417"
     },
     {
       "id": 166,
@@ -1108,7 +1154,8 @@
       "notes": "for 55lbs = 24000g",
       "isActive": true,
       "userId": 36,
-      "createdAt": "2025-06-22T18:02:45.229Z"
+      "createdAt": "2025-06-22T18:02:45.229Z",
+      "unitCost": "0.8750"
     },
     {
       "id": 168,
@@ -1122,7 +1169,8 @@
       "notes": "for 44lbs = 19000g",
       "isActive": true,
       "userId": 36,
-      "createdAt": "2025-06-22T18:02:45.232Z"
+      "createdAt": "2025-06-22T18:02:45.232Z",
+      "unitCost": "0.9474"
     },
     {
       "id": 170,
@@ -1136,7 +1184,8 @@
       "notes": "used for 8oz and 16oz bottles",
       "isActive": true,
       "userId": 36,
-      "createdAt": "2025-06-22T18:02:45.235Z"
+      "createdAt": "2025-06-22T18:02:45.235Z",
+      "unitCost": "7.5900"
     },
     {
       "id": 172,
@@ -1150,7 +1199,8 @@
       "notes": "Pricesmart - $1600 for 50g x 12 packs",
       "isActive": true,
       "userId": 36,
-      "createdAt": "2025-06-22T18:02:45.239Z"
+      "createdAt": "2025-06-22T18:02:45.239Z",
+      "unitCost": "2.6667"
     },
     {
       "id": 174,
@@ -1164,7 +1214,8 @@
       "notes": "Pricesmart -$300 for 2 kg",
       "isActive": true,
       "userId": 36,
-      "createdAt": "2025-06-22T18:02:45.243Z"
+      "createdAt": "2025-06-22T18:02:45.243Z",
+      "unitCost": "0.1500"
     },
     {
       "id": 176,
@@ -1178,7 +1229,8 @@
       "notes": "Pricesmart - $4500 / 3400mls i.e weight = 85% volume 4L",
       "isActive": true,
       "userId": 36,
-      "createdAt": "2025-06-22T18:02:45.246Z"
+      "createdAt": "2025-06-22T18:02:45.246Z",
+      "unitCost": "1.3824"
     },
     {
       "id": 178,
@@ -1192,7 +1244,8 @@
       "notes": "Pricesmart $3000/ 4250mls i.e weight = 85% volume 5L",
       "isActive": true,
       "userId": 36,
-      "createdAt": "2025-06-22T18:02:45.250Z"
+      "createdAt": "2025-06-22T18:02:45.250Z",
+      "unitCost": "0.7059"
     },
     {
       "id": 180,
@@ -1206,7 +1259,8 @@
       "notes": "Catherine Peak 700 per 19000mls",
       "isActive": true,
       "userId": 36,
-      "createdAt": "2025-06-22T18:02:45.254Z"
+      "createdAt": "2025-06-22T18:02:45.254Z",
+      "unitCost": "0.0368"
     },
     {
       "id": 182,
@@ -1220,7 +1274,8 @@
       "notes": null,
       "isActive": true,
       "userId": 36,
-      "createdAt": "2025-06-22T18:02:45.258Z"
+      "createdAt": "2025-06-22T18:02:45.258Z",
+      "unitCost": "1.1013"
     },
     {
       "id": 184,
@@ -1234,7 +1289,8 @@
       "notes": "cost - 1lb =454g = $250",
       "isActive": true,
       "userId": 36,
-      "createdAt": "2025-06-22T18:02:45.262Z"
+      "createdAt": "2025-06-22T18:02:45.262Z",
+      "unitCost": "0.5507"
     },
     {
       "id": 186,
@@ -1248,7 +1304,8 @@
       "notes": "$700 per lb (454g) approx $2 per gram",
       "isActive": true,
       "userId": 36,
-      "createdAt": "2025-06-22T18:02:45.265Z"
+      "createdAt": "2025-06-22T18:02:45.265Z",
+      "unitCost": "2.0000"
     },
     {
       "id": 188,
@@ -1262,7 +1319,8 @@
       "notes": null,
       "isActive": true,
       "userId": 36,
-      "createdAt": "2025-06-22T18:02:45.269Z"
+      "createdAt": "2025-06-22T18:02:45.269Z",
+      "unitCost": "0.6000"
     },
     {
       "id": 190,
@@ -1276,7 +1334,8 @@
       "notes": "$500 per pound (454g) approx $1 per gram",
       "isActive": true,
       "userId": 36,
-      "createdAt": "2025-06-22T18:02:45.272Z"
+      "createdAt": "2025-06-22T18:02:45.272Z",
+      "unitCost": "1.0000"
     },
     {
       "id": 192,
@@ -1290,7 +1349,8 @@
       "notes": "$500 per pound (454g) approx $1 per gram",
       "isActive": true,
       "userId": 36,
-      "createdAt": "2025-06-22T18:02:45.276Z"
+      "createdAt": "2025-06-22T18:02:45.276Z",
+      "unitCost": "1.0000"
     },
     {
       "id": 194,
@@ -1304,7 +1364,8 @@
       "notes": "cost calculated after collecting and processing",
       "isActive": true,
       "userId": 36,
-      "createdAt": "2025-06-22T18:02:45.279Z"
+      "createdAt": "2025-06-22T18:02:45.279Z",
+      "unitCost": "0.6000"
     },
     {
       "id": 196,
@@ -1318,7 +1379,8 @@
       "notes": "Pricesmart $1500 for 3kg",
       "isActive": true,
       "userId": 36,
-      "createdAt": "2025-06-22T18:02:45.285Z"
+      "createdAt": "2025-06-22T18:02:45.285Z",
+      "unitCost": "0.5000"
     },
     {
       "id": 198,
@@ -1332,7 +1394,8 @@
       "notes": "Hi -Lo - O.O pomace - $7300",
       "isActive": true,
       "userId": 36,
-      "createdAt": "2025-06-22T18:02:45.289Z"
+      "createdAt": "2025-06-22T18:02:45.289Z",
+      "unitCost": "2.1471"
     },
     {
       "id": 200,
@@ -1346,7 +1409,8 @@
       "notes": null,
       "isActive": true,
       "userId": 36,
-      "createdAt": "2025-06-22T18:02:45.293Z"
+      "createdAt": "2025-06-22T18:02:45.293Z",
+      "unitCost": "0.1250"
     },
     {
       "id": 202,
@@ -1360,7 +1424,8 @@
       "notes": null,
       "isActive": true,
       "userId": 36,
-      "createdAt": "2025-06-22T18:02:45.296Z"
+      "createdAt": "2025-06-22T18:02:45.296Z",
+      "unitCost": "0.0833"
     },
     {
       "id": 204,
@@ -1374,7 +1439,8 @@
       "notes": null,
       "isActive": true,
       "userId": 36,
-      "createdAt": "2025-06-22T18:02:45.303Z"
+      "createdAt": "2025-06-22T18:02:45.303Z",
+      "unitCost": "127.0000"
     },
     {
       "id": 206,
@@ -1388,7 +1454,8 @@
       "notes": null,
       "isActive": true,
       "userId": 36,
-      "createdAt": "2025-06-22T18:02:45.306Z"
+      "createdAt": "2025-06-22T18:02:45.306Z",
+      "unitCost": "127.0000"
     },
     {
       "id": 208,
@@ -1402,7 +1469,8 @@
       "notes": null,
       "isActive": true,
       "userId": 36,
-      "createdAt": "2025-06-22T18:02:45.310Z"
+      "createdAt": "2025-06-22T18:02:45.310Z",
+      "unitCost": "127.0000"
     },
     {
       "id": 210,
@@ -1416,7 +1484,8 @@
       "notes": null,
       "isActive": true,
       "userId": 36,
-      "createdAt": "2025-06-22T18:02:45.314Z"
+      "createdAt": "2025-06-22T18:02:45.314Z",
+      "unitCost": "127.0000"
     },
     {
       "id": 212,
@@ -1430,7 +1499,8 @@
       "notes": "use for verschem 8oz and 16oz bottles",
       "isActive": true,
       "userId": 36,
-      "createdAt": "2025-06-22T18:02:45.319Z"
+      "createdAt": "2025-06-22T18:02:45.319Z",
+      "unitCost": "10.9135"
     },
     {
       "id": 214,
@@ -1444,7 +1514,8 @@
       "notes": null,
       "isActive": true,
       "userId": 36,
-      "createdAt": "2025-06-22T18:02:45.322Z"
+      "createdAt": "2025-06-22T18:02:45.322Z",
+      "unitCost": "50.0000"
     },
     {
       "id": 216,
@@ -1458,7 +1529,8 @@
       "notes": "purchase approx. 5 bags of 250's in 2022",
       "isActive": true,
       "userId": 36,
-      "createdAt": "2025-06-22T18:02:45.330Z"
+      "createdAt": "2025-06-22T18:02:45.330Z",
+      "unitCost": "52.0030"
     },
     {
       "id": 218,
@@ -1472,7 +1544,8 @@
       "notes": null,
       "isActive": true,
       "userId": 36,
-      "createdAt": "2025-06-22T18:02:45.334Z"
+      "createdAt": "2025-06-22T18:02:45.334Z",
+      "unitCost": "38.3333"
     },
     {
       "id": 220,
@@ -1486,7 +1559,8 @@
       "notes": "use Versachems 24-410 whien pricing",
       "isActive": true,
       "userId": 36,
-      "createdAt": "2025-06-22T18:02:45.352Z"
+      "createdAt": "2025-06-22T18:02:45.352Z",
+      "unitCost": "25.8766"
     },
     {
       "id": 222,
@@ -1500,7 +1574,8 @@
       "notes": "price estimated from 2022 with inflation",
       "isActive": true,
       "userId": 36,
-      "createdAt": "2025-06-22T18:02:45.357Z"
+      "createdAt": "2025-06-22T18:02:45.357Z",
+      "unitCost": "0.0833"
     },
     {
       "id": 224,
@@ -1514,7 +1589,8 @@
       "notes": null,
       "isActive": true,
       "userId": 36,
-      "createdAt": "2025-06-22T18:02:45.364Z"
+      "createdAt": "2025-06-22T18:02:45.364Z",
+      "unitCost": "55.2000"
     },
     {
       "id": 226,
@@ -1528,7 +1604,8 @@
       "notes": "$8000 for 1000g - $8 per gram. Usage 0.0075%",
       "isActive": true,
       "userId": 36,
-      "createdAt": "2025-06-22T18:02:45.369Z"
+      "createdAt": "2025-06-22T18:02:45.369Z",
+      "unitCost": "8.0000"
     },
     {
       "id": 228,
@@ -1542,7 +1619,8 @@
       "notes": "$5600 plus gct plus $1500 cutting fee for 500 sheets plus $300/4 copy fee",
       "isActive": true,
       "userId": 36,
-      "createdAt": "2025-06-22T18:02:45.373Z"
+      "createdAt": "2025-06-22T18:02:45.373Z",
+      "unitCost": "15.8800"
     },
     {
       "id": 1157,
@@ -1556,7 +1634,8 @@
       "notes": "Paramount - $9500 per 25000g",
       "isActive": true,
       "userId": 1,
-      "createdAt": "2025-06-23T10:51:40.784Z"
+      "createdAt": "2025-06-23T10:51:40.784Z",
+      "unitCost": "0.3800"
     },
     {
       "id": 1159,
@@ -1570,7 +1649,8 @@
       "notes": "CHECK !!! Paramount - $17200 per 5 gallon - 18925",
       "isActive": true,
       "userId": 1,
-      "createdAt": "2025-06-23T10:51:40.817Z"
+      "createdAt": "2025-06-23T10:51:40.817Z",
+      "unitCost": "0.9089"
     },
     {
       "id": 1161,
@@ -1584,7 +1664,8 @@
       "notes": "Catherine Peak 700 per 19000mls",
       "isActive": true,
       "userId": 1,
-      "createdAt": "2025-06-23T10:51:40.830Z"
+      "createdAt": "2025-06-23T10:51:40.830Z",
+      "unitCost": "0.0368"
     },
     {
       "id": 1163,
@@ -1598,7 +1679,8 @@
       "notes": null,
       "isActive": true,
       "userId": 1,
-      "createdAt": "2025-06-23T10:51:40.841Z"
+      "createdAt": "2025-06-23T10:51:40.841Z",
+      "unitCost": "0.1250"
     },
     {
       "id": 1165,
@@ -1612,7 +1694,8 @@
       "notes": null,
       "isActive": true,
       "userId": 1,
-      "createdAt": "2025-06-23T10:51:40.854Z"
+      "createdAt": "2025-06-23T10:51:40.854Z",
+      "unitCost": "0.0833"
     },
     {
       "id": 1167,
@@ -1626,7 +1709,8 @@
       "notes": null,
       "isActive": true,
       "userId": 1,
-      "createdAt": "2025-06-23T10:51:40.868Z"
+      "createdAt": "2025-06-23T10:51:40.868Z",
+      "unitCost": "127.0000"
     },
     {
       "id": 1169,
@@ -1640,7 +1724,8 @@
       "notes": null,
       "isActive": true,
       "userId": 1,
-      "createdAt": "2025-06-23T10:51:40.877Z"
+      "createdAt": "2025-06-23T10:51:40.877Z",
+      "unitCost": "127.0000"
     },
     {
       "id": 1171,
@@ -1654,7 +1739,8 @@
       "notes": null,
       "isActive": true,
       "userId": 1,
-      "createdAt": "2025-06-23T10:51:40.891Z"
+      "createdAt": "2025-06-23T10:51:40.891Z",
+      "unitCost": "127.0000"
     },
     {
       "id": 1173,
@@ -1668,7 +1754,8 @@
       "notes": null,
       "isActive": true,
       "userId": 1,
-      "createdAt": "2025-06-23T10:51:40.901Z"
+      "createdAt": "2025-06-23T10:51:40.901Z",
+      "unitCost": "127.0000"
     },
     {
       "id": 1175,
@@ -1682,7 +1769,8 @@
       "notes": "use for verschem 8oz and 16oz bottles",
       "isActive": true,
       "userId": 1,
-      "createdAt": "2025-06-23T10:51:40.912Z"
+      "createdAt": "2025-06-23T10:51:40.912Z",
+      "unitCost": "10.9135"
     },
     {
       "id": 1177,
@@ -1696,7 +1784,8 @@
       "notes": null,
       "isActive": true,
       "userId": 1,
-      "createdAt": "2025-06-23T10:51:40.921Z"
+      "createdAt": "2025-06-23T10:51:40.921Z",
+      "unitCost": "50.0000"
     },
     {
       "id": 1179,
@@ -1710,7 +1799,8 @@
       "notes": "purchase approx. 5 bags of 250's in 2022",
       "isActive": true,
       "userId": 1,
-      "createdAt": "2025-06-23T10:51:40.932Z"
+      "createdAt": "2025-06-23T10:51:40.932Z",
+      "unitCost": "52.0030"
     },
     {
       "id": 1181,
@@ -1724,7 +1814,8 @@
       "notes": null,
       "isActive": true,
       "userId": 1,
-      "createdAt": "2025-06-23T10:51:40.942Z"
+      "createdAt": "2025-06-23T10:51:40.942Z",
+      "unitCost": "38.3333"
     },
     {
       "id": 1183,
@@ -1738,7 +1829,8 @@
       "notes": "use Versachems 24-410 whien pricing",
       "isActive": true,
       "userId": 1,
-      "createdAt": "2025-06-23T10:51:40.951Z"
+      "createdAt": "2025-06-23T10:51:40.951Z",
+      "unitCost": "25.8766"
     },
     {
       "id": 1185,
@@ -1752,7 +1844,8 @@
       "notes": "price estimated from 2022 with inflation",
       "isActive": true,
       "userId": 1,
-      "createdAt": "2025-06-23T10:51:40.970Z"
+      "createdAt": "2025-06-23T10:51:40.970Z",
+      "unitCost": "0.0833"
     },
     {
       "id": 1187,
@@ -1766,7 +1859,8 @@
       "notes": null,
       "isActive": true,
       "userId": 1,
-      "createdAt": "2025-06-23T10:51:40.984Z"
+      "createdAt": "2025-06-23T10:51:40.984Z",
+      "unitCost": "55.2000"
     },
     {
       "id": 1189,
@@ -1780,7 +1874,8 @@
       "notes": "called 'spice jar carton' ; 11 x 7 x 4 ; used for small orders eg soap 8oz 16oz, paperclip holders, etc",
       "isActive": true,
       "userId": 1,
-      "createdAt": "2025-06-23T10:51:40.994Z"
+      "createdAt": "2025-06-23T10:51:40.994Z",
+      "unitCost": "100.0500"
     },
     {
       "id": 1191,
@@ -1794,7 +1889,8 @@
       "notes": "called 'Jamaica cosmetics' ; 12 x 8 x 6 ;",
       "isActive": true,
       "userId": 1,
-      "createdAt": "2025-06-23T10:51:41.005Z"
+      "createdAt": "2025-06-23T10:51:41.005Z",
+      "unitCost": "143.7500"
     },
     {
       "id": 1193,
@@ -1808,7 +1904,8 @@
       "notes": "called 'bacon' ; 13 x 9 x 6.7; medium size box",
       "isActive": true,
       "userId": 1,
-      "createdAt": "2025-06-23T10:51:41.014Z"
+      "createdAt": "2025-06-23T10:51:41.014Z",
+      "unitCost": "165.6000"
     },
     {
       "id": 1195,
@@ -1822,7 +1919,8 @@
       "notes": "called - '24 x 240mls' ; medium size box; 13.5 x 9 x 5.8",
       "isActive": true,
       "userId": 1,
-      "createdAt": "2025-06-23T10:51:41.022Z"
+      "createdAt": "2025-06-23T10:51:41.022Z",
+      "unitCost": "133.4000"
     },
     {
       "id": 1197,
@@ -1836,7 +1934,8 @@
       "notes": "called 'corrugated case 24 x 16oz'; '16oz x24' printed on box; 15.7 x 10.5 x 7.5; large box",
       "isActive": true,
       "userId": 1,
-      "createdAt": "2025-06-23T10:51:41.032Z"
+      "createdAt": "2025-06-23T10:51:41.032Z",
+      "unitCost": "141.4500"
     },
     {
       "id": 1199,
@@ -1850,7 +1949,8 @@
       "notes": "Used for bookends x 2, coasters x4, etc.",
       "isActive": true,
       "userId": 1,
-      "createdAt": "2025-06-23T10:51:41.044Z"
+      "createdAt": "2025-06-23T10:51:41.044Z",
+      "unitCost": "120.1600"
     },
     {
       "id": 1201,
@@ -1864,21 +1964,23 @@
       "notes": "box with flaps - not used often",
       "isActive": true,
       "userId": 1,
-      "createdAt": "2025-06-23T10:51:41.052Z"
+      "createdAt": "2025-06-23T10:51:41.052Z",
+      "unitCost": "139.1500"
     },
     {
       "id": 1203,
       "name": "Boxes - slip sheet",
-      "sku": null,
+      "sku": "",
       "categoryId": 646,
       "vendorId": 672,
       "totalCost": "1245",
-      "quantity": "10",
+      "quantity": "100",
       "unit": "pcs",
-      "notes": "Used for lining boxes - divided by 10 to account for usage",
+      "notes": "Used for lining boxes - divided by 10 to account for usage. therefore total pieces are 10 sheets x 10 cuts per sheet = 100",
       "isActive": true,
       "userId": 1,
-      "createdAt": "2025-06-23T10:51:41.061Z"
+      "createdAt": "2025-06-23T10:51:41.061Z",
+      "unitCost": "12.4500"
     },
     {
       "id": 1205,
@@ -1892,7 +1994,8 @@
       "notes": "42.4 kg = 40000g",
       "isActive": true,
       "userId": 1,
-      "createdAt": "2025-06-23T10:51:41.069Z"
+      "createdAt": "2025-06-23T10:51:41.069Z",
+      "unitCost": "0.0625"
     },
     {
       "id": 1207,
@@ -1906,7 +2009,8 @@
       "notes": null,
       "isActive": true,
       "userId": 1,
-      "createdAt": "2025-06-23T10:51:41.079Z"
+      "createdAt": "2025-06-23T10:51:41.079Z",
+      "unitCost": "0.1100"
     },
     {
       "id": 1209,
@@ -1920,7 +2024,8 @@
       "notes": "approx 200 pound bag = 90000g",
       "isActive": true,
       "userId": 1,
-      "createdAt": "2025-06-23T10:51:41.092Z"
+      "createdAt": "2025-06-23T10:51:41.092Z",
+      "unitCost": "0.0078"
     },
     {
       "id": 1211,
@@ -1934,7 +2039,8 @@
       "notes": "for 55lbs = 24000g",
       "isActive": true,
       "userId": 1,
-      "createdAt": "2025-06-23T10:51:41.102Z"
+      "createdAt": "2025-06-23T10:51:41.102Z",
+      "unitCost": "0.8750"
     },
     {
       "id": 1213,
@@ -1948,7 +2054,8 @@
       "notes": "estimated",
       "isActive": true,
       "userId": 1,
-      "createdAt": "2025-06-23T10:51:41.112Z"
+      "createdAt": "2025-06-23T10:51:41.112Z",
+      "unitCost": "2.2026"
     },
     {
       "id": 1215,
@@ -1962,7 +2069,8 @@
       "notes": "for 55lbs = 24000g",
       "isActive": true,
       "userId": 1,
-      "createdAt": "2025-06-23T10:51:41.125Z"
+      "createdAt": "2025-06-23T10:51:41.125Z",
+      "unitCost": "1.0417"
     },
     {
       "id": 1217,
@@ -1976,7 +2084,8 @@
       "notes": "for 55lbs = 24000g",
       "isActive": true,
       "userId": 1,
-      "createdAt": "2025-06-23T10:51:41.143Z"
+      "createdAt": "2025-06-23T10:51:41.143Z",
+      "unitCost": "0.8750"
     },
     {
       "id": 1219,
@@ -1990,7 +2099,8 @@
       "notes": "for 44lbs = 19000g",
       "isActive": true,
       "userId": 1,
-      "createdAt": "2025-06-23T10:51:41.155Z"
+      "createdAt": "2025-06-23T10:51:41.155Z",
+      "unitCost": "0.9474"
     },
     {
       "id": 1221,
@@ -2004,7 +2114,8 @@
       "notes": null,
       "isActive": true,
       "userId": 1,
-      "createdAt": "2025-06-23T10:51:41.164Z"
+      "createdAt": "2025-06-23T10:51:41.164Z",
+      "unitCost": "0.1830"
     },
     {
       "id": 1223,
@@ -2018,7 +2129,8 @@
       "notes": "4oz bottle - $12 USD each, pay for 4 = $48, get 7; total 7 x 4 oz = 828mls; mail pack = $1500",
       "isActive": true,
       "userId": 1,
-      "createdAt": "2025-06-23T10:51:41.171Z"
+      "createdAt": "2025-06-23T10:51:41.171Z",
+      "unitCost": "11.3768"
     },
     {
       "id": 1225,
@@ -2032,7 +2144,8 @@
       "notes": null,
       "isActive": true,
       "userId": 1,
-      "createdAt": "2025-06-23T10:51:41.177Z"
+      "createdAt": "2025-06-23T10:51:41.177Z",
+      "unitCost": "0.0392"
     },
     {
       "id": 1227,
@@ -2046,7 +2159,8 @@
       "notes": null,
       "isActive": true,
       "userId": 1,
-      "createdAt": "2025-06-23T10:51:41.185Z"
+      "createdAt": "2025-06-23T10:51:41.185Z",
+      "unitCost": "0.0294"
     },
     {
       "id": 1229,
@@ -2060,7 +2174,8 @@
       "notes": null,
       "isActive": true,
       "userId": 1,
-      "createdAt": "2025-06-23T10:51:41.195Z"
+      "createdAt": "2025-06-23T10:51:41.195Z",
+      "unitCost": "0.0392"
     },
     {
       "id": 1231,
@@ -2074,7 +2189,8 @@
       "notes": null,
       "isActive": true,
       "userId": 1,
-      "createdAt": "2025-06-23T10:51:41.204Z"
+      "createdAt": "2025-06-23T10:51:41.204Z",
+      "unitCost": "0.0294"
     },
     {
       "id": 1233,
@@ -2088,7 +2204,8 @@
       "notes": null,
       "isActive": true,
       "userId": 1,
-      "createdAt": "2025-06-23T10:51:41.212Z"
+      "createdAt": "2025-06-23T10:51:41.212Z",
+      "unitCost": "0.0294"
     },
     {
       "id": 1235,
@@ -2102,7 +2219,8 @@
       "notes": null,
       "isActive": true,
       "userId": 1,
-      "createdAt": "2025-06-23T10:51:41.224Z"
+      "createdAt": "2025-06-23T10:51:41.224Z",
+      "unitCost": "0.0392"
     },
     {
       "id": 1237,
@@ -2116,7 +2234,8 @@
       "notes": null,
       "isActive": true,
       "userId": 1,
-      "createdAt": "2025-06-23T10:51:41.234Z"
+      "createdAt": "2025-06-23T10:51:41.234Z",
+      "unitCost": "0.0392"
     },
     {
       "id": 1239,
@@ -2130,7 +2249,8 @@
       "notes": "use to bag gallon bottles",
       "isActive": true,
       "userId": 1,
-      "createdAt": "2025-06-23T10:51:41.244Z"
+      "createdAt": "2025-06-23T10:51:41.244Z",
+      "unitCost": "5.4000"
     },
     {
       "id": 1241,
@@ -2144,7 +2264,8 @@
       "notes": "used to bag 4oz bottles.",
       "isActive": true,
       "userId": 1,
-      "createdAt": "2025-06-23T10:51:41.253Z"
+      "createdAt": "2025-06-23T10:51:41.253Z",
+      "unitCost": "0.5635"
     },
     {
       "id": 1243,
@@ -2158,7 +2279,8 @@
       "notes": "used to bag 8oz bottles, etc",
       "isActive": true,
       "userId": 1,
-      "createdAt": "2025-06-23T10:51:41.263Z"
+      "createdAt": "2025-06-23T10:51:41.263Z",
+      "unitCost": "0.8395"
     },
     {
       "id": 1245,
@@ -2172,7 +2294,8 @@
       "notes": null,
       "isActive": true,
       "userId": 1,
-      "createdAt": "2025-06-23T10:51:41.279Z"
+      "createdAt": "2025-06-23T10:51:41.279Z",
+      "unitCost": "1.6100"
     },
     {
       "id": 1247,
@@ -2186,7 +2309,8 @@
       "notes": null,
       "isActive": true,
       "userId": 1,
-      "createdAt": "2025-06-23T10:51:41.289Z"
+      "createdAt": "2025-06-23T10:51:41.289Z",
+      "unitCost": "2.8865"
     },
     {
       "id": 1249,
@@ -2200,7 +2324,8 @@
       "notes": "medium size brown bags",
       "isActive": true,
       "userId": 1,
-      "createdAt": "2025-06-23T10:51:41.299Z"
+      "createdAt": "2025-06-23T10:51:41.299Z",
+      "unitCost": "8.5330"
     },
     {
       "id": 1251,
@@ -2214,7 +2339,8 @@
       "notes": null,
       "isActive": true,
       "userId": 1,
-      "createdAt": "2025-06-23T10:51:41.311Z"
+      "createdAt": "2025-06-23T10:51:41.311Z",
+      "unitCost": "15.4675"
     },
     {
       "id": 1253,
@@ -2228,7 +2354,8 @@
       "notes": null,
       "isActive": true,
       "userId": 1,
-      "createdAt": "2025-06-23T10:51:41.318Z"
+      "createdAt": "2025-06-23T10:51:41.318Z",
+      "unitCost": "0.3277"
     },
     {
       "id": 1255,
@@ -2242,7 +2369,8 @@
       "notes": "300y yard roll = 900 feet; divide units into 1 foot pieces",
       "isActive": true,
       "userId": 1,
-      "createdAt": "2025-06-23T10:51:41.325Z"
+      "createdAt": "2025-06-23T10:51:41.325Z",
+      "unitCost": "10.5556"
     },
     {
       "id": 1257,
@@ -2256,7 +2384,8 @@
       "notes": "$5600 plus gct plus $1500 cutting fee for 500 sheets plus $300/4 copy fee",
       "isActive": true,
       "userId": 1,
-      "createdAt": "2025-06-23T10:51:41.334Z"
+      "createdAt": "2025-06-23T10:51:41.334Z",
+      "unitCost": "15.8800"
     },
     {
       "id": 1259,
@@ -2270,7 +2399,8 @@
       "notes": null,
       "isActive": true,
       "userId": 1,
-      "createdAt": "2025-06-23T10:51:41.348Z"
+      "createdAt": "2025-06-23T10:51:41.348Z",
+      "unitCost": "1.1013"
     },
     {
       "id": 1261,
@@ -2284,7 +2414,8 @@
       "notes": "cost - 1lb =454g = $250",
       "isActive": true,
       "userId": 1,
-      "createdAt": "2025-06-23T10:51:41.363Z"
+      "createdAt": "2025-06-23T10:51:41.363Z",
+      "unitCost": "0.5507"
     },
     {
       "id": 1263,
@@ -2298,7 +2429,8 @@
       "notes": "$700 per lb (454g) approx $2 per gram",
       "isActive": true,
       "userId": 1,
-      "createdAt": "2025-06-23T10:51:41.378Z"
+      "createdAt": "2025-06-23T10:51:41.378Z",
+      "unitCost": "2.0000"
     },
     {
       "id": 1265,
@@ -2312,7 +2444,8 @@
       "notes": null,
       "isActive": true,
       "userId": 1,
-      "createdAt": "2025-06-23T10:51:41.387Z"
+      "createdAt": "2025-06-23T10:51:41.387Z",
+      "unitCost": "0.6000"
     },
     {
       "id": 1267,
@@ -2326,7 +2459,8 @@
       "notes": "$500 per pound (454g) approx $1 per gram",
       "isActive": true,
       "userId": 1,
-      "createdAt": "2025-06-23T10:51:41.399Z"
+      "createdAt": "2025-06-23T10:51:41.399Z",
+      "unitCost": "1.0000"
     },
     {
       "id": 1269,
@@ -2340,7 +2474,8 @@
       "notes": "$500 per pound (454g) approx $1 per gram",
       "isActive": true,
       "userId": 1,
-      "createdAt": "2025-06-23T10:51:41.414Z"
+      "createdAt": "2025-06-23T10:51:41.414Z",
+      "unitCost": "1.0000"
     },
     {
       "id": 1271,
@@ -2354,7 +2489,8 @@
       "notes": "cost calculated after collecting and processing",
       "isActive": true,
       "userId": 1,
-      "createdAt": "2025-06-23T10:51:41.425Z"
+      "createdAt": "2025-06-23T10:51:41.425Z",
+      "unitCost": "0.6000"
     },
     {
       "id": 1273,
@@ -2368,7 +2504,8 @@
       "notes": null,
       "isActive": true,
       "userId": 1,
-      "createdAt": "2025-06-23T10:51:41.435Z"
+      "createdAt": "2025-06-23T10:51:41.435Z",
+      "unitCost": "250.0000"
     },
     {
       "id": 1275,
@@ -2382,7 +2519,8 @@
       "notes": null,
       "isActive": true,
       "userId": 1,
-      "createdAt": "2025-06-23T10:51:41.445Z"
+      "createdAt": "2025-06-23T10:51:41.445Z",
+      "unitCost": "500.0000"
     },
     {
       "id": 1277,
@@ -2396,7 +2534,8 @@
       "notes": null,
       "isActive": true,
       "userId": 1,
-      "createdAt": "2025-06-23T10:51:41.460Z"
+      "createdAt": "2025-06-23T10:51:41.460Z",
+      "unitCost": "750.0000"
     },
     {
       "id": 1279,
@@ -2410,7 +2549,8 @@
       "notes": null,
       "isActive": true,
       "userId": 1,
-      "createdAt": "2025-06-23T10:51:41.473Z"
+      "createdAt": "2025-06-23T10:51:41.473Z",
+      "unitCost": "1000.0000"
     },
     {
       "id": 1281,
@@ -2424,7 +2564,8 @@
       "notes": null,
       "isActive": true,
       "userId": 1,
-      "createdAt": "2025-06-23T10:51:41.486Z"
+      "createdAt": "2025-06-23T10:51:41.486Z",
+      "unitCost": "1250.0000"
     },
     {
       "id": 1283,
@@ -2438,7 +2579,8 @@
       "notes": null,
       "isActive": true,
       "userId": 1,
-      "createdAt": "2025-06-23T10:51:41.498Z"
+      "createdAt": "2025-06-23T10:51:41.498Z",
+      "unitCost": "1500.0000"
     },
     {
       "id": 1285,
@@ -2452,7 +2594,8 @@
       "notes": null,
       "isActive": true,
       "userId": 1,
-      "createdAt": "2025-06-23T10:51:41.507Z"
+      "createdAt": "2025-06-23T10:51:41.507Z",
+      "unitCost": "1750.0000"
     },
     {
       "id": 1287,
@@ -2466,7 +2609,8 @@
       "notes": null,
       "isActive": true,
       "userId": 1,
-      "createdAt": "2025-06-23T10:51:41.517Z"
+      "createdAt": "2025-06-23T10:51:41.517Z",
+      "unitCost": "860.0000"
     },
     {
       "id": 1289,
@@ -2480,7 +2624,8 @@
       "notes": null,
       "isActive": true,
       "userId": 1,
-      "createdAt": "2025-06-23T10:51:41.527Z"
+      "createdAt": "2025-06-23T10:51:41.527Z",
+      "unitCost": "1300.0000"
     },
     {
       "id": 1291,
@@ -2494,7 +2639,8 @@
       "notes": null,
       "isActive": true,
       "userId": 1,
-      "createdAt": "2025-06-23T10:51:41.535Z"
+      "createdAt": "2025-06-23T10:51:41.535Z",
+      "unitCost": "2340.0000"
     },
     {
       "id": 1293,
@@ -2508,7 +2654,8 @@
       "notes": "Earth element -4 oz (116g) = $1600; 1T weighs 5g",
       "isActive": true,
       "userId": 1,
-      "createdAt": "2025-06-23T10:51:41.550Z"
+      "createdAt": "2025-06-23T10:51:41.550Z",
+      "unitCost": "17.2414"
     },
     {
       "id": 1295,
@@ -2522,7 +2669,8 @@
       "notes": "aztec clay mask - 1 lbs =454g =$15USD plus $1200 JMD courier",
       "isActive": true,
       "userId": 1,
-      "createdAt": "2025-06-23T10:51:41.566Z"
+      "createdAt": "2025-06-23T10:51:41.566Z",
+      "unitCost": "8.0947"
     },
     {
       "id": 1297,
@@ -2536,7 +2684,8 @@
       "notes": "Paramount - $22000 per 19000mls",
       "isActive": true,
       "userId": 1,
-      "createdAt": "2025-06-23T10:51:41.583Z"
+      "createdAt": "2025-06-23T10:51:41.583Z",
+      "unitCost": "1.1579"
     },
     {
       "id": 1299,
@@ -2550,7 +2699,8 @@
       "notes": "Cellulose - paramount $77000 / 25000g purchased Feb 9 2024",
       "isActive": true,
       "userId": 1,
-      "createdAt": "2025-06-23T10:51:41.594Z"
+      "createdAt": "2025-06-23T10:51:41.594Z",
+      "unitCost": "3.0840"
     },
     {
       "id": 1301,
@@ -2564,7 +2714,8 @@
       "notes": "Paramount Trading",
       "isActive": true,
       "userId": 1,
-      "createdAt": "2025-06-23T10:51:41.606Z"
+      "createdAt": "2025-06-23T10:51:41.606Z",
+      "unitCost": "1.6400"
     },
     {
       "id": 1303,
@@ -2578,7 +2729,8 @@
       "notes": "Paramount Trading",
       "isActive": true,
       "userId": 1,
-      "createdAt": "2025-06-23T10:51:41.616Z"
+      "createdAt": "2025-06-23T10:51:41.616Z",
+      "unitCost": "0.2720"
     },
     {
       "id": 1305,
@@ -2592,7 +2744,8 @@
       "notes": "Pricesmart - $1600 for 50g x 12 packs",
       "isActive": true,
       "userId": 1,
-      "createdAt": "2025-06-23T10:51:41.634Z"
+      "createdAt": "2025-06-23T10:51:41.634Z",
+      "unitCost": "2.6667"
     },
     {
       "id": 1307,
@@ -2606,7 +2759,8 @@
       "notes": "Pricesmart -$300 for 2 kg",
       "isActive": true,
       "userId": 1,
-      "createdAt": "2025-06-23T10:51:41.645Z"
+      "createdAt": "2025-06-23T10:51:41.645Z",
+      "unitCost": "0.1500"
     },
     {
       "id": 1309,
@@ -2620,7 +2774,8 @@
       "notes": "Pricesmart $1500 for 3kg",
       "isActive": true,
       "userId": 1,
-      "createdAt": "2025-06-23T10:51:41.658Z"
+      "createdAt": "2025-06-23T10:51:41.658Z",
+      "unitCost": "0.5000"
     },
     {
       "id": 1311,
@@ -2634,7 +2789,8 @@
       "notes": "$8000 for 1000g - $8 per gram. Usage 0.0075%",
       "isActive": true,
       "userId": 1,
-      "createdAt": "2025-06-23T10:51:41.670Z"
+      "createdAt": "2025-06-23T10:51:41.670Z",
+      "unitCost": "8.0000"
     },
     {
       "id": 1313,
@@ -2648,7 +2804,8 @@
       "notes": "$6000/16000mls i.e weight = 85% volume 18.8, Seprod / Caribbean products",
       "isActive": true,
       "userId": 1,
-      "createdAt": "2025-06-23T10:51:41.682Z"
+      "createdAt": "2025-06-23T10:51:41.682Z",
+      "unitCost": "0.4025"
     },
     {
       "id": 1315,
@@ -2662,7 +2819,8 @@
       "notes": "$42 USD for 1 gallon plus $4000 JMD courier",
       "isActive": true,
       "userId": 1,
-      "createdAt": "2025-06-23T10:51:41.694Z"
+      "createdAt": "2025-06-23T10:51:41.694Z",
+      "unitCost": "3.3973"
     },
     {
       "id": 1317,
@@ -2676,7 +2834,8 @@
       "notes": "$42 USD per gallon plus $4000 courier",
       "isActive": true,
       "userId": 1,
-      "createdAt": "2025-06-23T10:51:41.705Z"
+      "createdAt": "2025-06-23T10:51:41.705Z",
+      "unitCost": "3.3973"
     },
     {
       "id": 1319,
@@ -2690,7 +2849,8 @@
       "notes": "$30 USD for 32 fl. oz plus $2000 JMD  courier",
       "isActive": true,
       "userId": 1,
-      "createdAt": "2025-06-23T10:51:41.717Z"
+      "createdAt": "2025-06-23T10:51:41.717Z",
+      "unitCost": "8.8109"
     },
     {
       "id": 1321,
@@ -2704,7 +2864,8 @@
       "notes": null,
       "isActive": true,
       "userId": 1,
-      "createdAt": "2025-06-23T10:51:41.729Z"
+      "createdAt": "2025-06-23T10:51:41.729Z",
+      "unitCost": "6.4440"
     },
     {
       "id": 1323,
@@ -2718,7 +2879,8 @@
       "notes": "$44 US + 6 US courier = $50; $9000JA / 240mls",
       "isActive": true,
       "userId": 1,
-      "createdAt": "2025-06-23T10:51:41.792Z"
+      "createdAt": "2025-06-23T10:51:41.792Z",
+      "unitCost": "39.2157"
     },
     {
       "id": 1325,
@@ -2732,7 +2894,8 @@
       "notes": "Pricesmart - $4500 / 3400mls i.e weight = 85% volume 4L",
       "isActive": true,
       "userId": 1,
-      "createdAt": "2025-06-23T10:51:41.802Z"
+      "createdAt": "2025-06-23T10:51:41.802Z",
+      "unitCost": "1.3824"
     },
     {
       "id": 1327,
@@ -2746,7 +2909,8 @@
       "notes": "Pricesmart $3000/ 4250mls i.e weight = 85% volume 5L",
       "isActive": true,
       "userId": 1,
-      "createdAt": "2025-06-23T10:51:41.811Z"
+      "createdAt": "2025-06-23T10:51:41.811Z",
+      "unitCost": "0.7059"
     },
     {
       "id": 1329,
@@ -2760,7 +2924,8 @@
       "notes": "Hi -Lo - O.O pomace - $7300",
       "isActive": true,
       "userId": 1,
-      "createdAt": "2025-06-23T10:51:41.820Z"
+      "createdAt": "2025-06-23T10:51:41.820Z",
+      "unitCost": "2.1471"
     },
     {
       "id": 1505,
@@ -2774,10 +2939,26 @@
       "notes": null,
       "userId": 1,
       "createdAt": "2025-06-23T10:53:05.447Z",
-      "updatedAt": "2025-06-23T10:53:05.448Z"
+      "updatedAt": "2025-06-23T10:53:05.448Z",
+      "unitCost": "50.0000"
     }
   ],
-  "formulations": [],
+  "formulations": [
+    {
+      "id": 1506,
+      "name": "Cooncrete - Square Coasters x 2 Units; Airmail Delivery",
+      "description": "4\" coasters with oxide, includes packaging and shipping",
+      "batchSize": "1.000",
+      "batchUnit": "unit",
+      "markupPercentage": "30.00",
+      "isActive": true,
+      "userId": 1,
+      "createdAt": "2025-06-23T11:10:14.228Z",
+      "totalCost": "501.95",
+      "unitCost": "501.9522",
+      "profitMargin": "150.59"
+    }
+  ],
   "formulationIngredients": [
     {
       "id": 21,
@@ -2813,6 +2994,60 @@
       "quantity": "0.010",
       "unit": "L",
       "costContribution": "1.80",
+      "includeInMarkup": true
+    },
+    {
+      "id": 1509,
+      "formulationId": 1506,
+      "materialId": 1207,
+      "quantity": "330",
+      "unit": "g",
+      "costContribution": "36.3",
+      "includeInMarkup": true
+    },
+    {
+      "id": 1510,
+      "formulationId": 1506,
+      "materialId": 1209,
+      "quantity": "170",
+      "unit": "g",
+      "costContribution": "1.3259999999999998",
+      "includeInMarkup": true
+    },
+    {
+      "id": 1511,
+      "formulationId": 1506,
+      "materialId": 1213,
+      "quantity": "25",
+      "unit": "pcs",
+      "costContribution": "55.065",
+      "includeInMarkup": true
+    },
+    {
+      "id": 1512,
+      "formulationId": 1506,
+      "materialId": 1201,
+      "quantity": "1",
+      "unit": "pcs",
+      "costContribution": "139.15",
+      "includeInMarkup": true
+    },
+    {
+      "id": 1513,
+      "formulationId": 1506,
+      "materialId": 1255,
+      "quantity": "2",
+      "unit": "pcs",
+      "costContribution": "21.1112",
+      "includeInMarkup": true
+    },
+    {
+      "id": 1514,
+      "formulationId": 1506,
+      "materialId": 1203,
+      "quantity": "2",
+      "unit": "pcs",
+      "costContribution": "249",
       "includeInMarkup": true
     }
   ],
@@ -8629,6 +8864,36 @@
       "changes": "{\"description\":\"Imported raw material \\\"Olive oil\\\" via CSV import\",\"data\":{\"name\":\"Olive oil\",\"sku\":null,\"categoryId\":660,\"vendorId\":686,\"totalCost\":\"7300\",\"quantity\":\"3400\",\"unit\":\"g\",\"notes\":\"Hi -Lo - O.O pomace - $7300\",\"isActive\":true,\"userId\":1}}",
       "createdAt": "2025-06-23T10:51:59.467Z",
       "timestamp": "2025-06-23T10:51:59.467Z"
+    },
+    {
+      "id": 1508,
+      "userId": 1,
+      "action": "create",
+      "entityType": "formulation",
+      "entityId": 1506,
+      "changes": "{\"description\":\"Created new formulation \\\"Cooncrete - Square Coasters x 2 Units; Airmail Delivery\\\" with batch size of 1.000 unit and 30.00% markup\",\"data\":{\"id\":1506,\"name\":\"Cooncrete - Square Coasters x 2 Units; Airmail Delivery\",\"description\":\"4\\\" coasters with oxide, includes packaging and shipping\",\"batchSize\":\"1.000\",\"batchUnit\":\"unit\",\"markupPercentage\":\"30.00\",\"isActive\":true,\"userId\":1,\"createdAt\":\"2025-06-23T11:10:14.228Z\",\"totalCost\":\"36.30\",\"unitCost\":\"36.3000\",\"profitMargin\":\"10.89\"},\"ingredients\":[{\"materialId\":1207,\"quantity\":\"330\",\"unit\":\"g\",\"costContribution\":\"36.3\",\"includeInMarkup\":true}]}",
+      "createdAt": "2025-06-23T11:10:14.249Z",
+      "timestamp": "2025-06-23T11:10:14.249Z"
+    },
+    {
+      "id": 1515,
+      "userId": 1,
+      "action": "update",
+      "entityType": "formulation",
+      "entityId": 1506,
+      "changes": "{\"description\":\"Updated formulation \\\"Cooncrete - Square Coasters x 2 Units; Airmail Delivery\\\" - batch size is now 1.000 unit with 30.00% markup (total cost changed from $36.30 to $501.95)\",\"before\":{\"id\":1506,\"name\":\"Cooncrete - Square Coasters x 2 Units; Airmail Delivery\",\"description\":\"4\\\" coasters with oxide, includes packaging and shipping\",\"batchSize\":\"1.000\",\"batchUnit\":\"unit\",\"markupPercentage\":\"30.00\",\"isActive\":true,\"userId\":1,\"createdAt\":\"2025-06-23T11:10:14.228Z\",\"totalCost\":\"36.30\",\"unitCost\":\"36.3000\",\"profitMargin\":\"10.89\"},\"after\":{\"id\":1506,\"name\":\"Cooncrete - Square Coasters x 2 Units; Airmail Delivery\",\"description\":\"4\\\" coasters with oxide, includes packaging and shipping\",\"batchSize\":\"1.000\",\"batchUnit\":\"unit\",\"markupPercentage\":\"30.00\",\"isActive\":true,\"userId\":1,\"createdAt\":\"2025-06-23T11:10:14.228Z\",\"totalCost\":\"501.95\",\"unitCost\":\"501.9522\",\"profitMargin\":\"150.59\"},\"ingredients\":[{\"materialId\":1207,\"quantity\":\"330\",\"unit\":\"g\",\"costContribution\":\"36.3\",\"includeInMarkup\":true},{\"materialId\":1209,\"quantity\":\"170\",\"unit\":\"g\",\"costContribution\":\"1.3259999999999998\",\"includeInMarkup\":true},{\"materialId\":1213,\"quantity\":\"25\",\"unit\":\"pcs\",\"costContribution\":\"55.065\",\"includeInMarkup\":true},{\"materialId\":1201,\"quantity\":\"1\",\"unit\":\"pcs\",\"costContribution\":\"139.15\",\"includeInMarkup\":true},{\"materialId\":1255,\"quantity\":\"2\",\"unit\":\"pcs\",\"costContribution\":\"21.1112\",\"includeInMarkup\":true},{\"materialId\":1203,\"quantity\":\"2\",\"unit\":\"pcs\",\"costContribution\":\"249\",\"includeInMarkup\":true}]}",
+      "createdAt": "2025-06-23T11:13:09.115Z",
+      "timestamp": "2025-06-23T11:13:09.115Z"
+    },
+    {
+      "id": 1516,
+      "userId": 1,
+      "action": "update",
+      "entityType": "material",
+      "entityId": 1203,
+      "changes": "{\"description\":\"Updated raw material \\\"Boxes - slip sheet\\\" - total cost is now $1245 for 100 pcs\",\"before\":{\"id\":1203,\"name\":\"Boxes - slip sheet\",\"sku\":null,\"categoryId\":646,\"vendorId\":672,\"totalCost\":\"1245\",\"quantity\":\"10\",\"unit\":\"pcs\",\"notes\":\"Used for lining boxes - divided by 10 to account for usage\",\"isActive\":true,\"userId\":1,\"createdAt\":\"2025-06-23T10:51:41.061Z\"},\"after\":{\"id\":1203,\"name\":\"Boxes - slip sheet\",\"sku\":\"\",\"categoryId\":646,\"vendorId\":672,\"totalCost\":\"1245\",\"quantity\":\"100\",\"unit\":\"pcs\",\"notes\":\"Used for lining boxes - divided by 10 to account for usage. therefore total pieces are 10 sheets x 10 cuts per sheet = 100\",\"isActive\":true,\"userId\":1,\"createdAt\":\"2025-06-23T10:51:41.061Z\"}}",
+      "createdAt": "2025-06-23T11:14:51.962Z",
+      "timestamp": "2025-06-23T11:14:51.962Z"
     }
   ],
   "passwordResetTokens": [
@@ -8641,5 +8906,5 @@
       "createdAt": "2025-06-22T18:26:22.092Z"
     }
   ],
-  "nextId": 1506
+  "nextId": 1517
 }
