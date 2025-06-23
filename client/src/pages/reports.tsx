@@ -42,10 +42,13 @@ export default function Reports() {
     queryKey: ["/api/user"]
   });
 
-  const { data: reports, refetch: refetchReports, isLoading } = useQuery({
+  const { data: reportsData, refetch: refetchReports, isLoading } = useQuery({
     queryKey: [`/api/reports/${selectedTier}`],
     enabled: !!userInfo
   });
+
+  const reports = reportsData?.reports || [];
+  const isPreview = reportsData?.preview || false;
 
   const handleRefresh = async () => {
     setRefreshing(true);
@@ -439,6 +442,12 @@ export default function Reports() {
                 <RefreshCw className="h-8 w-8 animate-spin mx-auto mb-4 text-gray-400" />
                 <p className="text-gray-600">Generating reports...</p>
               </div>
+            ) : isPreview ? (
+              <PreviewCard 
+                title={reportsData.title}
+                description={reportsData.description}
+                reports={reportsData.reports}
+              />
             ) : reports && reports.length > 0 ? (
               reports.map((report: ReportData, index) => renderReportItem(report, index))
             ) : (
@@ -457,6 +466,12 @@ export default function Reports() {
                 <RefreshCw className="h-8 w-8 animate-spin mx-auto mb-4 text-gray-400" />
                 <p className="text-gray-600">Generating reports...</p>
               </div>
+            ) : isPreview ? (
+              <PreviewCard 
+                title={reportsData.title}
+                description={reportsData.description}
+                reports={reportsData.reports}
+              />
             ) : reports && reports.length > 0 ? (
               reports.map((report: ReportData, index) => renderReportItem(report, index))
             ) : (
@@ -475,6 +490,12 @@ export default function Reports() {
                 <RefreshCw className="h-8 w-8 animate-spin mx-auto mb-4 text-gray-400" />
                 <p className="text-gray-600">Generating reports...</p>
               </div>
+            ) : isPreview ? (
+              <PreviewCard 
+                title={reportsData.title}
+                description={reportsData.description}
+                reports={reportsData.reports}
+              />
             ) : reports && reports.length > 0 ? (
               reports.map((report: ReportData, index) => renderReportItem(report, index))
             ) : (
@@ -493,6 +514,12 @@ export default function Reports() {
                 <RefreshCw className="h-8 w-8 animate-spin mx-auto mb-4 text-gray-400" />
                 <p className="text-gray-600">Generating reports...</p>
               </div>
+            ) : isPreview ? (
+              <PreviewCard 
+                title={reportsData.title}
+                description={reportsData.description}
+                reports={reportsData.reports}
+              />
             ) : reports && reports.length > 0 ? (
               reports.map((report: ReportData, index) => renderReportItem(report, index))
             ) : (

@@ -37,7 +37,7 @@
       "id": 1597,
       "email": "cretedesigns@yahoo.com",
       "password": "$2b$10$Yy0sLAvoW7oX7I6Kg17yTe03rgUAudX5qpnbdMv4Cd6ClvrU4RH1.",
-      "company": "",
+      "company": "Free Tier tester",
       "role": "user",
       "profileImage": null,
       "googleId": null,
@@ -326,6 +326,26 @@
       "notes": "",
       "userId": 1,
       "createdAt": "2025-06-23T10:33:00.602Z"
+    },
+    {
+      "id": 1600,
+      "name": "vendor test 1",
+      "contactEmail": "",
+      "contactPhone": "",
+      "address": "",
+      "notes": "",
+      "userId": 1597,
+      "createdAt": "2025-06-23T16:42:28.880Z"
+    },
+    {
+      "id": 1602,
+      "name": "vendor 2",
+      "contactEmail": "",
+      "contactPhone": "",
+      "address": "",
+      "notes": "",
+      "userId": 1597,
+      "createdAt": "2025-06-23T16:42:36.049Z"
     }
   ],
   "materialCategories": [
@@ -9103,6 +9123,26 @@
       "changes": "{\"description\":\"Updated raw material \\\"lavender\\\" - total cost is now $6000 for 102 g\",\"before\":{\"id\":1225,\"name\":\"lavender\",\"sku\":null,\"categoryId\":650,\"vendorId\":674,\"totalCost\":\"4\",\"quantity\":\"102\",\"unit\":\"g\",\"notes\":null,\"isActive\":true,\"userId\":1,\"createdAt\":\"2025-06-23T10:51:41.177Z\",\"unitCost\":\"0.0392\"},\"after\":{\"id\":1225,\"name\":\"lavender\",\"sku\":\"\",\"categoryId\":650,\"vendorId\":674,\"totalCost\":\"6000\",\"quantity\":\"102\",\"unit\":\"g\",\"notes\":\"30USD plus 7 courier = 37USD = 6000JMD\",\"isActive\":true,\"userId\":1,\"createdAt\":\"2025-06-23T10:51:41.177Z\",\"unitCost\":\"0.0392\"}}",
       "createdAt": "2025-06-23T14:54:34.649Z",
       "timestamp": "2025-06-23T14:54:34.649Z"
+    },
+    {
+      "id": 1601,
+      "userId": 1597,
+      "action": "create",
+      "entityType": "vendor",
+      "entityId": 1600,
+      "changes": "{\"description\":\"Added new vendor \\\"vendor test 1\\\"\",\"data\":{\"id\":1600,\"name\":\"vendor test 1\",\"contactEmail\":\"\",\"contactPhone\":\"\",\"address\":\"\",\"notes\":\"\",\"userId\":1597,\"createdAt\":\"2025-06-23T16:42:28.880Z\"}}",
+      "createdAt": "2025-06-23T16:42:28.888Z",
+      "timestamp": "2025-06-23T16:42:28.888Z"
+    },
+    {
+      "id": 1603,
+      "userId": 1597,
+      "action": "create",
+      "entityType": "vendor",
+      "entityId": 1602,
+      "changes": "{\"description\":\"Added new vendor \\\"vendor 2\\\"\",\"data\":{\"id\":1602,\"name\":\"vendor 2\",\"contactEmail\":\"\",\"contactPhone\":\"\",\"address\":\"\",\"notes\":\"\",\"userId\":1597,\"createdAt\":\"2025-06-23T16:42:36.049Z\"}}",
+      "createdAt": "2025-06-23T16:42:36.056Z",
+      "timestamp": "2025-06-23T16:42:36.056Z"
     }
   ],
   "passwordResetTokens": [
@@ -9123,6 +9163,6 @@
       "createdAt": "2025-06-23T16:33:29.469Z"
     }
   ],
-  "nextId": 1600,
+  "nextId": 1604,
   "payments": []
 }

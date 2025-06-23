@@ -14,6 +14,44 @@ function hasAccessToTier(userTier: string, requiredTier: string): boolean {
   // e.g., enterprise users can access pro, business, and free features
   return userTierIndex >= requiredTierIndex;
 }
+
+function getReportsPreview(userTier: string, requestedTier: string) {
+  const reportPreviews = {
+    pro: {
+      title: "Pro Plan Reports",
+      description: "All reports in the Free plan plus:",
+      reports: [
+        { title: "Cost Analysis by Category", description: "Detailed breakdown of material costs by category with trends" },
+        { title: "Vendor Performance Report", description: "Analysis of vendor pricing, reliability, and cost efficiency" },
+        { title: "Monthly Expense Summary", description: "Comprehensive monthly spending analysis with comparisons" },
+        { title: "Price Trend Analysis", description: "Historical price movements and forecasting for materials" }
+      ]
+    },
+    business: {
+      title: "Business Plan Reports", 
+      description: "All reports in the Free and Pro plans plus:",
+      reports: [
+        { title: "Profit Margin Analysis", description: "Detailed profit analysis by product and formulation" },
+        { title: "Advanced Inventory Insights", description: "Stock optimization and reorder recommendations" },
+        { title: "Formulation Efficiency Report", description: "Analysis of formulation performance and cost optimization" },
+        { title: "Quarterly Business Review", description: "Comprehensive quarterly performance and trends analysis" }
+      ]
+    },
+    enterprise: {
+      title: "Enterprise Plan Reports",
+      description: "All reports in the Free, Pro, and Business plans plus:",
+      reports: [
+        { title: "Advanced Financial Analytics", description: "Comprehensive financial modeling and forecasting" },
+        { title: "Multi-Location Analysis", description: "Cross-location performance and cost comparisons" },
+        { title: "Custom KPI Dashboard", description: "Personalized metrics and business intelligence insights" },
+        { title: "Executive Summary Report", description: "High-level strategic insights and recommendations" },
+        { title: "Competitive Analysis", description: "Market positioning and competitive benchmarking" }
+      ]
+    }
+  };
+
+  return reportPreviews[requestedTier] || { title: "Unknown Plan", description: "", reports: [] };
+}
 import { checkMaterialsLimit, checkFormulationsLimit, checkVendorsLimit, getUserSubscriptionInfo } from "./subscription-middleware";
 import { 
   insertVendorSchema, insertMaterialCategorySchema, insertRawMaterialSchema,
@@ -1983,19 +2021,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const user = await storage.getUser(userId);
       const userTier = user?.subscriptionPlan || 'free';
       
-      // Check if user has access to the requested tier
+      // If user doesn't have access to the requested tier, show preview
       if (!hasAccessToTier(userTier, tier)) {
-        return res.status(403).json({ 
-          error: "Access denied", 
-          message: `Your ${userTier} plan does not include ${tier} tier reports. Please upgrade your subscription.`,
+        const preview = getReportsPreview(userTier, tier);
+        return res.json({
+          preview: true,
           currentTier: userTier,
-          requestedTier: tier
+          requestedTier: tier,
+          message: `Your ${userTier} plan does not include ${tier} tier reports. Upgrade to unlock these features.`,
+          ...preview
         });
       }
       
       const reports = await reportsService.generateAllReportsForTier(userId, tier);
       
-      res.json(reports);
+      res.json({ reports });
     } catch (error) {
       console.error("Reports generation error:", error);
       res.status(500).json({ error: "Failed to generate reports" });
