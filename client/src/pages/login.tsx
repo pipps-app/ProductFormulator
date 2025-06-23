@@ -21,7 +21,6 @@ const loginSchema = z.object({
 type LoginFormData = z.infer<typeof loginSchema>;
 
 const registerSchema = z.object({
-  username: z.string().min(2, "Username must be at least 2 characters"),
   email: z.string().email("Please enter a valid email address"),
   password: z.string().min(6, "Password must be at least 6 characters"),
   company: z.string().optional(),
@@ -98,7 +97,6 @@ export default function Login() {
   const registerForm = useForm<RegisterFormData>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
-      username: "",
       email: "",
       password: "",
       company: "",
@@ -186,7 +184,6 @@ export default function Login() {
         description: "Your account has been created successfully. You can now log in.",
       });
       registerForm.reset({
-        username: "",
         email: "",
         password: "",
         company: "",
@@ -579,25 +576,6 @@ export default function Login() {
                 <Form {...registerForm}>
                   <form onSubmit={registerForm.handleSubmit(onRegisterSubmit)} className="space-y-4">
                     <div className="space-y-4">
-                      <FormField
-                        control={registerForm.control}
-                        name="username"
-                        render={({ field }) => (
-                          <FormItem className="space-y-2">
-                            <FormLabel className="text-sm font-medium">Username</FormLabel>
-                            <FormControl>
-                              <Input 
-                                placeholder="Choose a username" 
-                                className="w-full h-11 px-3 py-2 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                autoComplete="username"
-                                {...field} 
-                              />
-                            </FormControl>
-                            <FormMessage className="text-xs text-red-600" />
-                          </FormItem>
-                        )}
-                      />
-
                       <FormField
                         control={registerForm.control}
                         name="email"

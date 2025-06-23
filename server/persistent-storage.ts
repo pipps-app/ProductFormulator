@@ -120,7 +120,6 @@ export class PersistentStorage implements IStorage {
     if (this.data.users.length === 0) {
       const defaultUser: User = {
         id: 1,
-        username: "Juliet",
         email: "jumelisa@yahoo.com",
         password: "$2b$10$KBiX1HqE/7L0Xm.CtGEJWO3ne.RGq2KETa0vQsuUXpEhnijyvCuZK",
         company: "J.C Epiphany Limited",
@@ -149,9 +148,7 @@ export class PersistentStorage implements IStorage {
     return this.data.users;
   }
 
-  async getUserByUsername(username: string): Promise<User | undefined> {
-    return this.data.users.find(u => u.username === username);
-  }
+
 
   async getUserByEmail(email: string): Promise<User | undefined> {
     return this.data.users.find(u => u.email === email);
