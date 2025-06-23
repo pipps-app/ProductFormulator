@@ -323,7 +323,12 @@ export default function HelpGuide() {
     const hash = window.location.hash.replace('#', '');
     if (hash) {
       // Auto-open the section
-      setOpenTopics(prev => prev.includes(hash) ? prev : [...prev, hash]);
+      setOpenTopics([hash]);
+      
+      // If it's getting-started, also filter to show only that topic
+      if (hash === 'getting-started') {
+        setSelectedCategory('Getting Started');
+      }
       
       // Scroll to the section after a brief delay for rendering
       setTimeout(() => {
