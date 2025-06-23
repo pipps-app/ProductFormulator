@@ -335,45 +335,56 @@ export class ReportsService {
 
   private async getMostExpensiveMaterials(userId: number) {
     const materials = await storage.getRawMaterials(userId);
+    const categories = await storage.getMaterialCategories(userId);
     const sorted = materials.sort((a, b) => parseFloat(b.unitCost) - parseFloat(a.unitCost));
     
-    return {
-      mostExpensive: sorted.slice(0, 5).map(m => ({
+    const mostExpensive = sorted.slice(0, 5).map(m => {
+      const category = categories.find(c => c.id === m.categoryId);
+      return {
         name: m.name,
         unitCost: m.unitCost,
         unit: m.unit,
-        category: m.categoryId
-      })),
-      leastExpensive: sorted.slice(-5).reverse().map(m => ({
+        category: category?.name || 'Uncategorized',
+        type: 'Most Expensive'
+      };
+    });
+    
+    const leastExpensive = sorted.slice(-5).reverse().map(m => {
+      const category = categories.find(c => c.id === m.categoryId);
+      return {
         name: m.name,
         unitCost: m.unitCost,
         unit: m.unit,
-        category: m.categoryId
-      }))
-    };
+        category: category?.name || 'Uncategorized',
+        type: 'Least Expensive'
+      };
+    });
+    
+    // Return as a flat array for better display
+    return [...mostExpensive, ...leastExpensive];
   }
 
   private async getBatchCostCalculations(userId: number) {
     const formulations = await storage.getFormulations(userId);
     const batchSizes = [1, 5, 10, 25, 50, 100];
     
-    const calculations = await Promise.all(formulations.map(async (formulation) => {
-      const ingredients = await storage.getFormulationIngredients(formulation.id);
+    const allCalculations = [];
+    
+    for (const formulation of formulations) {
       const baseCost = parseFloat(formulation.totalCost) || 0;
       
-      const batchCosts = batchSizes.map(size => ({
-        batchSize: size,
-        totalCost: (baseCost * size).toFixed(2),
-        unitCost: baseCost.toFixed(4)
-      }));
-      
-      return {
-        formulation: formulation.name,
-        batchCalculations: batchCosts
-      };
-    }));
+      for (const size of batchSizes) {
+        allCalculations.push({
+          formulation: formulation.name,
+          batchSize: size,
+          totalCost: (baseCost * size).toFixed(2),
+          unitCost: baseCost.toFixed(4),
+          costPerUnit: (baseCost / size).toFixed(4)
+        });
+      }
+    }
     
-    return calculations;
+    return allCalculations;
   }
 
   private async getBasicProfitMargins(userId: number) {
@@ -400,7 +411,9 @@ export class ReportsService {
     const formulations = await storage.getFormulations(userId);
     const materials = await storage.getRawMaterials(userId);
     
-    const breakdown = await Promise.all(formulations.map(async (formulation) => {
+    const allIngredients = [];
+    
+    for (const formulation of formulations) {
       const ingredients = await storage.getFormulationIngredients(formulation.id);
       
       const ingredientCosts = ingredients.map(ingredient => {
@@ -410,31 +423,31 @@ export class ReportsService {
         const totalCost = quantity * unitCost;
         
         return {
+          formulation: formulation.name,
           materialName: material?.name || 'Unknown',
           quantity: quantity,
           unit: material?.unit || '',
           unitCost: unitCost.toFixed(4),
-          totalCost: totalCost.toFixed(4),
-          percentage: 0 // Will calculate after
+          totalCost: totalCost.toFixed(4)
         };
       });
       
       const totalFormulationCost = ingredientCosts.reduce((sum, ing) => sum + parseFloat(ing.totalCost), 0);
       
-      // Calculate percentages
+      // Add percentage and push to all ingredients
       ingredientCosts.forEach(ing => {
-        ing.percentage = totalFormulationCost > 0 ? 
+        const percentage = totalFormulationCost > 0 ? 
           ((parseFloat(ing.totalCost) / totalFormulationCost) * 100).toFixed(2) : '0.00';
+        
+        allIngredients.push({
+          ...ing,
+          percentage,
+          formulationTotalCost: totalFormulationCost.toFixed(4)
+        });
       });
-      
-      return {
-        formulation: formulation.name,
-        totalCost: totalFormulationCost.toFixed(4),
-        ingredients: ingredientCosts.sort((a, b) => parseFloat(b.totalCost) - parseFloat(a.totalCost))
-      };
-    }));
+    }
     
-    return breakdown;
+    return allIngredients.sort((a, b) => parseFloat(b.totalCost) - parseFloat(a.totalCost));
   }
 
   private async getCompleteMaterialListing(userId: number) {
@@ -732,59 +745,23 @@ export class ReportsService {
     const vendors = await storage.getVendors(userId);
     const categories = await storage.getMaterialCategories(userId);
     
-    // Group materials by category and look for similar materials across vendors
-    const categoryGroups: { [key: string]: any[] } = {};
+    const comparisons = [];
     
     materials.forEach(material => {
-      const category = categories.find(c => c.id === material.categoryId);
-      const categoryName = category?.name || 'Uncategorized';
-      
-      if (!categoryGroups[categoryName]) {
-        categoryGroups[categoryName] = [];
-      }
-      
       const vendor = vendors.find(v => v.id === material.vendorId);
-      categoryGroups[categoryName].push({
-        ...material,
-        vendorName: vendor?.name || 'No Vendor'
+      const category = categories.find(c => c.id === material.categoryId);
+      
+      comparisons.push({
+        materialName: material.name,
+        vendorName: vendor?.name || 'No Vendor',
+        category: category?.name || 'Uncategorized',
+        unitCost: material.unitCost,
+        unit: material.unit,
+        totalCost: material.totalCost
       });
     });
     
-    const comparisons = Object.entries(categoryGroups).map(([category, materials]) => {
-      const vendorStats = materials.reduce((acc: any, material) => {
-        if (!acc[material.vendorName]) {
-          acc[material.vendorName] = {
-            materials: [],
-            avgUnitCost: 0,
-            totalMaterials: 0
-          };
-        }
-        
-        acc[material.vendorName].materials.push({
-          name: material.name,
-          unitCost: material.unitCost,
-          unit: material.unit
-        });
-        acc[material.vendorName].totalMaterials++;
-        
-        return acc;
-      }, {});
-      
-      // Calculate average costs
-      Object.keys(vendorStats).forEach(vendor => {
-        const totalCost = vendorStats[vendor].materials.reduce(
-          (sum: number, m: any) => sum + parseFloat(m.unitCost), 0
-        );
-        vendorStats[vendor].avgUnitCost = (totalCost / vendorStats[vendor].totalMaterials).toFixed(4);
-      });
-      
-      return {
-        category,
-        vendorComparison: vendorStats
-      };
-    });
-    
-    return comparisons;
+    return comparisons.sort((a, b) => parseFloat(b.unitCost) - parseFloat(a.unitCost));
   }
 
   private async getCostSavingsOpportunities(userId: number) {

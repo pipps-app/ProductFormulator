@@ -132,19 +132,45 @@ export default function Reports() {
       if (Array.isArray(data)) {
         data.forEach((item, index) => {
           if (typeof item === 'object' && item !== null) {
-            lines.push(`${' '.repeat(indent)}${index + 1}. ${item.name || item.materialName || item.category || 'Item'}`);
+            const title = item.name || item.materialName || item.category || item.formulation || `Item ${index + 1}`;
+            lines.push(`${' '.repeat(indent)}${index + 1}. ${title}`);
             Object.entries(item).forEach(([key, value]) => {
-              if (key !== 'name' && key !== 'materialName' && key !== 'category') {
-                lines.push(`${' '.repeat(indent + 2)}${key}: ${value}`);
+              if (key !== 'name' && key !== 'materialName' && key !== 'category' && key !== 'formulation') {
+                const displayKey = key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
+                let displayValue = value;
+                
+                // Handle nested objects and arrays
+                if (typeof value === 'object' && value !== null) {
+                  if (Array.isArray(value)) {
+                    displayValue = `[${value.length} items]`;
+                  } else {
+                    displayValue = JSON.stringify(value, null, 2);
+                  }
+                }
+                
+                lines.push(`${' '.repeat(indent + 4)}${displayKey}: ${displayValue}`);
               }
             });
+            lines.push(''); // Add space between items
           } else {
             lines.push(`${' '.repeat(indent)}${index + 1}. ${item}`);
           }
         });
       } else if (typeof data === 'object' && data !== null) {
         Object.entries(data).forEach(([key, value]) => {
-          lines.push(`${' '.repeat(indent)}${key}: ${value}`);
+          const displayKey = key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
+          let displayValue = value;
+          
+          // Handle nested objects and arrays
+          if (typeof value === 'object' && value !== null) {
+            if (Array.isArray(value)) {
+              displayValue = `[${value.length} items]`;
+            } else {
+              displayValue = JSON.stringify(value, null, 2);
+            }
+          }
+          
+          lines.push(`${' '.repeat(indent)}${displayKey}: ${displayValue}`);
         });
       } else {
         lines.push(`${' '.repeat(indent)}${data}`);
@@ -253,7 +279,7 @@ export default function Reports() {
 
           {hasAccess ? (
             <Collapsible>
-              <CollapsibleTrigger className="flex items-center space-x-2 text-sm text-blue-600 hover:text-blue-800">
+              <CollapsibleTrigger className="flex items-center space-x-2 text-sm text-blue-600 hover:text-blue-800 cursor-pointer">
                 <ChevronRight className="h-4 w-4" />
                 <span>View Report Data</span>
               </CollapsibleTrigger>
@@ -284,21 +310,43 @@ export default function Reports() {
     // Handle different data structures
     if (Array.isArray(data)) {
       return (
-        <div className="space-y-2">
-          {data.slice(0, 5).map((item, index) => (
-            <div key={index} className="flex justify-between items-center p-2 bg-gray-50 rounded">
-              <span className="text-sm font-medium">
-                {item.name || item.materialName || item.category || `Item ${index + 1}`}
-              </span>
-              <Badge variant="outline">
-                {item.unitCost || item.totalCost || item.value || item.count || 'N/A'}
-              </Badge>
+        <div className="space-y-3">
+          {data.slice(0, 10).map((item, index) => (
+            <div key={index} className="border-l-4 border-blue-200 pl-4 py-2">
+              <h4 className="text-sm font-semibold text-gray-800 mb-2">
+                {item.name || item.materialName || item.category || item.formulation || `Item ${index + 1}`}
+              </h4>
+              <div className="grid grid-cols-2 gap-2 text-xs">
+                {Object.entries(item).map(([key, value]) => {
+                  if (key === 'name' || key === 'materialName' || key === 'category' || key === 'formulation') return null;
+                  
+                  let displayValue = value;
+                  if (typeof value === 'object' && value !== null) {
+                    if (Array.isArray(value)) {
+                      displayValue = `${value.length} items`;
+                    } else {
+                      displayValue = 'Complex data';
+                    }
+                  }
+                  
+                  return (
+                    <div key={key} className="flex justify-between">
+                      <span className="text-gray-600 capitalize">
+                        {key.replace(/([A-Z])/g, ' $1').trim()}:
+                      </span>
+                      <span className="font-medium">{String(displayValue)}</span>
+                    </div>
+                  );
+                })}
+              </div>
             </div>
           ))}
-          {data.length > 5 && (
-            <p className="text-xs text-gray-500 text-center">
-              ...and {data.length - 5} more items
-            </p>
+          {data.length > 10 && (
+            <div className="text-center py-2">
+              <Badge variant="secondary">
+                ...and {data.length - 10} more items
+              </Badge>
+            </div>
           )}
         </div>
       );
@@ -307,24 +355,35 @@ export default function Reports() {
     if (typeof data === 'object' && data !== null) {
       return (
         <div className="space-y-2">
-          {Object.entries(data).slice(0, 5).map(([key, value]) => (
-            <div key={key} className="flex justify-between items-center p-2 bg-gray-50 rounded">
-              <span className="text-sm font-medium capitalize">
-                {key.replace(/([A-Z])/g, ' $1').trim()}
-              </span>
-              <Badge variant="outline">
-                {typeof value === 'object' ? 'View Details' : String(value)}
-              </Badge>
-            </div>
-          ))}
+          {Object.entries(data).map(([key, value]) => {
+            let displayValue = value;
+            if (typeof value === 'object' && value !== null) {
+              if (Array.isArray(value)) {
+                displayValue = `${value.length} items`;
+              } else {
+                displayValue = 'Complex data';
+              }
+            }
+            
+            return (
+              <div key={key} className="flex justify-between items-center p-3 bg-white border rounded">
+                <span className="text-sm font-medium capitalize">
+                  {key.replace(/([A-Z])/g, ' $1').trim()}
+                </span>
+                <Badge variant="outline">
+                  {String(displayValue)}
+                </Badge>
+              </div>
+            );
+          })}
         </div>
       );
     }
     
     return (
-      <div className="p-4 bg-gray-50 rounded">
+      <div className="p-4 bg-white border rounded">
         <p className="text-sm text-gray-600">
-          {typeof data === 'string' ? data : JSON.stringify(data)}
+          {typeof data === 'string' ? data : JSON.stringify(data, null, 2)}
         </p>
       </div>
     );
