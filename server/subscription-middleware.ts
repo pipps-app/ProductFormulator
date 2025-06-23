@@ -12,11 +12,11 @@ interface SubscriptionLimits {
 
 const planLimits: Record<string, SubscriptionLimits> = {
   free: {
-    maxMaterials: 10,
-    maxFormulations: 3,
+    maxMaterials: 5,
+    maxFormulations: 1,
     maxVendors: 2,
     maxCategories: 2,
-    maxFileAttachments: 2,
+    maxFileAttachments: 1,
     maxStorageSize: 5
   },
   pro: {

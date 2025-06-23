@@ -30,19 +30,19 @@ const plans: SubscriptionPlan[] = [
     name: "Free",
     price: 0,
     interval: "forever",
-    maxMaterials: 10,
-    maxFormulations: 3,
+    maxMaterials: 5,
+    maxFormulations: 1,
     maxVendors: 2,
     maxCategories: 2,
-    maxFileAttachments: 2,
+    maxFileAttachments: 1,
     maxStorageSize: 5,
     support: "Help documentation",
     features: [
-      "Up to 10 raw materials",
-      "Up to 3 formulations",
+      "Up to 5 raw materials",
+      "Up to 1 formulation",
       "2 vendors & 2 categories",
       "Basic cost calculations",
-      "2 file attachments",
+      "1 file attachment",
       "5MB storage",
       "Help documentation"
     ]
@@ -114,10 +114,8 @@ const plans: SubscriptionPlan[] = [
       "API access",
       "Unlimited file attachments",
       "10GB storage",
-      "Custom integrations",
-      "Advanced analytics",
       "Dedicated support manager",
-      "Custom training"
+      "Phone support priority"
     ]
   }
 ];
