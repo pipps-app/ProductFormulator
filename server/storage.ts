@@ -8,7 +8,8 @@ import {
   type File, type InsertFile,
   type FileAttachment, type InsertFileAttachment,
   type AuditLog, type InsertAuditLog,
-  type PasswordResetToken, type InsertPasswordResetToken
+  type PasswordResetToken, type InsertPasswordResetToken,
+  type Payment, type InsertPayment
 } from "@shared/schema";
 
 export interface IStorage {
@@ -62,6 +63,13 @@ export interface IStorage {
   getPasswordResetToken(token: string): Promise<PasswordResetToken | undefined>;
   markTokenAsUsed(token: string): Promise<boolean>;
   cleanupExpiredTokens(): Promise<void>;
+  
+  // Payment management
+  createPayment(payment: InsertPayment): Promise<Payment>;
+  getPayment(id: number): Promise<Payment | undefined>;
+  getPaymentByTransactionId(transactionId: string): Promise<Payment | undefined>;
+  getUserPayments(userId: number): Promise<Payment[]>;
+  updatePaymentStatus(id: number, status: string, refundAmount?: string): Promise<boolean>;
 }
 
 class MemoryStorage implements IStorage {

@@ -20,6 +20,23 @@ export const users = pgTable("users", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+export const payments = pgTable("payments", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id),
+  transactionId: text("transaction_id").notNull().unique(),
+  paymentProcessor: text("payment_processor").notNull(), // "paypal", "stripe", "manual"
+  amount: decimal("amount", { precision: 10, scale: 2 }).notNull(),
+  currency: text("currency").notNull().default("USD"),
+  subscriptionTier: text("subscription_tier").notNull(), // "pro", "business", "enterprise"
+  paymentType: text("payment_type").notNull(), // "subscription", "renewal", "upgrade"
+  paymentStatus: text("payment_status").notNull().default("completed"), // "pending", "completed", "failed", "refunded"
+  paymentDate: timestamp("payment_date").defaultNow(),
+  refundDate: timestamp("refund_date"),
+  refundAmount: decimal("refund_amount", { precision: 10, scale: 2 }),
+  notes: text("notes"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
 export const vendors = pgTable("vendors", {
   id: serial("id").primaryKey(),
   name: text("name").notNull(),
@@ -201,6 +218,11 @@ export const insertPasswordResetTokenSchema = createInsertSchema(passwordResetTo
   createdAt: true,
 });
 
+export const insertPaymentSchema = createInsertSchema(payments).omit({
+  id: true,
+  createdAt: true,
+});
+
 // Types
 export type User = typeof users.$inferSelect;
 export type InsertUser = z.infer<typeof insertUserSchema>;
@@ -234,3 +256,6 @@ export type InsertAuditLog = z.infer<typeof insertAuditLogSchema>;
 
 export type PasswordResetToken = typeof passwordResetTokens.$inferSelect;
 export type InsertPasswordResetToken = z.infer<typeof insertPasswordResetTokenSchema>;
+
+export type Payment = typeof payments.$inferSelect;
+export type InsertPayment = z.infer<typeof insertPaymentSchema>;

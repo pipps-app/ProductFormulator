@@ -5,7 +5,8 @@ import type {
   User, InsertUser, Vendor, InsertVendor, MaterialCategory, InsertMaterialCategory,
   RawMaterial, InsertRawMaterial, Formulation, InsertFormulation, FormulationIngredient, InsertFormulationIngredient,
   File, InsertFile, FileAttachment, InsertFileAttachment, MaterialFile, InsertMaterialFile,
-  AuditLog, InsertAuditLog, PasswordResetToken, InsertPasswordResetToken
+  AuditLog, InsertAuditLog, PasswordResetToken, InsertPasswordResetToken,
+  Payment, InsertPayment
 } from "@shared/schema";
 
 interface StorageData {
@@ -20,6 +21,7 @@ interface StorageData {
   materialFiles: MaterialFile[];
   auditLogs: AuditLog[];
   passwordResetTokens: PasswordResetToken[];
+  payments: Payment[];
   nextId: number;
 }
 
@@ -40,6 +42,7 @@ export class PersistentStorage implements IStorage {
       materialFiles: [],
       auditLogs: [],
       passwordResetTokens: [],
+      payments: [],
       nextId: 1
     };
     this.loadData();
