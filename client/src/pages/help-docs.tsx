@@ -14,7 +14,8 @@ import {
   Settings,
   CreditCard,
   Upload,
-  Calculator
+  Calculator,
+  BarChart3
 } from "lucide-react";
 
 export default function HelpDocs() {
@@ -48,6 +49,42 @@ export default function HelpDocs() {
           description: "Complete tutorial for formulation creation",
           readTime: "10 min",
           popularity: "high"
+        }
+      ]
+    },
+    {
+      title: "Reports & Analytics",
+      icon: BarChart3,
+      articles: [
+        {
+          title: "Understanding Report Tiers",
+          description: "Overview of Free, Pro, Business, and Enterprise reporting features",
+          readTime: "4 min",
+          popularity: "high"
+        },
+        {
+          title: "Free Tier Reports",
+          description: "Material database value and basic cost analysis available to all users",
+          readTime: "3 min",
+          popularity: "high"
+        },
+        {
+          title: "Advanced Analytics",
+          description: "Pro, Business, and Enterprise reporting capabilities and insights",
+          readTime: "6 min",
+          popularity: "medium"
+        },
+        {
+          title: "Downloading Reports",
+          description: "Export reports as PDF or JSON for external analysis",
+          readTime: "2 min",
+          popularity: "medium"
+        },
+        {
+          title: "Report Data Accuracy",
+          description: "How report calculations work and ensuring data quality",
+          readTime: "5 min",
+          popularity: "medium"
         }
       ]
     },
