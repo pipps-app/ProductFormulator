@@ -47,29 +47,7 @@ const plans: SubscriptionPlan[] = [
       "Help documentation"
     ]
   },
-  {
-    id: "starter",
-    name: "Starter",
-    price: 9,
-    interval: "month",
-    maxMaterials: 25,
-    maxFormulations: 5,
-    maxVendors: 5,
-    maxCategories: 5,
-    maxFileAttachments: 5,
-    maxStorageSize: 25,
-    support: "Email support",
-    features: [
-      "Up to 25 raw materials",
-      "Up to 5 formulations",
-      "5 vendors & 5 categories",
-      "Basic cost calculations",
-      "5 file attachments",
-      "25MB storage",
-      "Email support",
-      "14-day money-back guarantee"
-    ]
-  },
+
   {
     id: "pro",
     name: "Pro",

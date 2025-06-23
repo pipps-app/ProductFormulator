@@ -1206,7 +1206,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Return Shopify store URLs for each plan
       const shopifyUrls: Record<string, string> = {
-        starter: process.env.SHOPIFY_STARTER_URL || 'https://your-store.myshopify.com/products/pipps-starter',
         professional: process.env.SHOPIFY_PROFESSIONAL_URL || 'https://your-store.myshopify.com/products/pipps-professional'
       };
       
