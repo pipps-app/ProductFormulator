@@ -1092,7 +1092,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       message: `Import completed: ${successful} successful, ${failed} failed`,
       successful,
       failed,
-      errors: errors.slice(0, 10) // Limit error messages
+      errors: errors.slice(0, 20), // Show more errors for debugging
+      availableCategories: categories.map(c => c.name),
+      availableVendors: vendors.map(v => v.name)
     });
   });
 
