@@ -882,64 +882,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
     const userId = req.userId;
     
     try {
-      // Define universal vendors for any business
-      const vendorsToCreate = [
-        "Local Supplier", "Online Marketplace", "Wholesale Distributor", 
-        "Direct Manufacturer", "Retail Store", "Specialty Vendor"
-      ];
-      
-      // Define universal categories for product making
-      const categoriesToCreate = [
-        "Base Materials", "Additives", "Packaging", "Tools & Equipment", 
-        "Ingredients", "Chemicals", "Raw Components", "Finishing Materials"
-      ];
-      
-      // Get existing data
       const existingVendors = await storage.getVendors(userId);
       const existingCategories = await storage.getMaterialCategories(userId);
       
-      const existingVendorNames = new Set(existingVendors.map(v => v.name.toLowerCase()));
-      const existingCategoryNames = new Set(existingCategories.map(c => c.name.toLowerCase()));
-      
-      let vendorsCreated = 0;
-      let categoriesCreated = 0;
-      
-      // Create missing vendors
-      for (const vendorName of vendorsToCreate) {
-        if (!existingVendorNames.has(vendorName.toLowerCase())) {
-          await storage.createVendor({
-            name: vendorName,
-            email: null,
-            phone: null,
-            address: null,
-            userId
-          });
-          vendorsCreated++;
-        }
-      }
-      
-      // Create missing categories
-      for (const categoryName of categoriesToCreate) {
-        if (!existingCategoryNames.has(categoryName.toLowerCase())) {
-          await storage.createMaterialCategory({
-            name: categoryName,
-            description: `Category for ${categoryName}`,
-            userId
-          });
-          categoriesCreated++;
-        }
-      }
-      
       res.json({
         success: true,
-        message: `Setup complete: ${vendorsCreated} vendors and ${categoriesCreated} categories created`,
-        vendorsCreated,
-        categoriesCreated
+        message: "No automatic setup performed. Create vendors and categories manually based on your CSV data.",
+        currentVendors: existingVendors.length,
+        currentCategories: existingCategories.length,
+        vendorsCreated: 0,
+        categoriesCreated: 0
       });
       
     } catch (error) {
       console.error("Setup error:", error);
-      res.status(500).json({ error: "Failed to setup import data" });
+      res.status(500).json({ error: "Failed to check existing data" });
     }
   });
 
