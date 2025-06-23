@@ -321,14 +321,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json(vendors);
   });
 
-  app.post("/api/vendors", async (req, res) => {
+  app.post("/api/vendors", requireAuth, checkVendorsLimit, async (req: any, res) => {
     try {
-      const vendorData = insertVendorSchema.parse({ ...req.body, userId: 1 });
+      const vendorData = insertVendorSchema.parse({ ...req.body, userId: req.userId });
       const vendor = await storage.createVendor(vendorData);
       
       // Create audit log
       await storage.createAuditLog({
-        userId: 1,
+        userId: req.userId,
         action: "create",
         entityType: "vendor",
         entityId: vendor.id,
@@ -508,7 +508,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json(material);
   });
 
-  app.post("/api/raw-materials", async (req, res) => {
+  app.post("/api/raw-materials", requireAuth, checkMaterialsLimit, async (req: any, res) => {
     try {
       // Calculate unitCost if not provided
       const requestData = { ...req.body, userId: 1 };
@@ -522,7 +522,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
       }
       
-      const materialData = insertRawMaterialSchema.parse(requestData);
+      const materialData = insertRawMaterialSchema.parse({ ...requestData, userId: req.userId });
       const material = await storage.createRawMaterial(materialData);
       
       // Create audit log
@@ -639,10 +639,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json(formulation);
   });
 
-  app.post("/api/formulations", async (req, res) => {
+  app.post("/api/formulations", requireAuth, checkFormulationsLimit, async (req: any, res) => {
     try {
       const { ingredients, ...formulationData } = req.body;
-      const parsedFormulationData = insertFormulationSchema.parse({ ...formulationData, userId: 1 });
+      const parsedFormulationData = insertFormulationSchema.parse({ ...formulationData, userId: req.userId });
       let formulation = await storage.createFormulation(parsedFormulationData);
       
       // Create formulation ingredients if provided
