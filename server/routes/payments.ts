@@ -37,8 +37,14 @@ export function registerPaymentRoutes(app: Express) {
   });
   
   // Get all payments for a user
-  app.get("/api/payments/user/:userId", async (req, res) => {
+  app.get("/api/payments/user/:userId", requireAuth, async (req: any, res) => {
     const userId = parseInt(req.params.userId);
+    
+    // Users can only access their own payment data
+    if (req.userId !== userId) {
+      return res.status(403).json({ error: "Access denied" });
+    }
+    
     const payments = await storage.getUserPayments(userId);
     res.json(payments);
   });

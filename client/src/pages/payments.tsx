@@ -28,8 +28,16 @@ interface Payment {
 
 export default function PaymentsPage() {
   const [searchTransactionId, setSearchTransactionId] = useState("");
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+
+  // Get current user info
+  const { data: userInfo } = useQuery({
+    queryKey: ["/api/user"]
+  });
+
   const [newPayment, setNewPayment] = useState({
-    userId: "1",
+    userId: userInfo?.id?.toString() || "1",
     transactionId: "",
     paymentProcessor: "paypal",
     amount: "",
@@ -39,12 +47,10 @@ export default function PaymentsPage() {
     notes: ""
   });
 
-  const { toast } = useToast();
-  const queryClient = useQueryClient();
-
-  // Get all payments for user
+  // Get all payments for current user
   const { data: payments = [], isLoading } = useQuery({
-    queryKey: ["/api/payments/user/1"],
+    queryKey: ["/api/payments/user", userInfo?.id],
+    enabled: !!userInfo?.id,
     select: (data: Payment[]) => data.sort((a, b) => new Date(b.paymentDate).getTime() - new Date(a.paymentDate).getTime())
   });
 
@@ -54,7 +60,7 @@ export default function PaymentsPage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/payments"] });
       setNewPayment({
-        userId: "1",
+        userId: userInfo?.id?.toString() || "1",
         transactionId: "",
         paymentProcessor: "paypal",
         amount: "",
