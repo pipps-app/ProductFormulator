@@ -1156,7 +1156,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // User profile management
   app.get("/api/user/profile", async (req, res) => {
-    const userId = 1; // Mock user ID
+    if (!req.session.userId) {
+      return res.status(401).json({ error: "Not authenticated" });
+    }
+    const userId = req.session.userId;
     const user = await storage.getUser(userId);
     if (!user) {
       return res.status(404).json({ error: "User not found" });
@@ -1270,7 +1273,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   app.post("/api/subscription/activate", async (req, res) => {
-    const userId = 1; // Mock user ID - replace with proper auth later
+    if (!req.session.userId) {
+      return res.status(401).json({ error: "Not authenticated" });
+    }
+    const userId = req.session.userId;
 
     try {
       const { orderId, planId } = req.body;
@@ -1339,7 +1345,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   app.get("/api/subscription/info", async (req, res) => {
-    const userId = 1; // Mock user ID - replace with proper auth later
+    if (!req.session.userId) {
+      return res.status(401).json({ error: "Not authenticated" });
+    }
+    const userId = req.session.userId;
 
     try {
       const subscriptionInfo = await getUserSubscriptionInfo(userId);
