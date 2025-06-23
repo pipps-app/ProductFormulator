@@ -688,8 +688,14 @@ export class ReportsService {
         const beforeData = changeData.before || {};
         const afterData = changeData.after || {};
         
-        const oldCost = parseFloat(beforeData.unitCost) || 0;
-        const newCost = parseFloat(afterData.unitCost) || 0;
+        // Calculate unit costs from total cost and quantity
+        const oldTotalCost = parseFloat(beforeData.totalCost) || 0;
+        const oldQuantity = parseFloat(beforeData.quantity) || 1;
+        const oldCost = oldQuantity > 0 ? oldTotalCost / oldQuantity : 0;
+        
+        const newTotalCost = parseFloat(afterData.totalCost) || 0;
+        const newQuantity = parseFloat(afterData.quantity) || 1;
+        const newCost = newQuantity > 0 ? newTotalCost / newQuantity : 0;
         const changeAmount = newCost - oldCost;
         const changePercent = oldCost > 0 ? ((changeAmount / oldCost) * 100) : 0;
         
