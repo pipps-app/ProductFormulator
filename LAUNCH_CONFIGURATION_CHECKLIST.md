@@ -63,13 +63,14 @@
 - `FINAL_DEPLOYMENT_PACKAGE.md`
 - `DEPLOYMENT_GUIDE.md`
 
-### PayPal Configuration URLs
-**Currently configured for sandbox:**
-- Sandbox: `https://www.sandbox.paypal.com/web-sdk/v6/core`
-- Production: `https://www.paypal.com/web-sdk/v6/core`
+### PayPal Integration (Future Feature)
+**Status:** Components exist but not currently used
+- PayPal components available for future implementation
+- Currently using Shopify-based payment processing
 
 **Files:**
-- `client/src/components/PayPalButton.tsx`
+- `client/src/components/PayPalButton.tsx` (inactive)
+- `server/paypal.ts` (inactive)
 
 ## Webhook URLs for Production
 
@@ -100,11 +101,17 @@ SHOPIFY_STARTER_URL=https://your-actual-store.myshopify.com/products/starter-pla
 SHOPIFY_PROFESSIONAL_URL=https://your-actual-store.myshopify.com/products/professional-plan
 ```
 
-### PayPal Configuration
+### Payment Processing (Shopify-Based)
 ```
-PAYPAL_CLIENT_ID=your-production-client-id
-PAYPAL_CLIENT_SECRET=your-production-client-secret
-NODE_ENV=production
+SHOPIFY_STARTER_URL=https://your-actual-store.myshopify.com/products/starter-plan
+SHOPIFY_PROFESSIONAL_URL=https://your-actual-store.myshopify.com/products/professional-plan
+```
+
+### PayPal Configuration (Future Use)
+```
+# PayPal components exist but not currently active
+# PAYPAL_CLIENT_ID=your-production-client-id
+# PAYPAL_CLIENT_SECRET=your-production-client-secret
 ```
 
 ### Database
@@ -120,9 +127,8 @@ SESSION_SECRET=your-secure-session-secret
 ## Pre-Launch Tasks
 
 1. **Update all email addresses** to your business email
-2. **Configure Shopify store URLs** with actual product links
-3. **Set up production PayPal credentials**
-4. **Configure email service** (Gmail or SendGrid)
+2. **Configure Shopify store URLs** with actual product links  
+3. **Configure email service** (Gmail or SendGrid)
 5. **Update WhatsApp number** to your business number
 6. **Set up Shopify webhooks** with your domain
 7. **Test all subscription flows** end-to-end
