@@ -298,7 +298,7 @@ export default function HelpDocs() {
       {/* Header */}
       <div>
         <h1 className="text-2xl font-bold text-slate-900">Help Documentation</h1>
-        <p className="text-slate-600">Comprehensive guides and tutorials for PIPPS Maker</p>
+        <p className="text-slate-600">Comprehensive guides and tutorials for PIPPS Maker Calculator</p>
       </div>
 
       {/* Search */}
