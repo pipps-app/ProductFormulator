@@ -392,7 +392,42 @@ export default function Reports() {
     );
   };
 
-
+  // Preview component for locked tier reports
+  const PreviewCard = ({ title, description, reports }) => (
+    <Card className="border-2 border-dashed border-orange-200 bg-orange-50/50">
+      <CardHeader className="pb-4">
+        <div className="flex items-center justify-between">
+          <div>
+            <CardTitle className="text-xl text-orange-800">{title}</CardTitle>
+            <p className="text-orange-600 mt-1">{description}</p>
+          </div>
+          <Crown className="h-8 w-8 text-orange-500" />
+        </div>
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-3 mb-4">
+          {reports.map((report, index) => (
+            <div key={index} className="flex items-start gap-3 p-3 bg-white/50 rounded-lg border border-orange-100">
+              <FileText className="h-5 w-5 text-orange-500 mt-0.5 flex-shrink-0" />
+              <div>
+                <h4 className="font-medium text-gray-800">{report.title}</h4>
+                <p className="text-sm text-gray-600">{report.description}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+        <div className="flex items-center justify-between p-4 bg-gradient-to-r from-orange-100 to-yellow-100 rounded-lg border border-orange-200">
+          <div>
+            <p className="font-medium text-orange-800">Upgrade to unlock these reports</p>
+            <p className="text-sm text-orange-600">Get detailed insights and analytics for your business</p>
+          </div>
+          <Button className="bg-orange-500 hover:bg-orange-600 text-white">
+            Upgrade Plan
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
+  );
 
   return (
     <div className="max-w-7xl mx-auto p-6 space-y-6">
