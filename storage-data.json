@@ -449,15 +449,6 @@
       "userId": 1,
       "createdAt": "2025-06-23T10:40:55.503Z",
       "updatedAt": "2025-06-23T10:40:55.503Z"
-    },
-    {
-      "id": 1154,
-      "name": "Concrete supplies",
-      "description": "Category for Concrete supplies",
-      "color": null,
-      "userId": 1,
-      "createdAt": "2025-06-23T10:40:55.503Z",
-      "updatedAt": "2025-06-23T10:40:55.503Z"
     }
   ],
   "rawMaterials": [
@@ -5646,6 +5637,16 @@
       "changes": "{\"description\":\"Imported raw material \\\"Shipping - SAL - USA up to 10kg\\\" via CSV import\",\"data\":{\"name\":\"Shipping - SAL - USA up to 10kg\",\"sku\":null,\"categoryId\":656,\"vendorId\":682,\"totalCost\":\"2340\",\"quantity\":\"1\",\"unit\":\"pcs\",\"notes\":null,\"isActive\":true,\"userId\":1}}",
       "createdAt": "2025-06-23T10:39:54.170Z",
       "timestamp": "2025-06-23T10:39:54.170Z"
+    },
+    {
+      "id": 1155,
+      "userId": 1,
+      "action": "delete",
+      "entityType": "category",
+      "entityId": 1154,
+      "changes": "{\"description\":\"Deleted category \\\"Concrete supplies\\\" (null color)\",\"data\":{\"id\":1154,\"name\":\"Concrete supplies\",\"description\":\"Category for Concrete supplies\",\"color\":null,\"userId\":1,\"createdAt\":\"2025-06-23T10:40:55.503Z\",\"updatedAt\":\"2025-06-23T10:40:55.503Z\"}}",
+      "createdAt": "2025-06-23T10:45:22.825Z",
+      "timestamp": "2025-06-23T10:45:22.825Z"
     }
   ],
   "passwordResetTokens": [
@@ -5658,5 +5659,5 @@
       "createdAt": "2025-06-22T18:26:22.092Z"
     }
   ],
-  "nextId": 1155
+  "nextId": 1156
 }
