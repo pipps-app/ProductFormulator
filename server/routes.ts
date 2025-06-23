@@ -505,7 +505,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const existingCategories = await storage.getMaterialCategories(userId);
       
       const tierLimits = {
-        free: 3,
+        free: 2,
         pro: 20,
         business: 50,
         enterprise: Infinity
