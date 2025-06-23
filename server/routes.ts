@@ -1390,6 +1390,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Support email endpoint
+  app.post("/api/support", async (req, res) => {
+    try {
+      const { name, email, subject, message } = req.body;
+
+      if (!name || !email || !subject || !message) {
+        return res.status(400).json({ error: "All fields are required" });
+      }
+
+      const success = await emailService.sendSupportEmail(name, email, subject, message);
+      
+      if (success) {
+        res.json({ success: true, message: "Support request sent successfully" });
+      } else {
+        res.status(500).json({ error: "Failed to send support request" });
+      }
+    } catch (error) {
+      console.error("Support email error:", error);
+      res.status(500).json({ error: "Failed to send support request" });
+    }
+  });
+
   // Instant trial account creation
   app.post("/api/users/create-trial", async (req, res) => {
     try {

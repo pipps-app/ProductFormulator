@@ -36,7 +36,7 @@ const plans: SubscriptionPlan[] = [
     maxCategories: 2,
     maxFileAttachments: 2,
     maxStorageSize: 5,
-    support: "Community support",
+    support: "Help documentation",
     features: [
       "Up to 10 raw materials",
       "Up to 3 formulations",
@@ -44,7 +44,7 @@ const plans: SubscriptionPlan[] = [
       "Basic cost calculations",
       "2 file attachments",
       "5MB storage",
-      "Community support"
+      "Help documentation"
     ]
   },
   {

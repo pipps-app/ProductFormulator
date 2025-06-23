@@ -167,6 +167,38 @@ class EmailService {
     });
   }
 
+  async sendSupportEmail(name: string, email: string, subject: string, message: string): Promise<boolean> {
+    if (!this.isConfigured()) {
+      console.error("Email service not configured");
+      return false;
+    }
+
+    const emailParams: EmailParams = {
+      to: this.config!.user, // Send to your Gmail address
+      subject: `PIPPS Support: ${subject}`,
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <h2 style="color: #333;">New Support Request</h2>
+          <div style="background-color: #f5f5f5; padding: 16px; border-radius: 4px; margin: 16px 0;">
+            <p><strong>From:</strong> ${name} (${email})</p>
+            <p><strong>Subject:</strong> ${subject}</p>
+          </div>
+          <div style="background-color: white; padding: 16px; border: 1px solid #ddd; border-radius: 4px;">
+            <h3>Message:</h3>
+            <p style="white-space: pre-wrap;">${message}</p>
+          </div>
+          <hr style="margin: 32px 0; border: none; border-top: 1px solid #eee;">
+          <p style="color: #666; font-size: 12px;">
+            PIPPS Maker Calc - Support Request
+          </p>
+        </div>
+      `,
+      text: `New support request from ${name} (${email})\n\nSubject: ${subject}\n\nMessage:\n${message}`
+    };
+
+    return await this.sendEmail(emailParams);
+  }
+
   isConfigured(): boolean {
     return this.transporter !== null && this.config !== null;
   }

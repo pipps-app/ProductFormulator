@@ -36,22 +36,45 @@ export default function Support() {
     e.preventDefault();
     setIsSubmitting(true);
     
-    // Simulate form submission
-    await new Promise(resolve => setTimeout(resolve, 1500));
+    try {
+      const response = await fetch('/api/support', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          subject: formData.subject,
+          message: formData.message
+        })
+      });
+
+      if (response.ok) {
+        toast({
+          title: "Support request sent",
+          description: "We'll respond to your email within 24 hours.",
+        });
+        
+        setFormData({
+          name: "",
+          email: "",
+          subject: "",
+          priority: "medium",
+          category: "general",
+          message: ""
+        });
+      } else {
+        throw new Error('Failed to send support request');
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to send support request. Please try again.",
+        variant: "destructive"
+      });
+    }
     
-    toast({
-      title: "Support ticket created",
-      description: "We'll respond within 24 hours. Check your email for updates.",
-    });
-    
-    setFormData({
-      name: "",
-      email: "",
-      subject: "",
-      priority: "medium",
-      category: "general",
-      message: ""
-    });
     setIsSubmitting(false);
   };
 
@@ -139,7 +162,7 @@ export default function Support() {
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
               <Send className="h-5 w-5" />
-              <span>Create Support Ticket</span>
+              <span>Contact Support</span>
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -222,7 +245,7 @@ export default function Support() {
               </div>
 
               <Button type="submit" disabled={isSubmitting} className="w-full">
-                {isSubmitting ? "Submitting..." : "Submit Ticket"}
+                {isSubmitting ? "Sending..." : "Send Message"}
               </Button>
             </form>
           </CardContent>
