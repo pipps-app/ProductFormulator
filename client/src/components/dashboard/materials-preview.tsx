@@ -1,7 +1,7 @@
 import { useMaterials, useMaterialCategories, useVendors } from "@/hooks/use-materials";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Filter, Edit, Trash2, Package, FlaskRound, RefreshCw } from "lucide-react";
+import { Filter, Package, FlaskRound, RefreshCw } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
 import { Link } from "wouter";
@@ -131,7 +131,6 @@ export default function MaterialsPreview() {
                   <th className="text-right p-4 text-sm font-medium text-slate-600">Unit Cost</th>
                   <th className="text-right p-4 text-sm font-medium text-slate-600">Total Quantity</th>
                   <th className="text-right p-4 text-sm font-medium text-slate-600">Value</th>
-                  <th className="text-center p-4 text-sm font-medium text-slate-600">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-200">
@@ -188,16 +187,6 @@ export default function MaterialsPreview() {
                         <p className="text-sm font-medium text-slate-900">
                           ${material.totalCost}
                         </p>
-                      </td>
-                      <td className="p-4 text-center">
-                        <div className="flex items-center justify-center space-x-2">
-                          <Button variant="ghost" size="sm">
-                            <Edit className="h-3 w-3" />
-                          </Button>
-                          <Button variant="ghost" size="sm">
-                            <Trash2 className="h-3 w-3" />
-                          </Button>
-                        </div>
                       </td>
                     </tr>
                   );
