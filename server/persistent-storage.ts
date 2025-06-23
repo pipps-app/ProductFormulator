@@ -162,7 +162,13 @@ export class PersistentStorage implements IStorage {
     const newUser: User = {
       id: this.data.nextId++,
       ...user,
-      createdAt: new Date()
+      createdAt: new Date(),
+      // Set defaults if not provided
+      subscriptionStatus: user.subscriptionStatus || "active",
+      subscriptionPlan: user.subscriptionPlan || "free",
+      subscriptionStartDate: user.subscriptionStartDate || new Date(),
+      role: user.role || "user",
+      authProvider: user.authProvider || "local"
     } as User;
     this.data.users.push(newUser);
     await this.saveData();

@@ -46,10 +46,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Hash password
       const hashedPassword = await bcrypt.hash(userData.password!, 10);
       
-      // Create user
+      // Create user with default subscription
       const user = await storage.createUser({
         ...userData,
         password: hashedPassword,
+        subscriptionStatus: "active",
+        subscriptionPlan: "free",
+        subscriptionStartDate: new Date(),
+        role: "user"
       });
 
       // Set up session
@@ -1164,8 +1168,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   app.put("/api/user/profile", async (req, res) => {
+    if (!req.session.userId) {
+      return res.status(401).json({ error: "Not authenticated" });
+    }
+
     try {
-      const userId = 1; // Mock user ID
+      const userId = req.session.userId;
       const { email, company } = req.body;
       
       const updates = { email, company };
@@ -1308,10 +1316,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   app.get("/api/subscription/status", async (req, res) => {
-    const userId = 1; // Mock user ID - replace with proper auth later
+    if (!req.session.userId) {
+      return res.status(401).json({ error: "Not authenticated" });
+    }
 
     try {
-      const user = await storage.getUser(userId);
+      const user = await storage.getUser(req.session.userId);
       if (!user) {
         return res.status(404).json({ error: "User not found" });
       }

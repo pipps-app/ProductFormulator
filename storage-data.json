@@ -32,6 +32,22 @@
       "password": "$2b$10$jVmsuubCMzvcpsf7B0iKN.qcWns7gRzJIs.tgEFLfI4N1QdFEs442",
       "company": "",
       "createdAt": "2025-06-22T17:32:19.517Z"
+    },
+    {
+      "id": 1597,
+      "email": "cretedesigns@yahoo.com",
+      "password": "$2b$10$Yy0sLAvoW7oX7I6Kg17yTe03rgUAudX5qpnbdMv4Cd6ClvrU4RH1.",
+      "company": "",
+      "role": "user",
+      "profileImage": null,
+      "googleId": null,
+      "authProvider": "local",
+      "subscriptionStatus": "active",
+      "subscriptionPlan": "free",
+      "subscriptionStartDate": "2025-06-23T16:31:48.356Z",
+      "subscriptionEndDate": null,
+      "paypalSubscriptionId": null,
+      "createdAt": "2025-06-23T16:31:48.356Z"
     }
   ],
   "vendors": [
@@ -9091,13 +9107,22 @@
   ],
   "passwordResetTokens": [
     {
-      "id": 386,
-      "userId": 1,
-      "token": "6b8cc2dfbdbb4d4cdfc5eacdc72d47acd6d06e7e4d451d7e744bf8aae0840e08",
-      "expiresAt": "2025-06-22T18:41:22.089Z",
-      "used": true,
-      "createdAt": "2025-06-22T18:26:22.092Z"
+      "id": 1598,
+      "userId": 1597,
+      "token": "eac599a73739e9bfdd5a7f99b132cf656dad77f9757e3b2537c68373f9ff539d",
+      "expiresAt": "2025-06-23T16:47:34.428Z",
+      "used": false,
+      "createdAt": "2025-06-23T16:32:34.434Z"
+    },
+    {
+      "id": 1599,
+      "userId": 1597,
+      "token": "5df4f17961ec38c38eb2f3590ef2d8da0bf8f51e0ee37d1237543a2632e4c6bd",
+      "expiresAt": "2025-06-23T16:48:29.458Z",
+      "used": false,
+      "createdAt": "2025-06-23T16:33:29.469Z"
     }
   ],
-  "nextId": 1597
+  "nextId": 1600,
+  "payments": []
 }
