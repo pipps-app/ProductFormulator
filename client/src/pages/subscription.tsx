@@ -26,6 +26,28 @@ interface SubscriptionPlan {
 
 const plans: SubscriptionPlan[] = [
   {
+    id: "free",
+    name: "Free",
+    price: 0,
+    interval: "forever",
+    maxMaterials: 5,
+    maxFormulations: 1,
+    maxVendors: 2,
+    maxCategories: 2,
+    maxFileAttachments: 1,
+    maxStorageSize: 5,
+    support: "Help documentation",
+    features: [
+      "Up to 5 raw materials",
+      "Up to 1 formulation",
+      "2 vendors & 2 categories",
+      "Basic cost calculations",
+      "1 file attachment",
+      "5MB storage",
+      "Help documentation"
+    ]
+  },
+  {
     id: "starter",
     name: "Starter",
     price: 9,
@@ -208,10 +230,10 @@ export default function Subscription() {
       <div className="text-center space-y-4">
         <h1 className="text-3xl font-bold text-slate-900">Choose Your Plan</h1>
         <p className="text-slate-600 max-w-2xl mx-auto">
-          All plans include our core features with different usage limits. 14-day money-back guarantee on all paid plans.
+          Start free, then upgrade when you need more. 14-day money-back guarantee on all paid plans.
         </p>
         <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 max-w-2xl mx-auto">
-          <p className="text-blue-800 font-medium">💳 Secure payment via Shopify • 💰 14-day money-back guarantee</p>
+          <p className="text-blue-800 font-medium">Free plan available • Secure payment via Shopify • 14-day money-back guarantee on paid plans</p>
         </div>
       </div>
 
