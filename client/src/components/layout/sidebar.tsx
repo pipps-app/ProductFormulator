@@ -19,7 +19,6 @@ export default function Sidebar() {
     { name: "Import/Export", href: "/import-export", icon: FileText, count: null },
     { name: "Reports", href: "/reports", icon: PieChart, count: null },
     { name: "Payments", href: "/payments", icon: DollarSign, count: null },
-    { name: "Admin", href: "/admin/subscriptions", icon: Settings, count: null },
     { name: "Subscription", href: "/subscription", icon: CreditCard, count: null },
     { name: "Help & Support", href: "/help", icon: BookOpen, count: null },
   ];
@@ -83,6 +82,16 @@ export default function Sidebar() {
             >
               <Plus className="h-4 w-4 mr-2" />
               New Formulation
+            </Button>
+          </Link>
+          <Link href="/admin/subscriptions">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="w-full justify-start text-slate-400 text-xs opacity-50"
+            >
+              <Settings className="h-3 w-3 mr-2" />
+              Settings
             </Button>
           </Link>
         </div>
