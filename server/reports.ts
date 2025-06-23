@@ -445,7 +445,8 @@ export class ReportsService {
         const material = materials.find(m => m.id === ingredient.materialId);
         const quantity = parseFloat(ingredient.quantity) || 0;
         const unitCost = material ? parseFloat(material.unitCost) : 0;
-        const totalCost = quantity * unitCost;
+        // Use stored costContribution instead of recalculating
+        const totalCost = parseFloat(ingredient.costContribution) || 0;
         
         return {
           formulation: formulation.name,
@@ -457,10 +458,8 @@ export class ReportsService {
         };
       });
       
-      const totalFormulationCost = ingredientCosts.reduce((sum, ing) => {
-        const cost = parseFloat(ing.totalCost.replace(/[^0-9.-]/g, ''));
-        return sum + (isNaN(cost) ? 0 : cost);
-      }, 0);
+      // Use the formulation's stored totalCost instead of recalculating
+      const totalFormulationCost = parseFloat(formulation.totalCost) || 0;
       
       // Add percentage and push to all ingredients
       ingredientCosts.forEach(ing => {
