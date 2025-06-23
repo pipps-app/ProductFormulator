@@ -487,20 +487,6 @@
       "updatedAt": "2025-06-23T10:40:55.503Z"
     },
     {
-      "id": 1621,
-      "name": "Concrete - Square Coasters x 2 Units; Airmail Delivery",
-      "color": "blue",
-      "userId": 1,
-      "createdAt": "2025-06-23T16:53:46.115Z"
-    },
-    {
-      "id": 1623,
-      "name": "Concrete - Square Coasters x 2 Units; Airmail Delivery",
-      "color": "blue",
-      "userId": 1,
-      "createdAt": "2025-06-23T16:53:52.430Z"
-    },
-    {
       "id": 1625,
       "name": "Bottle and cap - Gallon bottles & caps",
       "color": "blue",
@@ -9444,6 +9430,26 @@
       "changes": "{\"description\":\"Deleted category \\\"Concrete - Square Coasters x 2 Units; Airmail Delivery\\\" (blue color)\",\"data\":{\"id\":1635,\"name\":\"Concrete - Square Coasters x 2 Units; Airmail Delivery\",\"color\":\"blue\",\"userId\":1597,\"createdAt\":\"2025-06-23T17:02:01.889Z\"}}",
       "createdAt": "2025-06-23T17:04:49.151Z",
       "timestamp": "2025-06-23T17:04:49.151Z"
+    },
+    {
+      "id": 1638,
+      "userId": 1,
+      "action": "delete",
+      "entityType": "category",
+      "entityId": 1621,
+      "changes": "{\"description\":\"Deleted category \\\"Concrete - Square Coasters x 2 Units; Airmail Delivery\\\" (blue color)\",\"data\":{\"id\":1621,\"name\":\"Concrete - Square Coasters x 2 Units; Airmail Delivery\",\"color\":\"blue\",\"userId\":1,\"createdAt\":\"2025-06-23T16:53:46.115Z\"}}",
+      "createdAt": "2025-06-23T18:17:09.636Z",
+      "timestamp": "2025-06-23T18:17:09.636Z"
+    },
+    {
+      "id": 1639,
+      "userId": 1,
+      "action": "delete",
+      "entityType": "category",
+      "entityId": 1623,
+      "changes": "{\"description\":\"Deleted category \\\"Concrete - Square Coasters x 2 Units; Airmail Delivery\\\" (blue color)\",\"data\":{\"id\":1623,\"name\":\"Concrete - Square Coasters x 2 Units; Airmail Delivery\",\"color\":\"blue\",\"userId\":1,\"createdAt\":\"2025-06-23T16:53:52.430Z\"}}",
+      "createdAt": "2025-06-23T18:17:12.513Z",
+      "timestamp": "2025-06-23T18:17:12.513Z"
     }
   ],
   "passwordResetTokens": [
@@ -9464,6 +9470,6 @@
       "createdAt": "2025-06-23T16:33:29.469Z"
     }
   ],
-  "nextId": 1638,
+  "nextId": 1640,
   "payments": []
 }
