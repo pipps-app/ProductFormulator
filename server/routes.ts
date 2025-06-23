@@ -882,17 +882,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
     const userId = req.userId;
     
     try {
-      // Define vendors from your CSV
+      // Define universal vendors for any business
       const vendorsToCreate = [
-        "Caribbean producers", "Changs trading", "Earth Elements", "Grove Industries", 
-        "Hardware store", "Jamaica Packagaing", "Online purchase", "Paramount Trading", 
-        "Piedmont trading", "Poly pet", "Pricesmart", "Supermarket", "United Plastics", "Versachem"
+        "Local Supplier", "Online Marketplace", "Wholesale Distributor", 
+        "Direct Manufacturer", "Retail Store", "Specialty Vendor"
       ];
       
-      // Define categories from your CSV
+      // Define universal categories for product making
       const categoriesToCreate = [
-        "Additives", "Bottles", "Boxes", "Concrete supplies", "Essential/Fragrance Oils", 
-        "Packaging", "Agricultural Products", "Manufacturing Ingredients", "Base Materials"
+        "Base Materials", "Additives", "Packaging", "Tools & Equipment", 
+        "Ingredients", "Chemicals", "Raw Components", "Finishing Materials"
       ];
       
       // Get existing data
