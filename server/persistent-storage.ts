@@ -52,6 +52,24 @@ export class PersistentStorage implements IStorage {
     try {
       const fileContent = await fs.readFile(this.dataFile, 'utf-8');
       this.data = JSON.parse(fileContent);
+      
+      // Ensure all required arrays exist
+      if (!this.data.payments) {
+        this.data.payments = [];
+      }
+      if (!this.data.files) {
+        this.data.files = [];
+      }
+      if (!this.data.fileAttachments) {
+        this.data.fileAttachments = [];
+      }
+      if (!this.data.materialFiles) {
+        this.data.materialFiles = [];
+      }
+      if (!this.data.passwordResetTokens) {
+        this.data.passwordResetTokens = [];
+      }
+      
       // Convert date strings back to Date objects
       this.data.users.forEach(u => {
         u.createdAt = new Date(u.createdAt);
@@ -75,6 +93,12 @@ export class PersistentStorage implements IStorage {
         this.data.passwordResetTokens.forEach(t => {
           t.createdAt = new Date(t.createdAt);
           t.expiresAt = new Date(t.expiresAt);
+        });
+      }
+      if (this.data.payments) {
+        this.data.payments.forEach(p => {
+          if (p.createdAt) p.createdAt = new Date(p.createdAt);
+          if (p.refundDate) p.refundDate = new Date(p.refundDate);
         });
       }
     } catch (error) {
