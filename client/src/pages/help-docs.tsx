@@ -284,6 +284,15 @@ export default function HelpDocs() {
     }
   };
 
+  const getPriorityLabel = (popularity: string) => {
+    switch (popularity) {
+      case 'high': return 'Essential';
+      case 'medium': return 'Helpful';
+      case 'low': return 'Advanced';
+      default: return 'General';
+    }
+  };
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -303,6 +312,14 @@ export default function HelpDocs() {
               onChange={(e) => setSearchQuery(e.target.value)}
               className="pl-10"
             />
+          </div>
+          
+          {/* Legend */}
+          <div className="mt-4 flex flex-wrap gap-2 items-center text-sm">
+            <span className="text-slate-600">Priority levels:</span>
+            <Badge className="bg-green-100 text-green-800">Essential</Badge>
+            <Badge className="bg-yellow-100 text-yellow-800">Helpful</Badge>
+            <Badge className="bg-gray-100 text-gray-800">Advanced</Badge>
           </div>
         </CardContent>
       </Card>
@@ -357,8 +374,8 @@ export default function HelpDocs() {
                             <Clock className="h-3 w-3 text-slate-400" />
                             <span className="text-xs text-slate-500">{article.readTime}</span>
                           </div>
-                          <Badge className={getPriorityColor(article.popularity)} variant="secondary">
-                            {article.popularity}
+                          <Badge className={getPriorityColor(article.popularity)}>
+                            {getPriorityLabel(article.popularity)}
                           </Badge>
                         </div>
                       </div>
