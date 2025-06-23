@@ -211,7 +211,7 @@ export default function Subscription() {
           All plans include our core features with different usage limits. 14-day money-back guarantee on all paid plans.
         </p>
         <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 max-w-2xl mx-auto">
-          <p className="text-blue-800 font-medium">💳 Payment: PayPal only • 💰 14-day money-back guarantee</p>
+          <p className="text-blue-800 font-medium">💳 Secure payment via Shopify • 💰 14-day money-back guarantee</p>
         </div>
       </div>
 
@@ -447,7 +447,7 @@ export default function Subscription() {
           </div>
           <div>
             <h4 className="font-medium text-slate-900 mb-2">What payment methods do you accept?</h4>
-            <p className="text-slate-600">We accept PayPal for convenient, secure payments. PayPal supports all major credit cards.</p>
+            <p className="text-slate-600">We accept all major credit cards through our secure Shopify payment system.</p>
           </div>
           <div>
             <h4 className="font-medium text-slate-900 mb-2">Is there a free trial?</h4>
@@ -455,7 +455,7 @@ export default function Subscription() {
           </div>
           <div>
             <h4 className="font-medium text-slate-900 mb-2">How do refunds work?</h4>
-            <p className="text-slate-600">Contact support within 14 days of payment for a full refund. No questions asked, processed through PayPal.</p>
+            <p className="text-slate-600">Contact support within 14 days of payment for a full refund. No questions asked, processed back to your original payment method.</p>
           </div>
         </CardContent>
       </Card>
