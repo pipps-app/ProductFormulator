@@ -1044,11 +1044,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
     }
 
+    // Provide helpful guidance in the response
+    let guidance = "";
+    if (failed > 0) {
+      const missingVendors = [...new Set(errors.filter(e => e.includes('vendor')).map(e => e.match(/"([^"]+)"/)?.[1]).filter(Boolean))];
+      const missingCategories = [...new Set(errors.filter(e => e.includes('category')).map(e => e.match(/"([^"]+)"/)?.[1]).filter(Boolean))];
+      
+      if (missingVendors.length > 0) {
+        guidance += `Missing vendors: ${missingVendors.join(', ')}. `;
+      }
+      if (missingCategories.length > 0) {
+        guidance += `Missing categories: ${missingCategories.join(', ')}. `;
+      }
+      guidance += "Create these items first, then re-upload your CSV.";
+    }
+
     res.json({
       message: `Import completed: ${successful} successful, ${failed} failed`,
       successful,
       failed,
-      errors: errors.slice(0, 20), // Show more errors for debugging
+      errors: errors.slice(0, 20),
+      guidance,
       availableCategories: categories.map(c => c.name),
       availableVendors: vendors.map(v => v.name)
     });

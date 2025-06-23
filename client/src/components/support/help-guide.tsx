@@ -35,6 +35,31 @@ interface HelpTopic {
 
 const helpTopics: HelpTopic[] = [
   {
+    id: "csv-import-guide",
+    title: "CSV Import - Step by Step",
+    category: "Import/Export",
+    icon: Upload,
+    priority: "high",
+    content: "Having trouble importing your CSV? Follow this guide to import all your materials successfully.",
+    steps: [
+      "Prepare your CSV with these exact columns: name,sku,categoryName,vendorName,totalCost,quantity,unit,notes",
+      "Go to Vendors section and create any vendors that appear in your CSV",
+      "Go to Categories section and create any categories that appear in your CSV", 
+      "Upload your CSV file in the Import/Export page",
+      "If some materials fail, check the error message and create any missing vendors/categories",
+      "Re-upload the same CSV file - it will only import the previously failed materials"
+    ],
+    tips: [
+      "Vendor and category names must match exactly (case-sensitive)",
+      "Use 'Remove Duplicates' button if materials appear twice",
+      "Export your data first as backup before importing"
+    ],
+    warnings: [
+      "Import will fail if vendor or category names don't exist in your system",
+      "Check for typos and extra spaces in vendor/category names"
+    ]
+  },
+  {
     id: "getting-started",
     title: "Getting Started - Your First Steps",
     category: "Getting Started",
