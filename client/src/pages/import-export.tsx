@@ -158,13 +158,22 @@ export default function ImportExport() {
         const result = await response.json();
         
         if (result.failed > 0) {
+          // Show detailed step-by-step instructions
+          const steps = result.actionSteps || [];
+          const stepsText = steps.length > 0 ? steps.map((step, i) => `${i + 1}. ${step}`).join('\n') : 'Check missing vendors/categories and create them first.';
+          
           toast({ 
-            title: `Import partially completed`, 
-            description: result.guidance || `${result.successful} imported, ${result.failed} failed. Check help guide for CSV import steps.`,
+            title: `${result.failed} materials failed to import`, 
+            description: `${result.successful} succeeded. TO FIX:\n${stepsText}`,
             variant: "destructive"
           });
-          console.log('Import errors:', result.errors);
-          console.log('Next steps:', result.guidance);
+          
+          // Also show in console for debugging
+          console.log('=== IMPORT ISSUE RESOLUTION ===');
+          console.log('Problem:', result.guidance);
+          console.log('Action Steps:');
+          steps.forEach((step, i) => console.log(`${i + 1}. ${step}`));
+          console.log('Detailed errors:', result.errors);
         } else {
           toast({ 
             title: "Import successful", 
@@ -322,18 +331,19 @@ export default function ImportExport() {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <Alert className="border-blue-200 bg-blue-50">
-                <Info className="h-4 w-4 text-blue-600" />
+              <Alert className="border-green-200 bg-green-50">
+                <Info className="h-4 w-4 text-green-600" />
                 <AlertDescription>
                   <div className="space-y-2 text-sm">
-                    <p><strong className="text-blue-800">Quick Import Guide:</strong></p>
-                    <ol className="list-decimal list-inside space-y-1 text-blue-700 ml-4">
-                      <li>Your CSV needs: <code className="bg-blue-100 px-1 rounded">name,sku,categoryName,vendorName,totalCost,quantity,unit,notes</code></li>
-                      <li>If import fails, create missing vendors/categories first, then re-upload</li>
-                      <li>Names must match exactly (case-sensitive)</li>
+                    <p><strong className="text-green-800">CSV Import Process:</strong></p>
+                    <ol className="list-decimal list-inside space-y-1 text-green-700 ml-4">
+                      <li>Upload your CSV file below</li>
+                      <li>If materials fail, you'll get EXACT instructions on what to create</li>
+                      <li>Create the missing vendors/categories</li>
+                      <li>Re-upload the SAME file - only failed items will import</li>
                     </ol>
-                    <p className="text-blue-600 text-xs mt-2">
-                      Need help? Check the Help section for detailed CSV import instructions.
+                    <p className="text-green-600 text-xs mt-2 font-medium">
+                      ✓ Required format: name,sku,categoryName,vendorName,totalCost,quantity,unit,notes
                     </p>
                   </div>
                 </AlertDescription>

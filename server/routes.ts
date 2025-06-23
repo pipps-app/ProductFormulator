@@ -1044,19 +1044,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
     }
 
-    // Provide helpful guidance in the response
+    // Create crystal-clear error guidance for clients
     let guidance = "";
+    let actionSteps = [];
+    
     if (failed > 0) {
       const missingVendors = [...new Set(errors.filter(e => e.includes('vendor')).map(e => e.match(/"([^"]+)"/)?.[1]).filter(Boolean))];
       const missingCategories = [...new Set(errors.filter(e => e.includes('category')).map(e => e.match(/"([^"]+)"/)?.[1]).filter(Boolean))];
       
       if (missingVendors.length > 0) {
-        guidance += `Missing vendors: ${missingVendors.join(', ')}. `;
+        guidance += `MISSING VENDORS: ${missingVendors.join(', ')}`;
+        actionSteps.push(`Go to VENDORS section → Click ADD VENDOR → Create: ${missingVendors.join(', ')}`);
       }
       if (missingCategories.length > 0) {
-        guidance += `Missing categories: ${missingCategories.join(', ')}. `;
+        if (guidance) guidance += " | ";
+        guidance += `MISSING CATEGORIES: ${missingCategories.join(', ')}`;
+        actionSteps.push(`Go to CATEGORIES section → Click ADD CATEGORY → Create: ${missingCategories.join(', ')}`);
       }
-      guidance += "Create these items first, then re-upload your CSV.";
+      
+      actionSteps.push("Re-upload the SAME CSV file - only failed materials will be imported");
     }
 
     res.json({
@@ -1065,6 +1071,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       failed,
       errors: errors.slice(0, 20),
       guidance,
+      actionSteps,
       availableCategories: categories.map(c => c.name),
       availableVendors: vendors.map(v => v.name)
     });
