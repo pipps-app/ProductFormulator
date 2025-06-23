@@ -143,10 +143,26 @@ export default function ImportExport() {
         console.log('Importing materials:', materials.slice(0, 3));
         const response = await apiRequest("POST", "/api/import/materials", { materials });
         const result = await response.json();
-        toast({ 
-          title: "Import completed", 
-          description: `${result.successful || 0} materials imported successfully. ${result.failed || 0} failed.`
-        });
+        
+        if (result.failed > 0) {
+          // Show detailed error information
+          const errorDetails = result.errors?.slice(0, 5).join('\n') || 'Unknown errors occurred';
+          toast({ 
+            title: `Import partially completed`, 
+            description: `${result.successful || 0} materials imported, ${result.failed || 0} failed.\n\nFirst few errors:\n${errorDetails}`,
+            variant: "destructive"
+          });
+          
+          // Log full error details to console for debugging
+          console.log('Import errors:', result.errors);
+          console.log('Available categories:', result.availableCategories);
+          console.log('Available vendors:', result.availableVendors);
+        } else {
+          toast({ 
+            title: "Import completed successfully", 
+            description: `${result.successful || 0} materials imported successfully.`
+          });
+        }
       } else {
         toast({ 
           title: "No valid materials found", 

@@ -1005,24 +1005,41 @@ export async function registerRoutes(app: Express): Promise<Server> {
     const categories = await storage.getMaterialCategories(userId);
     const vendors = await storage.getVendors(userId);
     
-    const categoryMap = new Map(categories.map(c => [c.name.toLowerCase(), c.id]));
-    const vendorMap = new Map(vendors.map(v => [v.name.toLowerCase(), v.id]));
+    // Create case-insensitive lookup maps
+    const categoryMap = new Map();
+    categories.forEach(c => {
+      categoryMap.set(c.name.toLowerCase(), c.id);
+      categoryMap.set(c.name, c.id); // Keep exact case too
+    });
+    
+    const vendorMap = new Map();
+    vendors.forEach(v => {
+      vendorMap.set(v.name.toLowerCase(), v.id);
+      vendorMap.set(v.name, v.id); // Keep exact case too
+    });
 
     for (const materialData of materials) {
       try {
-        // Find category ID
-        const categoryId = categoryMap.get(materialData.categoryName?.toLowerCase());
-        if (!categoryId) {
+        // Validate required fields
+        if (!materialData.name || !materialData.categoryName || !materialData.vendorName) {
           failed++;
-          errors.push(`Category "${materialData.categoryName}" not found for material "${materialData.name}"`);
+          errors.push(`Material missing required fields: ${materialData.name || 'unnamed'} - needs name, categoryName, vendorName`);
           continue;
         }
 
-        // Find vendor ID
-        const vendorId = vendorMap.get(materialData.vendorName?.toLowerCase());
+        // Find category and vendor IDs with case-insensitive matching
+        let categoryId = categoryMap.get(materialData.categoryName) || categoryMap.get(materialData.categoryName.toLowerCase());
+        let vendorId = vendorMap.get(materialData.vendorName) || vendorMap.get(materialData.vendorName.toLowerCase());
+
+        if (!categoryId) {
+          failed++;
+          errors.push(`Category "${materialData.categoryName}" not found for material "${materialData.name}". Available: ${categories.map(c => c.name).join(', ')}`);
+          continue;
+        }
+
         if (!vendorId) {
           failed++;
-          errors.push(`Vendor "${materialData.vendorName}" not found for material "${materialData.name}"`);
+          errors.push(`Vendor "${materialData.vendorName}" not found for material "${materialData.name}". Available: ${vendors.map(v => v.name).join(', ')}`);
           continue;
         }
 
