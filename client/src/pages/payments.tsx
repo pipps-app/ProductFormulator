@@ -137,118 +137,14 @@ export default function PaymentsPage() {
     <div className="space-y-6">
       <div className="flex items-center gap-2">
         <CreditCard className="h-6 w-6" />
-        <h1 className="text-2xl font-bold">Payment Management</h1>
+        <h1 className="text-2xl font-bold">Payment History</h1>
+        <Badge variant="outline" className="ml-2">Read Only</Badge>
       </div>
+      <p className="text-muted-foreground">
+        View payment records for activated subscriptions. Payments are processed through Shopify.
+      </p>
 
-      {/* Record New Payment */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <DollarSign className="h-5 w-5" />
-            Record New Payment
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleCreatePayment} className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <Label htmlFor="transactionId">Transaction ID</Label>
-              <Input
-                id="transactionId"
-                value={newPayment.transactionId}
-                onChange={(e) => setNewPayment({ ...newPayment, transactionId: e.target.value })}
-                placeholder="TXN_12345_PAYPAL"
-                required
-              />
-            </div>
 
-            <div>
-              <Label htmlFor="amount">Amount</Label>
-              <Input
-                id="amount"
-                type="number"
-                step="0.01"
-                value={newPayment.amount}
-                onChange={(e) => setNewPayment({ ...newPayment, amount: e.target.value })}
-                placeholder="29.99"
-                required
-              />
-            </div>
-
-            <div>
-              <Label htmlFor="processor">Payment Processor</Label>
-              <Select
-                value={newPayment.paymentProcessor}
-                onValueChange={(value) => setNewPayment({ ...newPayment, paymentProcessor: value })}
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="paypal">PayPal</SelectItem>
-                  <SelectItem value="stripe">Stripe</SelectItem>
-                  <SelectItem value="manual">Manual/Bank Transfer</SelectItem>
-                  <SelectItem value="shopify">Shopify</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div>
-              <Label htmlFor="tier">Subscription Tier</Label>
-              <Select
-                value={newPayment.subscriptionTier}
-                onValueChange={(value) => setNewPayment({ ...newPayment, subscriptionTier: value })}
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="pro">Pro ($29.99/month)</SelectItem>
-                  <SelectItem value="business">Business ($59.99/month)</SelectItem>
-                  <SelectItem value="enterprise">Enterprise ($99.99/month)</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div>
-              <Label htmlFor="paymentType">Payment Type</Label>
-              <Select
-                value={newPayment.paymentType}
-                onValueChange={(value) => setNewPayment({ ...newPayment, paymentType: value })}
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="subscription">New Subscription</SelectItem>
-                  <SelectItem value="renewal">Renewal</SelectItem>
-                  <SelectItem value="upgrade">Plan Upgrade</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div>
-              <Label htmlFor="notes">Notes (Optional)</Label>
-              <Input
-                id="notes"
-                value={newPayment.notes}
-                onChange={(e) => setNewPayment({ ...newPayment, notes: e.target.value })}
-                placeholder="Additional notes..."
-              />
-            </div>
-
-            <div className="md:col-span-2">
-              <Button 
-                type="submit" 
-                disabled={createPaymentMutation.isPending}
-                className="w-full"
-              >
-                {createPaymentMutation.isPending && <RefreshCw className="mr-2 h-4 w-4 animate-spin" />}
-                Record Payment
-              </Button>
-            </div>
-          </form>
-        </CardContent>
-      </Card>
 
       {/* Payment History */}
       <Card>

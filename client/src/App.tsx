@@ -20,6 +20,7 @@ import Support from "@/pages/support";
 import HelpPage from "@/pages/help";
 import Reports from "@/pages/reports";
 import Payments from "@/pages/payments";
+import AdminSubscriptions from "@/pages/admin-subscriptions";
 import Onboarding from "@/pages/onboarding";
 import Login from "@/pages/login";
 import AppLayout from "@/components/layout/app-layout";
@@ -52,6 +53,7 @@ function Router() {
       <ProtectedAppRoute path="/import-export" component={ImportExport} />
       <ProtectedAppRoute path="/reports" component={Reports} />
       <ProtectedAppRoute path="/payments" component={Payments} />
+      <ProtectedAppRoute path="/admin/subscriptions" component={AdminSubscriptions} />
       <ProtectedAppRoute path="/profile" component={Profile} />
       <ProtectedAppRoute path="/subscription" component={Subscription} />
       <ProtectedAppRoute path="/support" component={Support} />

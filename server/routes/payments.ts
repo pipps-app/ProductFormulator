@@ -2,6 +2,15 @@ import { Express } from "express";
 import { storage } from "../storage";
 import { insertPaymentSchema } from "@shared/schema";
 
+// Authentication middleware
+function requireAuth(req: any, res: any, next: any) {
+  if (!req.session?.userId) {
+    return res.status(401).json({ error: "Authentication required" });
+  }
+  req.userId = req.session.userId;
+  next();
+}
+
 export function registerPaymentRoutes(app: Express) {
   // Record a new payment
   app.post("/api/payments", async (req, res) => {

@@ -1989,6 +1989,66 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Register payment routes
   registerPaymentRoutes(app);
 
+  // Admin routes
+  app.get("/api/admin/users", requireAuth, async (req: any, res) => {
+    // For now, only allow admin access (you can add role checking later)
+    const users = await storage.getAllUsers();
+    res.json(users);
+  });
+
+  app.post("/api/admin/update-subscription", requireAuth, async (req: any, res) => {
+    try {
+      const { email, subscriptionTier, subscriptionStatus, duration } = req.body;
+      
+      if (!email || !subscriptionTier || !subscriptionStatus || !duration) {
+        return res.status(400).json({ error: "Missing required fields" });
+      }
+
+      // Find user by email
+      const user = await storage.getUserByEmail(email);
+      if (!user) {
+        return res.status(404).json({ error: "User not found with this email" });
+      }
+
+      // Calculate dates
+      const startDate = new Date();
+      const endDate = new Date();
+      endDate.setMonth(endDate.getMonth() + parseInt(duration));
+
+      // Update user subscription
+      const updatedUser = await storage.updateUser(user.id, {
+        subscriptionPlan: subscriptionTier,
+        subscriptionStatus: subscriptionStatus,
+        subscriptionStartDate: startDate,
+        subscriptionEndDate: subscriptionStatus === 'active' ? endDate : null
+      });
+
+      if (!updatedUser) {
+        return res.status(500).json({ error: "Failed to update user subscription" });
+      }
+
+      // Create audit log
+      await storage.createAuditLog({
+        userId: req.userId, // Admin who made the change
+        action: "update",
+        entityType: "user_subscription",
+        entityId: user.id,
+        changes: JSON.stringify({
+          description: `Subscription updated for ${email}`,
+          subscriptionTier,
+          subscriptionStatus,
+          duration: `${duration} months`,
+          updatedBy: "admin"
+        }),
+      });
+
+      res.json({ success: true, user: updatedUser });
+    } catch (error) {
+      console.error("Subscription update error:", error);
+      res.status(500).json({ error: "Failed to update subscription" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

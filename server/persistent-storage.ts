@@ -145,6 +145,10 @@ export class PersistentStorage implements IStorage {
     return this.data.users.find(u => u.id === id);
   }
 
+  async getAllUsers(): Promise<User[]> {
+    return this.data.users;
+  }
+
   async getUserByUsername(username: string): Promise<User | undefined> {
     return this.data.users.find(u => u.username === username);
   }
