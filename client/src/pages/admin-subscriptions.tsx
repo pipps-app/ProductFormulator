@@ -33,11 +33,29 @@ export default function AdminSubscriptionsPage() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  // Get all users
-  const { data: users = [], isLoading } = useQuery({
+  // Get current user to check admin status
+  const { data: currentUser } = useQuery({
+    queryKey: ["/api/user"]
+  });
+
+  // Get all users (only if admin)
+  const { data: users = [], isLoading, error } = useQuery({
     queryKey: ["/api/admin/users"],
+    enabled: currentUser?.role === 'admin',
     select: (data: User[]) => data.sort((a, b) => a.email.localeCompare(b.email))
   });
+
+  // Show access denied if not admin
+  if (currentUser && currentUser.role !== 'admin') {
+    return (
+      <div className="max-w-md mx-auto mt-20 p-6 text-center">
+        <div className="bg-red-50 border border-red-200 rounded-lg p-6">
+          <h2 className="text-lg font-semibold text-red-800 mb-2">Access Denied</h2>
+          <p className="text-red-600">Admin privileges required to access this page.</p>
+        </div>
+      </div>
+    );
+  }
 
   // Update subscription mutation
   const updateSubscriptionMutation = useMutation({

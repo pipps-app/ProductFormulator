@@ -36,6 +36,8 @@ export default function PaymentsPage() {
     queryKey: ["/api/user"]
   });
 
+  const isAdmin = userInfo?.role === 'admin';
+
   const [newPayment, setNewPayment] = useState({
     userId: userInfo?.id?.toString() || "1",
     transactionId: "",
@@ -191,7 +193,7 @@ export default function PaymentsPage() {
                       </div>
                     </div>
                     <div className="flex gap-2">
-                      {payment.paymentStatus === "completed" && (
+                      {isAdmin && payment.paymentStatus === "completed" && (
                         <Button
                           variant="outline"
                           size="sm"

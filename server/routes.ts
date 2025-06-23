@@ -1991,13 +1991,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Admin routes
   app.get("/api/admin/users", requireAuth, async (req: any, res) => {
-    // For now, only allow admin access (you can add role checking later)
+    // Check if user is admin
+    const currentUser = await storage.getUser(req.userId);
+    if (!currentUser || currentUser.role !== 'admin') {
+      return res.status(403).json({ error: "Admin access required" });
+    }
+    
     const users = await storage.getAllUsers();
     res.json(users);
   });
 
   app.post("/api/admin/update-subscription", requireAuth, async (req: any, res) => {
     try {
+      // Check if user is admin
+      const currentUser = await storage.getUser(req.userId);
+      if (!currentUser || currentUser.role !== 'admin') {
+        return res.status(403).json({ error: "Admin access required" });
+      }
+      
       const { email, subscriptionTier, subscriptionStatus, duration } = req.body;
       
       if (!email || !subscriptionTier || !subscriptionStatus || !duration) {
