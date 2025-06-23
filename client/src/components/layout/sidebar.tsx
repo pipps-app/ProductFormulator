@@ -1,6 +1,6 @@
 import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
-import { BarChart3, Package, FlaskRound, Truck, Tag, FileText, Plus, CreditCard, BookOpen } from "lucide-react";
+import { BarChart3, Package, FlaskRound, Truck, Tag, FileText, Plus, CreditCard, BookOpen, PieChart } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { useDashboardStats } from "@/hooks/use-formulations";
 
@@ -17,6 +17,7 @@ export default function Sidebar() {
     { name: "Vendors", href: "/vendors", icon: Truck, count: stats?.vendorsCount },
     { name: "Categories", href: "/categories", icon: Tag, count: null },
     { name: "Import/Export", href: "/import-export", icon: FileText, count: null },
+    { name: "Reports", href: "/reports", icon: PieChart, count: null },
     { name: "Subscription", href: "/subscription", icon: CreditCard, count: null },
     { name: "Help & Support", href: "/help", icon: BookOpen, count: null },
   ];
