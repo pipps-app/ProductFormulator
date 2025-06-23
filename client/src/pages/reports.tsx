@@ -41,7 +41,7 @@ export default function Reports() {
   });
 
   const { data: reports, refetch: refetchReports, isLoading } = useQuery({
-    queryKey: ["/api/reports", selectedTier],
+    queryKey: [`/api/reports/${selectedTier}`],
     enabled: !!userInfo
   });
 

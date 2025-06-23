@@ -1920,7 +1920,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  const httpServer = createServer(app);
   // Reports routes
   app.get("/api/reports/:tier", requireAuth, async (req: any, res) => {
     const userId = req.userId;
@@ -1953,5 +1952,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  const httpServer = createServer(app);
   return httpServer;
 }
