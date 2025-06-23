@@ -457,12 +457,16 @@ export class ReportsService {
         };
       });
       
-      const totalFormulationCost = ingredientCosts.reduce((sum, ing) => sum + parseFloat(ing.totalCost), 0);
+      const totalFormulationCost = ingredientCosts.reduce((sum, ing) => {
+        const cost = parseFloat(ing.totalCost.replace(/[^0-9.-]/g, ''));
+        return sum + (isNaN(cost) ? 0 : cost);
+      }, 0);
       
       // Add percentage and push to all ingredients
       ingredientCosts.forEach(ing => {
+        const ingCost = parseFloat(ing.totalCost.replace(/[^0-9.-]/g, ''));
         const percentage = totalFormulationCost > 0 ? 
-          ((parseFloat(ing.totalCost) / totalFormulationCost) * 100).toFixed(2) : '0.00';
+          ((ingCost / totalFormulationCost) * 100).toFixed(2) : '0.00';
         
         allIngredients.push({
           ...ing,
