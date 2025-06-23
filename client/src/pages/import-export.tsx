@@ -79,12 +79,20 @@ export default function ImportExport() {
         const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, ''));
         console.log('CSV Headers:', headers);
         
+        console.log(`Processing ${lines.length} total lines (${lines.length - 1} data rows)`);
+        
         for (let i = 1; i < lines.length; i++) {
+          const line = lines[i].trim();
+          if (!line) {
+            console.log(`Skipping empty line ${i}`);
+            continue;
+          }
+          
           const values = [];
           let currentValue = '';
           let inQuotes = false;
           
-          for (let char of lines[i]) {
+          for (let char of line) {
             if (char === '"') {
               inQuotes = !inQuotes;
             } else if (char === ',' && !inQuotes) {
@@ -96,43 +104,48 @@ export default function ImportExport() {
           }
           values.push(currentValue.trim());
           
-          if (values.length >= headers.length) {
-            const material: any = {};
-            headers.forEach((header, index) => {
-              const value = values[index]?.replace(/"/g, '') || '';
-              switch (header.toLowerCase()) {
-                case 'name':
-                  material.name = value;
-                  break;
-                case 'sku':
-                  material.sku = value || null;
-                  break;
-                case 'categoryname':
-                  material.categoryName = value;
-                  break;
-                case 'vendorname':
-                  material.vendorName = value;
-                  break;
-                case 'totalcost':
-                  material.totalCost = value || '0';
-                  break;
-                case 'quantity':
-                  material.quantity = value || '1';
-                  break;
-                case 'unit':
-                  material.unit = value || 'pc';
-                  break;
-                case 'notes':
-                  material.notes = value || null;
-                  break;
-              }
-            });
-            
-            if (material.name && material.categoryName && material.vendorName) {
-              materials.push(material);
+          const material: any = {};
+          headers.forEach((header, index) => {
+            const value = values[index]?.replace(/"/g, '').trim() || '';
+            switch (header.toLowerCase()) {
+              case 'name':
+                material.name = value;
+                break;
+              case 'sku':
+                material.sku = value || null;
+                break;
+              case 'categoryname':
+                material.categoryName = value;
+                break;
+              case 'vendorname':
+                material.vendorName = value;
+                break;
+              case 'totalcost':
+                material.totalCost = value || '0';
+                break;
+              case 'quantity':
+                material.quantity = value || '1';
+                break;
+              case 'unit':
+                material.unit = value || 'pcs';
+                break;
+              case 'notes':
+                material.notes = value || null;
+                break;
             }
+          });
+          
+          // Validate required fields
+          if (material.name && material.name.trim() && 
+              material.categoryName && material.categoryName.trim() && 
+              material.vendorName && material.vendorName.trim()) {
+            materials.push(material);
+          } else {
+            console.log(`Skipping invalid material on line ${i}:`, material);
           }
         }
+        
+        console.log(`Parsed ${materials.length} valid materials from ${lines.length - 1} data rows`);
       } else {
         // Parse JSON
         const data = JSON.parse(text);
