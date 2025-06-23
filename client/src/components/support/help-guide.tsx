@@ -287,8 +287,65 @@ const helpTopics: HelpTopic[] = [
     ]
   },
   {
+    id: "reports-overview",
+    title: "Understanding Report Tiers",
+    category: "Reports",
+    icon: FileText,
+    priority: "high",
+    content: "Overview of Free, Pro, Business, and Enterprise reporting features available in PIPPS Maker.",
+    steps: [
+      "Free Tier: Access to Material Database Value and Basic Cost Analysis",
+      "Pro Tier: All Free reports plus Advanced Analytics and Custom Reports",
+      "Business Tier: All Pro reports plus Multi-location Analysis and Team Reports",
+      "Enterprise Tier: All Business reports plus API Access and Custom Integrations"
+    ],
+    tips: [
+      "Free tier reports provide essential insights for small operations",
+      "Higher tiers unlock detailed analytics for business growth",
+      "Reports can be exported as PDF or JSON for external analysis"
+    ]
+  },
+  {
+    id: "free-tier-reports",
+    title: "Free Tier Reports",
+    category: "Reports",
+    icon: Info,
+    priority: "high",
+    content: "Material database value and basic cost analysis available to all users at no cost.",
+    steps: [
+      "Navigate to Reports section in the sidebar",
+      "View Total Material Database Value showing your inventory worth",
+      "Access Basic Cost Analysis for formulation costs",
+      "Export reports as PDF for record keeping"
+    ],
+    tips: [
+      "Free reports update automatically as you add materials",
+      "Database value calculation includes all active materials",
+      "Cost analysis helps identify most expensive formulation components"
+    ]
+  },
+  {
+    id: "advanced-analytics", 
+    title: "Advanced Analytics (Pro+)",
+    category: "Reports",
+    icon: FileText,
+    priority: "medium",
+    content: "Pro, Business, and Enterprise reporting capabilities and insights for detailed business analysis.",
+    steps: [
+      "Upgrade to Pro tier or higher to access advanced reports",
+      "View detailed cost breakdowns by category and vendor",
+      "Analyze trends in material costs over time",
+      "Generate custom reports based on specific criteria"
+    ],
+    tips: [
+      "Advanced reports help optimize purchasing decisions",
+      "Trend analysis identifies cost-saving opportunities",
+      "Custom filters allow targeted analysis of specific materials or formulations"
+    ]
+  },
+  {
     id: "password-security",
-    title: "Account Security and Password Reset",
+    title: "Account Security and Password Reset", 
     category: "Security",
     icon: Shield,
     priority: "low",
@@ -359,10 +416,19 @@ export default function HelpGuide() {
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
-      case "high": return "bg-red-100 text-red-800";
+      case "high": return "bg-green-100 text-green-800";
       case "medium": return "bg-yellow-100 text-yellow-800";
-      case "low": return "bg-green-100 text-green-800";
+      case "low": return "bg-gray-100 text-gray-800";
       default: return "bg-gray-100 text-gray-800";
+    }
+  };
+
+  const getPriorityLabel = (priority: string) => {
+    switch (priority) {
+      case "high": return "Essential";
+      case "medium": return "Helpful";
+      case "low": return "Advanced";
+      default: return "General";
     }
   };
 
@@ -371,6 +437,14 @@ export default function HelpGuide() {
       <div className="text-center mb-8">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">Help & Support</h1>
         <p className="text-gray-600">Everything you need to know about using PIPPS Maker Calc</p>
+        
+        {/* Priority Legend */}
+        <div className="flex justify-center gap-3 mt-4 text-sm">
+          <span className="text-gray-600">Priority levels:</span>
+          <Badge className="bg-green-100 text-green-800">Essential</Badge>
+          <Badge className="bg-yellow-100 text-yellow-800">Helpful</Badge>
+          <Badge className="bg-gray-100 text-gray-800">Advanced</Badge>
+        </div>
       </div>
 
       {/* Search and Filter */}
@@ -426,7 +500,7 @@ export default function HelpGuide() {
                               {topic.category}
                             </Badge>
                             <Badge className={`text-xs ${getPriorityColor(topic.priority)}`}>
-                              {topic.priority}
+                              {getPriorityLabel(topic.priority)}
                             </Badge>
                           </div>
                         </div>
