@@ -44,8 +44,9 @@ export default function Categories() {
       toast({ title: "Category created successfully" });
       handleCloseModal();
     },
-    onError: () => {
-      toast({ title: "Failed to create category", variant: "destructive" });
+    onError: (error: any) => {
+      const errorMessage = error.response?.data?.message || error.response?.data?.error || "Failed to create category";
+      toast({ title: errorMessage, variant: "destructive" });
     },
   });
 
@@ -57,8 +58,9 @@ export default function Categories() {
       toast({ title: "Category updated successfully" });
       handleCloseModal();
     },
-    onError: () => {
-      toast({ title: "Failed to update category", variant: "destructive" });
+    onError: (error: any) => {
+      const errorMessage = error.response?.data?.message || error.response?.data?.error || "Failed to update category";
+      toast({ title: errorMessage, variant: "destructive" });
     },
   });
 
@@ -69,8 +71,9 @@ export default function Categories() {
       toast({ title: "Category deleted successfully" });
       setDeletingCategory(null);
     },
-    onError: () => {
-      toast({ title: "Failed to delete category", variant: "destructive" });
+    onError: (error: any) => {
+      const errorMessage = error.response?.data?.message || error.response?.data?.error || "Failed to delete category";
+      toast({ title: errorMessage, variant: "destructive" });
     },
   });
 
