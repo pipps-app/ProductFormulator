@@ -1921,5 +1921,37 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   const httpServer = createServer(app);
+  // Reports routes
+  app.get("/api/reports/:tier", requireAuth, async (req: any, res) => {
+    const userId = req.userId;
+    const tier = req.params.tier;
+    
+    try {
+      let reports = [];
+      
+      switch (tier) {
+        case 'free':
+          reports = await reportsService.generateFreeReports(userId);
+          break;
+        case 'pro':
+          reports = await reportsService.generateProReports(userId);
+          break;
+        case 'business':
+          reports = await reportsService.generateBusinessReports(userId);
+          break;
+        case 'enterprise':
+          reports = await reportsService.generateEnterpriseReports(userId);
+          break;
+        default:
+          return res.status(400).json({ error: "Invalid tier specified" });
+      }
+      
+      res.json(reports);
+    } catch (error) {
+      console.error("Reports generation error:", error);
+      res.status(500).json({ error: "Failed to generate reports" });
+    }
+  });
+
   return httpServer;
 }
