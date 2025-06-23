@@ -59,7 +59,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           console.error("Session save error:", err);
           return res.status(500).json({ error: "Session error" });
         }
-        res.json({ success: true, user: { id: user.id, username: user.username, email: user.email } });
+        res.json({ success: true, user: { id: user.id, email: user.email } });
       });
     } catch (error) {
       console.error("Registration error:", error);
@@ -88,7 +88,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           console.error("Session save error:", err);
           return res.status(500).json({ error: "Session error" });
         }
-        res.json({ success: true, user: { id: user.id, username: user.username, email: user.email } });
+        res.json({ success: true, user: { id: user.id, email: user.email } });
       });
     } catch (error) {
       console.error("Login error:", error);
@@ -1166,9 +1166,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.put("/api/user/profile", async (req, res) => {
     try {
       const userId = 1; // Mock user ID
-      const { username, email, company } = req.body;
+      const { email, company } = req.body;
       
-      const updates = { username, email, company };
+      const updates = { email, company };
       const user = await storage.updateUser(userId, updates);
       
       if (!user) {
@@ -1354,7 +1354,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (!user) {
         // Create new user account
         user = await storage.createUser({
-          username: customer_email.split('@')[0],
           email: customer_email,
           password: 'temp_password', // User will need to set password on first login
           company: '',
@@ -1464,7 +1463,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Create new trial user
       const user = await storage.createUser({
-        username: trialEmail.split('@')[0],
         email: trialEmail,
         password: 'trial_password', // Simple password for trials
         company: '',
@@ -1520,7 +1518,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Create new user
       const user = await storage.createUser({
-        username: email.split('@')[0],
         email: email,
         password: 'temp_password', // User will set password on first login
         company: '',

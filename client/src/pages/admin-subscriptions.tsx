@@ -12,7 +12,6 @@ import { apiRequest } from "@/lib/queryClient";
 
 interface User {
   id: number;
-  username: string;
   email: string;
   subscriptionStatus: string;
   subscriptionPlan: string;
@@ -246,7 +245,7 @@ export default function AdminSubscriptionsPage() {
                         {getTierBadge(user.subscriptionPlan || "free")}
                       </div>
                       <div className="text-sm text-muted-foreground space-y-1">
-                        <div>Name: {user.username}</div>
+                        <div>Email: {user.email}</div>
                         {user.company && <div>Company: {user.company}</div>}
                         {user.subscriptionStartDate && (
                           <div className="flex items-center gap-1">
