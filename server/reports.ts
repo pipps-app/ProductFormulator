@@ -303,7 +303,8 @@ export class ReportsService {
   private async getTotalMaterialValue(userId: number) {
     const materials = await storage.getRawMaterials(userId);
     const totalValue = materials.reduce((sum, material) => {
-      return sum + (parseFloat(material.totalCost) || 0);
+      const cost = parseFloat(material.totalCost);
+      return sum + (isNaN(cost) ? 0 : cost);
     }, 0);
     
     return {
@@ -319,14 +320,17 @@ export class ReportsService {
     
     const categoryStats = categories.map(category => {
       const categoryMaterials = materials.filter(m => m.categoryId === category.id);
-      const totalCost = categoryMaterials.reduce((sum, m) => sum + (parseFloat(m.unitCost) || 0), 0);
+      const totalCost = categoryMaterials.reduce((sum, m) => {
+        const cost = parseFloat(m.unitCost);
+        return sum + (isNaN(cost) ? 0 : cost);
+      }, 0);
       const avgCost = categoryMaterials.length > 0 ? totalCost / categoryMaterials.length : 0;
       
       return {
         category: category.name,
-        averageCost: `$${avgCost.toFixed(4)}`,
+        averageCost: `$${isNaN(avgCost) ? '0.0000' : avgCost.toFixed(4)}`,
         materialCount: `${categoryMaterials.length} materials`,
-        totalCost: `$${totalCost.toFixed(2)}`
+        totalCost: `$${isNaN(totalCost) ? '0.00' : totalCost.toFixed(2)}`
       };
     });
 
@@ -371,9 +375,9 @@ export class ReportsService {
     const allCalculations = [];
     
     for (const formulation of formulations) {
-      const unitCost = parseFloat(formulation.unitCost) || 0;
-      const profitMargin = parseFloat(formulation.profitMargin) || 0;
-      const targetPrice = parseFloat(formulation.targetPrice) || 0;
+      const unitCost = isNaN(parseFloat(formulation.unitCost)) ? 0 : parseFloat(formulation.unitCost);
+      const profitMargin = isNaN(parseFloat(formulation.profitMargin)) ? 0 : parseFloat(formulation.profitMargin);
+      const targetPrice = isNaN(parseFloat(formulation.targetPrice)) ? 0 : parseFloat(formulation.targetPrice);
       
       // Use target price if available, otherwise calculate from profit margin
       const unitSellingPrice = targetPrice > 0 ? targetPrice : unitCost * (1 + profitMargin / 100);
@@ -405,10 +409,10 @@ export class ReportsService {
     const formulations = await storage.getFormulations(userId);
     
     return formulations.map(formulation => {
-      const totalCost = parseFloat(formulation.totalCost) || 0;
-      const unitCost = parseFloat(formulation.unitCost) || 0;
-      const profitMargin = parseFloat(formulation.profitMargin) || 0;
-      const targetPrice = parseFloat(formulation.targetPrice) || 0;
+      const totalCost = isNaN(parseFloat(formulation.totalCost)) ? 0 : parseFloat(formulation.totalCost);
+      const unitCost = isNaN(parseFloat(formulation.unitCost)) ? 0 : parseFloat(formulation.unitCost);
+      const profitMargin = isNaN(parseFloat(formulation.profitMargin)) ? 0 : parseFloat(formulation.profitMargin);
+      const targetPrice = isNaN(parseFloat(formulation.targetPrice)) ? 0 : parseFloat(formulation.targetPrice);
       
       // Use target price if available, otherwise calculate from profit margin
       const sellingPrice = targetPrice > 0 ? targetPrice : unitCost * (1 + profitMargin / 100);
@@ -417,12 +421,12 @@ export class ReportsService {
       
       return {
         name: formulation.name,
-        totalCost: `$${totalCost.toFixed(2)}`,
-        unitCost: `$${unitCost.toFixed(4)}`,
-        profitMargin: `${profitMargin.toFixed(2)}%`,
-        sellingPrice: `$${sellingPrice.toFixed(4)}`,
-        profit: `$${profit.toFixed(4)}`,
-        actualMarginPercent: `${actualMarginPercent.toFixed(2)}%`,
+        totalCost: `$${isNaN(totalCost) ? '0.00' : totalCost.toFixed(2)}`,
+        unitCost: `$${isNaN(unitCost) ? '0.0000' : unitCost.toFixed(4)}`,
+        profitMargin: `${isNaN(profitMargin) ? '0.00' : profitMargin.toFixed(2)}%`,
+        sellingPrice: `$${isNaN(sellingPrice) ? '0.0000' : sellingPrice.toFixed(4)}`,
+        profit: `$${isNaN(profit) ? '0.0000' : profit.toFixed(4)}`,
+        actualMarginPercent: `${isNaN(actualMarginPercent) ? '0.00' : actualMarginPercent.toFixed(2)}%`,
         hasTargetPrice: targetPrice > 0 ? 'Yes' : 'No'
       };
     });
@@ -448,8 +452,8 @@ export class ReportsService {
           materialName: material?.name || 'Unknown Material',
           quantity: `${quantity} ${material?.unit || 'units'}`,
           unit: material?.unit || 'Not specified',
-          unitCost: `$${unitCost.toFixed(4)}`,
-          totalCost: `$${totalCost.toFixed(4)}`
+          unitCost: `$${isNaN(unitCost) ? '0.0000' : unitCost.toFixed(4)}`,
+          totalCost: `$${isNaN(totalCost) ? '0.0000' : totalCost.toFixed(4)}`
         };
       });
       
@@ -463,7 +467,7 @@ export class ReportsService {
         allIngredients.push({
           ...ing,
           percentage: `${percentage}%`,
-          formulationTotalCost: `$${totalFormulationCost.toFixed(4)}`
+          formulationTotalCost: `$${isNaN(totalFormulationCost) ? '0.0000' : totalFormulationCost.toFixed(4)}`
         });
       });
     }
@@ -485,10 +489,10 @@ export class ReportsService {
         sku: material.sku || 'Not specified',
         category: category?.name || 'Uncategorized',
         vendor: vendor?.name || 'No Vendor Assigned',
-        totalCost: `$${material.totalCost || '0.00'}`,
+        totalCost: `$${isNaN(parseFloat(material.totalCost)) ? '0.00' : parseFloat(material.totalCost).toFixed(2)}`,
         quantity: material.quantity || 'Not specified',
         unit: material.unit || 'Not specified',
-        unitCost: `$${material.unitCost || '0.0000'}`,
+        unitCost: `$${isNaN(parseFloat(material.unitCost)) ? '0.0000' : parseFloat(material.unitCost).toFixed(4)}`,
         notes: material.notes || 'No notes'
       };
     }).sort((a, b) => parseFloat(b.unitCost) - parseFloat(a.unitCost));
@@ -512,17 +516,21 @@ export class ReportsService {
         };
       }
       
-      const unitCosts = categoryMaterials.map(m => parseFloat(m.unitCost));
-      const avgCost = unitCosts.reduce((sum, cost) => sum + cost, 0) / unitCosts.length;
-      const minCost = Math.min(...unitCosts);
-      const maxCost = Math.max(...unitCosts);
+      const unitCosts = categoryMaterials.map(m => {
+        const cost = parseFloat(m.unitCost);
+        return isNaN(cost) ? 0 : cost;
+      }).filter(cost => cost > 0);
+      
+      const avgCost = unitCosts.length > 0 ? unitCosts.reduce((sum, cost) => sum + cost, 0) / unitCosts.length : 0;
+      const minCost = unitCosts.length > 0 ? Math.min(...unitCosts) : 0;
+      const maxCost = unitCosts.length > 0 ? Math.max(...unitCosts) : 0;
       
       return {
         category: category.name,
         materialCount: `${categoryMaterials.length} materials`,
-        averageUnitCost: `$${avgCost.toFixed(4)}`,
-        minUnitCost: `$${minCost.toFixed(4)}`,
-        maxUnitCost: `$${maxCost.toFixed(4)}`,
+        averageUnitCost: `$${isNaN(avgCost) ? '0.0000' : avgCost.toFixed(4)}`,
+        minUnitCost: `$${isNaN(minCost) ? '0.0000' : minCost.toFixed(4)}`,
+        maxUnitCost: `$${isNaN(maxCost) ? '0.0000' : maxCost.toFixed(4)}`,
         materials: categoryMaterials.map(m => ({
           name: m.name,
           unitCost: `$${m.unitCost || '0.0000'}/${m.unit || 'unit'}`,
@@ -778,7 +786,7 @@ export class ReportsService {
         category: category?.name || 'Uncategorized',
         unitCost: `$${material.unitCost || '0.0000'}/${material.unit || 'unit'}`,
         unit: material.unit || 'Not specified',
-        totalCost: `$${material.totalCost || '0.00'}`
+        totalCost: `$${isNaN(parseFloat(material.totalCost)) ? '0.00' : parseFloat(material.totalCost).toFixed(2)}`
       });
     });
     
