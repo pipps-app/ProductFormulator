@@ -76,7 +76,7 @@ export default function AdminSubscriptionsPage() {
       inactive: "secondary",
       expired: "destructive"
     };
-    return <Badge variant={variants[status] || "secondary"}>{status.toUpperCase()}</Badge>;
+    return <Badge variant={variants[status] || "secondary"}>{(status || "unknown").toUpperCase()}</Badge>;
   };
 
   const getTierBadge = (tier: string) => {
@@ -88,7 +88,7 @@ export default function AdminSubscriptionsPage() {
     };
     return (
       <Badge className={colors[tier] || colors.free}>
-        {tier.toUpperCase()}
+        {(tier || "free").toUpperCase()}
       </Badge>
     );
   };
@@ -224,8 +224,8 @@ export default function AdminSubscriptionsPage() {
                     <div className="space-y-2">
                       <div className="flex items-center gap-3">
                         <span className="font-medium">{user.email}</span>
-                        {getStatusBadge(user.subscriptionStatus)}
-                        {getTierBadge(user.subscriptionPlan)}
+                        {getStatusBadge(user.subscriptionStatus || "inactive")}
+                        {getTierBadge(user.subscriptionPlan || "free")}
                       </div>
                       <div className="text-sm text-muted-foreground space-y-1">
                         <div>Name: {user.username}</div>
