@@ -53,7 +53,11 @@ export async function checkSubscriptionLimits(
   resourceType: 'materials' | 'formulations' | 'vendors'
 ) {
   try {
-    const userId = 1; // Mock user ID - replace with proper auth later
+    const userId = (req as any).userId;
+    if (!userId) {
+      return res.status(401).json({ error: 'Authentication required' });
+    }
+    
     const user = await storage.getUser(userId);
     
     if (!user) {
