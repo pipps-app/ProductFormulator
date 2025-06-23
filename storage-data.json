@@ -2120,7 +2120,7 @@
     {
       "id": 1223,
       "name": "Fragrance oils - Plant guru",
-      "sku": null,
+      "sku": "",
       "categoryId": 650,
       "vendorId": 674,
       "totalCost": "9420",
@@ -2135,13 +2135,13 @@
     {
       "id": 1225,
       "name": "lavender",
-      "sku": null,
+      "sku": "",
       "categoryId": 650,
       "vendorId": 674,
-      "totalCost": "4",
+      "totalCost": "6000",
       "quantity": "102",
       "unit": "g",
-      "notes": null,
+      "notes": "30USD plus 7 courier = 37USD = 6000JMD",
       "isActive": true,
       "userId": 1,
       "createdAt": "2025-06-23T10:51:41.177Z",
@@ -9057,6 +9057,36 @@
       "changes": "{\"description\":\"Updated formulation \\\"Concrete - Square Coasters x 2 Units; Airmail Delivery\\\" - batch size is now 1.000 unit with 100% markup\",\"before\":{\"id\":1506,\"name\":\"Concrete - Square Coasters x 2 Units; Airmail Delivery\",\"description\":\"4\\\" coasters with oxide, includes packaging and shipping; sold for 18.99 USD = $3000 JMD\",\"batchSize\":\"1.000\",\"batchUnit\":\"unit\",\"markupPercentage\":\"30.00\",\"isActive\":true,\"userId\":1,\"createdAt\":\"2025-06-23T11:10:14.228Z\",\"totalCost\":\"563.05\",\"unitCost\":\"563.0500\",\"profitMargin\":\"93.91\",\"targetPrice\":\"3000\"},\"after\":{\"id\":1506,\"name\":\"Concrete - Square Coasters x 2 Units; Airmail Delivery\",\"description\":\"4\\\" coasters with oxide, includes packaging and shipping; sold for 18.99 USD = $3000 JMD\",\"batchSize\":\"1.000\",\"batchUnit\":\"unit\",\"markupPercentage\":\"100\",\"isActive\":true,\"userId\":1,\"createdAt\":\"2025-06-23T11:10:14.228Z\",\"totalCost\":\"563.05\",\"unitCost\":\"563.0500\",\"profitMargin\":\"313.05\",\"targetPrice\":\"3000\"},\"ingredients\":[{\"materialId\":1207,\"quantity\":\"330\",\"unit\":\"g\",\"costContribution\":\"36.3\",\"includeInMarkup\":true},{\"materialId\":1209,\"quantity\":\"170\",\"unit\":\"g\",\"costContribution\":\"1.33\",\"includeInMarkup\":true},{\"materialId\":1213,\"quantity\":\"25\",\"unit\":\"pcs\",\"costContribution\":\"55.06\",\"includeInMarkup\":true},{\"materialId\":1201,\"quantity\":\"1\",\"unit\":\"pcs\",\"costContribution\":\"139.15\",\"includeInMarkup\":true},{\"materialId\":1255,\"quantity\":\"2\",\"unit\":\"pcs\",\"costContribution\":\"21.11\",\"includeInMarkup\":true},{\"materialId\":1203,\"quantity\":\"2\",\"unit\":\"pcs\",\"costContribution\":\"24.9\",\"includeInMarkup\":true},{\"materialId\":1273,\"quantity\":\"1\",\"unit\":\"pcs\",\"costContribution\":\"250\",\"includeInMarkup\":false},{\"materialId\":1565,\"quantity\":\"8\",\"unit\":\"kg\",\"costContribution\":\"35.2\",\"includeInMarkup\":true}]}",
       "createdAt": "2025-06-23T14:27:36.255Z",
       "timestamp": "2025-06-23T14:27:36.255Z"
+    },
+    {
+      "id": 1594,
+      "userId": 1,
+      "action": "update",
+      "entityType": "material",
+      "entityId": 1223,
+      "changes": "{\"description\":\"Updated raw material \\\"Fragrance oils - Plant guru\\\" - total cost is now $9420 for 102 g\",\"before\":{\"id\":1223,\"name\":\"Fragrance oils - Plant guru\",\"sku\":null,\"categoryId\":650,\"vendorId\":674,\"totalCost\":\"9420\",\"quantity\":\"828\",\"unit\":\"g\",\"notes\":\"4oz bottle - $12 USD each, pay for 4 = $48, get 7; total 7 x 4 oz = 828mls; mail pack = $1500\",\"isActive\":true,\"userId\":1,\"createdAt\":\"2025-06-23T10:51:41.171Z\",\"unitCost\":\"11.3768\"},\"after\":{\"id\":1223,\"name\":\"Fragrance oils - Plant guru\",\"sku\":\"\",\"categoryId\":650,\"vendorId\":674,\"totalCost\":\"9420\",\"quantity\":\"102\",\"unit\":\"g\",\"notes\":\"4oz bottle - $12 USD each, pay for 4 = $48, get 7; total 7 x 4 oz = 828mls; mail pack = $1500\",\"isActive\":true,\"userId\":1,\"createdAt\":\"2025-06-23T10:51:41.171Z\",\"unitCost\":\"11.3768\"}}",
+      "createdAt": "2025-06-23T14:53:29.066Z",
+      "timestamp": "2025-06-23T14:53:29.066Z"
+    },
+    {
+      "id": 1595,
+      "userId": 1,
+      "action": "update",
+      "entityType": "material",
+      "entityId": 1223,
+      "changes": "{\"description\":\"Updated raw material \\\"Fragrance oils - Plant guru\\\" - total cost is now $9420 for 828 g\",\"before\":{\"id\":1223,\"name\":\"Fragrance oils - Plant guru\",\"sku\":\"\",\"categoryId\":650,\"vendorId\":674,\"totalCost\":\"9420\",\"quantity\":\"102\",\"unit\":\"g\",\"notes\":\"4oz bottle - $12 USD each, pay for 4 = $48, get 7; total 7 x 4 oz = 828mls; mail pack = $1500\",\"isActive\":true,\"userId\":1,\"createdAt\":\"2025-06-23T10:51:41.171Z\",\"unitCost\":\"11.3768\"},\"after\":{\"id\":1223,\"name\":\"Fragrance oils - Plant guru\",\"sku\":\"\",\"categoryId\":650,\"vendorId\":674,\"totalCost\":\"9420\",\"quantity\":\"828\",\"unit\":\"g\",\"notes\":\"4oz bottle - $12 USD each, pay for 4 = $48, get 7; total 7 x 4 oz = 828mls; mail pack = $1500\",\"isActive\":true,\"userId\":1,\"createdAt\":\"2025-06-23T10:51:41.171Z\",\"unitCost\":\"11.3768\"}}",
+      "createdAt": "2025-06-23T14:53:42.448Z",
+      "timestamp": "2025-06-23T14:53:42.448Z"
+    },
+    {
+      "id": 1596,
+      "userId": 1,
+      "action": "update",
+      "entityType": "material",
+      "entityId": 1225,
+      "changes": "{\"description\":\"Updated raw material \\\"lavender\\\" - total cost is now $6000 for 102 g\",\"before\":{\"id\":1225,\"name\":\"lavender\",\"sku\":null,\"categoryId\":650,\"vendorId\":674,\"totalCost\":\"4\",\"quantity\":\"102\",\"unit\":\"g\",\"notes\":null,\"isActive\":true,\"userId\":1,\"createdAt\":\"2025-06-23T10:51:41.177Z\",\"unitCost\":\"0.0392\"},\"after\":{\"id\":1225,\"name\":\"lavender\",\"sku\":\"\",\"categoryId\":650,\"vendorId\":674,\"totalCost\":\"6000\",\"quantity\":\"102\",\"unit\":\"g\",\"notes\":\"30USD plus 7 courier = 37USD = 6000JMD\",\"isActive\":true,\"userId\":1,\"createdAt\":\"2025-06-23T10:51:41.177Z\",\"unitCost\":\"0.0392\"}}",
+      "createdAt": "2025-06-23T14:54:34.649Z",
+      "timestamp": "2025-06-23T14:54:34.649Z"
     }
   ],
   "passwordResetTokens": [
@@ -9069,5 +9099,5 @@
       "createdAt": "2025-06-22T18:26:22.092Z"
     }
   ],
-  "nextId": 1594
+  "nextId": 1597
 }

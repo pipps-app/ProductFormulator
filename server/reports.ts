@@ -371,15 +371,26 @@ export class ReportsService {
     const allCalculations = [];
     
     for (const formulation of formulations) {
-      const baseCost = parseFloat(formulation.totalCost) || 0;
+      // Use unitCost for per-unit calculations, totalCost is for the base batch
+      const unitCost = parseFloat(formulation.unitCost) || 0;
+      const totalCost = parseFloat(formulation.totalCost) || 0;
+      const profitMargin = parseFloat(formulation.profitMargin) || 0;
       
       for (const size of batchSizes) {
+        const batchTotalCost = unitCost * size;
+        const sellingPrice = unitCost * (1 + profitMargin / 100);
+        const batchSellingPrice = sellingPrice * size;
+        const batchProfit = batchSellingPrice - batchTotalCost;
+        
         allCalculations.push({
           formulation: formulation.name,
           batchSize: size,
-          totalCost: (baseCost * size).toFixed(2),
-          unitCost: baseCost.toFixed(4),
-          costPerUnit: (baseCost / size).toFixed(4)
+          unitCost: unitCost.toFixed(4),
+          batchTotalCost: batchTotalCost.toFixed(2),
+          unitSellingPrice: sellingPrice.toFixed(4),
+          batchSellingPrice: batchSellingPrice.toFixed(2),
+          batchProfit: batchProfit.toFixed(2),
+          profitMargin: profitMargin.toFixed(2)
         });
       }
     }
@@ -394,7 +405,12 @@ export class ReportsService {
       const totalCost = parseFloat(formulation.totalCost) || 0;
       const unitCost = parseFloat(formulation.unitCost) || 0;
       const profitMargin = parseFloat(formulation.profitMargin) || 0;
-      const sellingPrice = unitCost / (1 - profitMargin / 100);
+      
+      // Correct selling price calculation: add profit to cost
+      // If profit margin is 20%, selling price = cost * (1 + 0.20) = cost * 1.20
+      const sellingPrice = unitCost * (1 + profitMargin / 100);
+      const profit = sellingPrice - unitCost;
+      const actualMarginPercent = unitCost > 0 ? (profit / unitCost) * 100 : 0;
       
       return {
         name: formulation.name,
@@ -402,7 +418,8 @@ export class ReportsService {
         unitCost: unitCost.toFixed(4),
         profitMargin: profitMargin.toFixed(2),
         sellingPrice: sellingPrice.toFixed(4),
-        profit: (sellingPrice - unitCost).toFixed(4)
+        profit: profit.toFixed(4),
+        actualMarginPercent: actualMarginPercent.toFixed(2)
       };
     });
   }
