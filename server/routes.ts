@@ -505,14 +505,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const existingCategories = await storage.getMaterialCategories(userId);
       
       const tierLimits = {
-        free: 5,
+        free: 3,
         pro: 20,
         business: 50,
         enterprise: Infinity
       };
       
       const limit = tierLimits[userTier];
+      console.log(`Category limit check: User ${userId}, Tier: ${userTier}, Current: ${existingCategories.length}, Limit: ${limit}`);
+      
       if (existingCategories.length >= limit) {
+        console.log(`Blocking category creation - limit reached`);
         return res.status(403).json({ 
           error: "Plan limit reached", 
           message: `Your ${userTier} plan allows up to ${limit} categories. You currently have ${existingCategories.length}.`,

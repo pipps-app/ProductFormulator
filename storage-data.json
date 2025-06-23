@@ -515,18 +515,11 @@
       "createdAt": "2025-06-23T16:58:12.290Z"
     },
     {
-      "id": 1629,
+      "id": 1635,
       "name": "Concrete - Square Coasters x 2 Units; Airmail Delivery",
       "color": "blue",
       "userId": 1597,
-      "createdAt": "2025-06-23T16:58:17.307Z"
-    },
-    {
-      "id": 1631,
-      "name": "",
-      "color": "blue",
-      "userId": 1597,
-      "createdAt": "2025-06-23T16:58:21.875Z"
+      "createdAt": "2025-06-23T17:02:01.889Z"
     }
   ],
   "rawMaterials": [
@@ -9418,6 +9411,36 @@
       "changes": "{\"description\":\"Created new category \\\"\\\" with blue color\",\"data\":{\"id\":1631,\"name\":\"\",\"color\":\"blue\",\"userId\":1597,\"createdAt\":\"2025-06-23T16:58:21.875Z\"}}",
       "createdAt": "2025-06-23T16:58:21.882Z",
       "timestamp": "2025-06-23T16:58:21.882Z"
+    },
+    {
+      "id": 1633,
+      "userId": 1597,
+      "action": "delete",
+      "entityType": "category",
+      "entityId": 1631,
+      "changes": "{\"description\":\"Deleted category \\\"\\\" (blue color)\",\"data\":{\"id\":1631,\"name\":\"\",\"color\":\"blue\",\"userId\":1597,\"createdAt\":\"2025-06-23T16:58:21.875Z\"}}",
+      "createdAt": "2025-06-23T17:01:50.606Z",
+      "timestamp": "2025-06-23T17:01:50.606Z"
+    },
+    {
+      "id": 1634,
+      "userId": 1597,
+      "action": "delete",
+      "entityType": "category",
+      "entityId": 1629,
+      "changes": "{\"description\":\"Deleted category \\\"Concrete - Square Coasters x 2 Units; Airmail Delivery\\\" (blue color)\",\"data\":{\"id\":1629,\"name\":\"Concrete - Square Coasters x 2 Units; Airmail Delivery\",\"color\":\"blue\",\"userId\":1597,\"createdAt\":\"2025-06-23T16:58:17.307Z\"}}",
+      "createdAt": "2025-06-23T17:01:54.042Z",
+      "timestamp": "2025-06-23T17:01:54.042Z"
+    },
+    {
+      "id": 1636,
+      "userId": 1597,
+      "action": "create",
+      "entityType": "category",
+      "entityId": 1635,
+      "changes": "{\"description\":\"Created new category \\\"Concrete - Square Coasters x 2 Units; Airmail Delivery\\\" with blue color\",\"data\":{\"id\":1635,\"name\":\"Concrete - Square Coasters x 2 Units; Airmail Delivery\",\"color\":\"blue\",\"userId\":1597,\"createdAt\":\"2025-06-23T17:02:01.889Z\"}}",
+      "createdAt": "2025-06-23T17:02:01.896Z",
+      "timestamp": "2025-06-23T17:02:01.896Z"
     }
   ],
   "passwordResetTokens": [
@@ -9438,6 +9461,6 @@
       "createdAt": "2025-06-23T16:33:29.469Z"
     }
   ],
-  "nextId": 1633,
+  "nextId": 1637,
   "payments": []
 }
