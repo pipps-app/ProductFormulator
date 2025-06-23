@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -316,7 +316,24 @@ const helpTopics: HelpTopic[] = [
 export default function HelpGuide() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
-  const [openTopics, setOpenTopics] = useState<string[]>(["getting-started"]);
+  const [openTopics, setOpenTopics] = useState<string[]>([]);
+
+  // Handle anchor links and auto-open sections
+  useEffect(() => {
+    const hash = window.location.hash.replace('#', '');
+    if (hash) {
+      // Auto-open the section
+      setOpenTopics(prev => prev.includes(hash) ? prev : [...prev, hash]);
+      
+      // Scroll to the section after a brief delay for rendering
+      setTimeout(() => {
+        const element = document.getElementById(hash);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }, 100);
+    }
+  }, []);
 
   const categories = ["All", ...Array.from(new Set(helpTopics.map(topic => topic.category)))];
   
@@ -387,7 +404,7 @@ export default function HelpGuide() {
           const isOpen = openTopics.includes(topic.id);
           
           return (
-            <Card key={topic.id}>
+            <Card key={topic.id} id={topic.id}>
               <Collapsible>
                 <CollapsibleTrigger 
                   className="w-full"

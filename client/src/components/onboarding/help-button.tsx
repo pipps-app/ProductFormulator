@@ -6,7 +6,7 @@ import { Link } from 'wouter';
 export function HelpButton() {
 
   return (
-    <Link href="/help">
+    <Link href="/help#getting-started">
       <Button
         variant="ghost"
         size="sm"
