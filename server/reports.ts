@@ -371,26 +371,29 @@ export class ReportsService {
     const allCalculations = [];
     
     for (const formulation of formulations) {
-      // Use unitCost for per-unit calculations, totalCost is for the base batch
       const unitCost = parseFloat(formulation.unitCost) || 0;
-      const totalCost = parseFloat(formulation.totalCost) || 0;
       const profitMargin = parseFloat(formulation.profitMargin) || 0;
+      const targetPrice = parseFloat(formulation.targetPrice) || 0;
+      
+      // Use target price if available, otherwise calculate from profit margin
+      const unitSellingPrice = targetPrice > 0 ? targetPrice : unitCost * (1 + profitMargin / 100);
       
       for (const size of batchSizes) {
         const batchTotalCost = unitCost * size;
-        const sellingPrice = unitCost * (1 + profitMargin / 100);
-        const batchSellingPrice = sellingPrice * size;
+        const batchSellingPrice = unitSellingPrice * size;
         const batchProfit = batchSellingPrice - batchTotalCost;
+        const effectiveMargin = unitCost > 0 ? ((unitSellingPrice - unitCost) / unitCost) * 100 : 0;
         
         allCalculations.push({
           formulation: formulation.name,
           batchSize: size,
           unitCost: unitCost.toFixed(4),
           batchTotalCost: batchTotalCost.toFixed(2),
-          unitSellingPrice: sellingPrice.toFixed(4),
+          unitSellingPrice: unitSellingPrice.toFixed(4),
           batchSellingPrice: batchSellingPrice.toFixed(2),
           batchProfit: batchProfit.toFixed(2),
-          profitMargin: profitMargin.toFixed(2)
+          profitMargin: effectiveMargin.toFixed(2),
+          hasTargetPrice: targetPrice > 0
         });
       }
     }
@@ -405,10 +408,10 @@ export class ReportsService {
       const totalCost = parseFloat(formulation.totalCost) || 0;
       const unitCost = parseFloat(formulation.unitCost) || 0;
       const profitMargin = parseFloat(formulation.profitMargin) || 0;
+      const targetPrice = parseFloat(formulation.targetPrice) || 0;
       
-      // Correct selling price calculation: add profit to cost
-      // If profit margin is 20%, selling price = cost * (1 + 0.20) = cost * 1.20
-      const sellingPrice = unitCost * (1 + profitMargin / 100);
+      // Use target price if available, otherwise calculate from profit margin
+      const sellingPrice = targetPrice > 0 ? targetPrice : unitCost * (1 + profitMargin / 100);
       const profit = sellingPrice - unitCost;
       const actualMarginPercent = unitCost > 0 ? (profit / unitCost) * 100 : 0;
       
@@ -419,7 +422,8 @@ export class ReportsService {
         profitMargin: profitMargin.toFixed(2),
         sellingPrice: sellingPrice.toFixed(4),
         profit: profit.toFixed(4),
-        actualMarginPercent: actualMarginPercent.toFixed(2)
+        actualMarginPercent: actualMarginPercent.toFixed(2),
+        hasTargetPrice: targetPrice > 0
       };
     });
   }
