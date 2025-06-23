@@ -172,8 +172,28 @@ export default function FormulationForm({ formulation, onSuccess }: FormulationF
       toast({ title: "Formulation created successfully" });
       onSuccess();
     },
-    onError: () => {
-      toast({ title: "Failed to create formulation", variant: "destructive" });
+    onError: (error: any) => {
+      const errorMessage = error.message || 'Failed to create formulation';
+      if (errorMessage.includes('403') && errorMessage.includes('Plan limit')) {
+        const match = errorMessage.match(/Plan limit reached.*?Upgrade to add more/);
+        const friendlyMessage = match ? match[0] : 'You\'ve reached your plan limit for formulations. Upgrade to add more.';
+        
+        toast({ 
+          title: "Plan Limit Reached", 
+          description: friendlyMessage,
+          variant: "destructive",
+          action: (
+            <button 
+              onClick={() => window.location.href = '/subscription'}
+              className="bg-blue-600 text-white px-3 py-1 rounded text-sm hover:bg-blue-700"
+            >
+              Upgrade Plan
+            </button>
+          )
+        });
+      } else {
+        toast({ title: "Failed to create formulation", variant: "destructive" });
+      }
     },
   });
 

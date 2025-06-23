@@ -36,8 +36,29 @@ export default function Vendors() {
       toast({ title: "Vendor created successfully" });
       handleCloseModal();
     },
-    onError: () => {
-      toast({ title: "Failed to create vendor", variant: "destructive" });
+    onError: (error: any) => {
+      const errorMessage = error.message || 'Failed to create vendor';
+      if (errorMessage.includes('403') && errorMessage.includes('Plan limit')) {
+        // Extract the user-friendly message from the error
+        const match = errorMessage.match(/Plan limit reached.*?Upgrade to add more/);
+        const friendlyMessage = match ? match[0] : 'You\'ve reached your plan limit for vendors. Upgrade to add more.';
+        
+        toast({ 
+          title: "Plan Limit Reached", 
+          description: friendlyMessage,
+          variant: "destructive",
+          action: (
+            <button 
+              onClick={() => window.location.href = '/subscription'}
+              className="bg-blue-600 text-white px-3 py-1 rounded text-sm hover:bg-blue-700"
+            >
+              Upgrade Plan
+            </button>
+          )
+        });
+      } else {
+        toast({ title: "Failed to create vendor", variant: "destructive" });
+      }
     },
   });
 

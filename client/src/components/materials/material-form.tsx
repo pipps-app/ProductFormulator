@@ -91,8 +91,28 @@ export default function MaterialForm({ material, onSuccess }: MaterialFormProps)
       toast({ title: "Material created successfully" });
       onSuccess();
     },
-    onError: () => {
-      toast({ title: "Failed to create material", variant: "destructive" });
+    onError: (error: any) => {
+      const errorMessage = error.message || 'Failed to create material';
+      if (errorMessage.includes('403') && errorMessage.includes('Plan limit')) {
+        const match = errorMessage.match(/Plan limit reached.*?Upgrade to add more/);
+        const friendlyMessage = match ? match[0] : 'You\'ve reached your plan limit for materials. Upgrade to add more.';
+        
+        toast({ 
+          title: "Plan Limit Reached", 
+          description: friendlyMessage,
+          variant: "destructive",
+          action: (
+            <button 
+              onClick={() => window.location.href = '/subscription'}
+              className="bg-blue-600 text-white px-3 py-1 rounded text-sm hover:bg-blue-700"
+            >
+              Upgrade Plan
+            </button>
+          )
+        });
+      } else {
+        toast({ title: "Failed to create material", variant: "destructive" });
+      }
     },
   });
 

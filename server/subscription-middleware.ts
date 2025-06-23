@@ -95,7 +95,8 @@ export async function checkSubscriptionLimits(
         message: `Your ${userPlan} plan allows up to ${maxAllowed} ${resourceType}. Upgrade to add more.`,
         currentCount,
         maxAllowed,
-        plan: userPlan
+        plan: userPlan,
+        upgradeUrl: '/subscription'
       });
     }
 
