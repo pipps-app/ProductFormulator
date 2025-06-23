@@ -261,60 +261,91 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.log(`Found ${formulations.length} formulations to check`);
       
       for (const formulation of formulations) {
-        // Get ingredients for this formulation
-        const ingredients = await storage.getFormulationIngredients(formulation.id);
-        
-        // Check if this formulation uses the updated material
-        const usesUpdatedMaterial = ingredients.some(ing => ing.materialId === materialId);
-        
-        if (usesUpdatedMaterial) {
-          console.log(`Updating formulation "${formulation.name}" which uses material ${materialId}`);
+        try {
+          // Get ingredients for this formulation
+          const ingredients = await storage.getFormulationIngredients(formulation.id);
           
-          // Recalculate costs for this formulation
-          let totalMaterialCost = 0;
+          // Check if this formulation uses the updated material
+          const usesUpdatedMaterial = ingredients.some(ing => ing.materialId === materialId);
           
-          for (const ingredient of ingredients) {
-            if (ingredient.materialId) {
-              const material = await storage.getRawMaterial(ingredient.materialId);
-              if (material) {
-                const costContribution = Number(ingredient.quantity) * Number(material.unitCost);
-                totalMaterialCost += costContribution;
-                
-                console.log(`Ingredient ${ingredient.id}: ${ingredient.quantity} x ${material.unitCost} = ${costContribution}`);
-                
-                // Update the ingredient's cost contribution
-                await storage.updateFormulationIngredient(ingredient.id, {
-                  costContribution: costContribution.toFixed(2)
-                });
+          if (usesUpdatedMaterial) {
+            console.log(`Updating formulation "${formulation.name}" which uses material ${materialId}`);
+            
+            // Recalculate costs for this formulation
+            let totalMaterialCost = 0;
+            let updatedIngredients = [];
+            
+            for (const ingredient of ingredients) {
+              if (ingredient.materialId) {
+                const material = await storage.getRawMaterial(ingredient.materialId);
+                if (material && material.unitCost) {
+                  const quantity = parseFloat(ingredient.quantity) || 0;
+                  const unitCost = parseFloat(material.unitCost) || 0;
+                  const costContribution = quantity * unitCost;
+                  
+                  // Only include in markup if specified
+                  if (ingredient.includeInMarkup !== false) {
+                    totalMaterialCost += costContribution;
+                  }
+                  
+                  console.log(`Ingredient ${ingredient.id}: ${quantity} x ${unitCost} = ${costContribution.toFixed(4)} (Include in markup: ${ingredient.includeInMarkup !== false})`);
+                  
+                  // Update the ingredient's cost contribution
+                  await storage.updateFormulationIngredient(ingredient.id, {
+                    costContribution: costContribution.toFixed(2)
+                  });
+                  
+                  updatedIngredients.push({
+                    materialId: ingredient.materialId,
+                    materialName: material.name,
+                    quantity: ingredient.quantity,
+                    unit: ingredient.unit,
+                    costContribution: costContribution.toFixed(2),
+                    includeInMarkup: ingredient.includeInMarkup !== false
+                  });
+                }
               }
             }
+            
+            // Calculate new formulation costs with robust validation
+            const batchSize = Math.max(parseFloat(formulation.batchSize) || 1, 0.001);
+            const unitCost = totalMaterialCost / batchSize;
+            const markupPercentage = parseFloat(formulation.markupPercentage) || 30;
+            const profitMargin = (markupPercentage / 100) * totalMaterialCost;
+            
+            // Update formulation with new calculated costs
+            await storage.updateFormulationCosts(formulation.id, {
+              totalCost: totalMaterialCost.toFixed(2),
+              unitCost: unitCost.toFixed(4),
+              profitMargin: profitMargin.toFixed(2),
+            });
+            
+            // Create comprehensive audit log for the automatic update
+            await storage.createAuditLog({
+              userId: 1,
+              action: "update",
+              entityType: "formulation",
+              entityId: formulation.id,
+              changes: JSON.stringify({
+                description: `Automatically updated formulation "${formulation.name}" costs due to material price change. New total cost: $${totalMaterialCost.toFixed(2)}`,
+                reason: "Material price change",
+                materialId: materialId,
+                previousTotalCost: formulation.totalCost,
+                newTotalCost: totalMaterialCost.toFixed(2),
+                updatedIngredients: updatedIngredients,
+                calculationDetails: {
+                  batchSize: batchSize,
+                  unitCost: unitCost.toFixed(4),
+                  markupPercentage: markupPercentage,
+                  profitMargin: profitMargin.toFixed(2)
+                }
+              }),
+            });
+            
+            console.log(`Successfully updated formulation "${formulation.name}" - New total cost: $${totalMaterialCost.toFixed(2)}`);
           }
-          
-          // Calculate new formulation costs
-          const batchSize = Number(formulation.batchSize || 1);
-          const unitCost = batchSize > 0 ? totalMaterialCost / batchSize : 0;
-          const markupPercentage = Number(formulation.markupPercentage || 30);
-          const profitMargin = (markupPercentage / 100) * totalMaterialCost;
-          
-          // Update formulation with new calculated costs
-          await storage.updateFormulationCosts(formulation.id, {
-            totalCost: totalMaterialCost.toFixed(2),
-            unitCost: unitCost.toFixed(4),
-            profitMargin: profitMargin.toFixed(2),
-          });
-          
-          // Create audit log for the automatic update
-          await storage.createAuditLog({
-            userId: 1,
-            action: "update",
-            entityType: "formulation",
-            entityId: formulation.id,
-            changes: JSON.stringify({
-              description: `Automatically updated formulation "${formulation.name}" costs due to material price change. New total cost: $${totalMaterialCost.toFixed(2)}`,
-              reason: "Material price change",
-              materialId: materialId
-            }),
-          });
+        } catch (formulationError) {
+          console.error(`Error updating formulation ${formulation.id}:`, formulationError);
         }
       }
     } catch (error) {

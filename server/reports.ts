@@ -677,43 +677,62 @@ export class ReportsService {
   }
 
   private async getHistoricalCostChanges(userId: number) {
-    const auditLogs = await storage.getAuditLogs(userId, 1000);
-    const materialUpdates = auditLogs.filter(log => 
-      log.action === 'update' && log.entityType === 'material'
-    );
-    
-    const changes = materialUpdates.map(log => {
-      try {
-        const changeData = JSON.parse(log.changes);
-        const beforeData = changeData.before || {};
-        const afterData = changeData.after || {};
-        
-        // Calculate unit costs from total cost and quantity
-        const oldTotalCost = parseFloat(beforeData.totalCost) || 0;
-        const oldQuantity = parseFloat(beforeData.quantity) || 1;
-        const oldCost = oldQuantity > 0 ? oldTotalCost / oldQuantity : 0;
-        
-        const newTotalCost = parseFloat(afterData.totalCost) || 0;
-        const newQuantity = parseFloat(afterData.quantity) || 1;
-        const newCost = newQuantity > 0 ? newTotalCost / newQuantity : 0;
-        const changeAmount = newCost - oldCost;
-        const changePercent = oldCost > 0 ? ((changeAmount / oldCost) * 100) : 0;
-        
-        return {
-          materialId: log.entityId,
-          materialName: afterData.name || beforeData.name || 'Unknown',
-          date: log.createdAt,
-          oldCost: `$${oldCost.toFixed(4)}`,
-          newCost: `$${newCost.toFixed(4)}`,
-          changeAmount: `$${changeAmount.toFixed(4)}`,
-          changePercent: `${changePercent.toFixed(2)}%`
-        };
-      } catch (error) {
-        return null;
-      }
-    }).filter(change => change && parseFloat(change.changeAmount.replace(/[^0-9.-]/g, '')) !== 0);
-    
-    return changes.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+    try {
+      const auditLogs = await storage.getAuditLogs(userId, 1000);
+      const materialUpdates = auditLogs.filter(log => 
+        log.action === 'update' && log.entityType === 'material' && log.changes
+      );
+      
+      const changes = materialUpdates.map(log => {
+        try {
+          const changeData = JSON.parse(log.changes);
+          const beforeData = changeData.before || {};
+          const afterData = changeData.after || {};
+          
+          // Ensure we have valid data
+          if (!beforeData.totalCost && !afterData.totalCost) {
+            return null;
+          }
+          
+          // Calculate unit costs from total cost and quantity with robust validation
+          const oldTotalCost = parseFloat(String(beforeData.totalCost || 0));
+          const oldQuantity = Math.max(parseFloat(String(beforeData.quantity || 1)), 0.0001);
+          const oldCost = oldTotalCost / oldQuantity;
+          
+          const newTotalCost = parseFloat(String(afterData.totalCost || 0));
+          const newQuantity = Math.max(parseFloat(String(afterData.quantity || 1)), 0.0001);
+          const newCost = newTotalCost / newQuantity;
+          
+          const changeAmount = newCost - oldCost;
+          const changePercent = oldCost > 0 ? ((changeAmount / oldCost) * 100) : 0;
+          
+          // Only return changes that have meaningful cost differences
+          if (Math.abs(changeAmount) < 0.0001) {
+            return null;
+          }
+          
+          return {
+            materialId: log.entityId || 0,
+            materialName: afterData.name || beforeData.name || `Material ${log.entityId}`,
+            date: log.createdAt || new Date().toISOString(),
+            oldCost: `$${isFinite(oldCost) ? oldCost.toFixed(4) : '0.0000'}`,
+            newCost: `$${isFinite(newCost) ? newCost.toFixed(4) : '0.0000'}`,
+            changeAmount: `$${isFinite(changeAmount) ? changeAmount.toFixed(4) : '0.0000'}`,
+            changePercent: `${isFinite(changePercent) ? changePercent.toFixed(2) : '0.00'}%`,
+            oldQuantity: `${oldQuantity} ${afterData.unit || beforeData.unit || 'units'}`,
+            newQuantity: `${newQuantity} ${afterData.unit || beforeData.unit || 'units'}`
+          };
+        } catch (parseError) {
+          console.error('Error parsing audit log:', parseError);
+          return null;
+        }
+      }).filter(change => change !== null);
+      
+      return changes.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+    } catch (error) {
+      console.error('Error in getHistoricalCostChanges:', error);
+      return [];
+    }
   }
 
   private async getCostUpdateFrequency(userId: number) {
