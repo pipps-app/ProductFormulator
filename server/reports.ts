@@ -679,28 +679,33 @@ export class ReportsService {
   private async getHistoricalCostChanges(userId: number) {
     const auditLogs = await storage.getAuditLogs(userId, 1000);
     const materialUpdates = auditLogs.filter(log => 
-      log.action === 'update' && log.entityType === 'raw_material'
+      log.action === 'update' && log.entityType === 'material'
     );
     
     const changes = materialUpdates.map(log => {
-      const oldData = log.oldData ? JSON.parse(log.oldData) : {};
-      const newData = log.newData ? JSON.parse(log.newData) : {};
-      
-      const oldCost = parseFloat(oldData.unitCost) || 0;
-      const newCost = parseFloat(newData.unitCost) || 0;
-      const changeAmount = newCost - oldCost;
-      const changePercent = oldCost > 0 ? ((changeAmount / oldCost) * 100) : 0;
-      
-      return {
-        materialId: log.entityId,
-        materialName: newData.name || oldData.name || 'Unknown',
-        date: log.createdAt,
-        oldCost: oldCost.toFixed(4),
-        newCost: newCost.toFixed(4),
-        changeAmount: changeAmount.toFixed(4),
-        changePercent: changePercent.toFixed(2)
-      };
-    }).filter(change => parseFloat(change.changeAmount) !== 0);
+      try {
+        const changeData = JSON.parse(log.changes);
+        const beforeData = changeData.before || {};
+        const afterData = changeData.after || {};
+        
+        const oldCost = parseFloat(beforeData.unitCost) || 0;
+        const newCost = parseFloat(afterData.unitCost) || 0;
+        const changeAmount = newCost - oldCost;
+        const changePercent = oldCost > 0 ? ((changeAmount / oldCost) * 100) : 0;
+        
+        return {
+          materialId: log.entityId,
+          materialName: afterData.name || beforeData.name || 'Unknown',
+          date: log.createdAt,
+          oldCost: `$${oldCost.toFixed(4)}`,
+          newCost: `$${newCost.toFixed(4)}`,
+          changeAmount: `$${changeAmount.toFixed(4)}`,
+          changePercent: `${changePercent.toFixed(2)}%`
+        };
+      } catch (error) {
+        return null;
+      }
+    }).filter(change => change && parseFloat(change.changeAmount.replace(/[^0-9.-]/g, '')) !== 0);
     
     return changes.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
   }
