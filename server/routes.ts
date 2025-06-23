@@ -9,6 +9,9 @@ function hasAccessToTier(userTier: string, requiredTier: string): boolean {
   const tierHierarchy = ['free', 'pro', 'business', 'enterprise'];
   const userTierIndex = tierHierarchy.indexOf(userTier);
   const requiredTierIndex = tierHierarchy.indexOf(requiredTier);
+  
+  // Higher tier users can access lower tier features
+  // e.g., enterprise users can access pro, business, and free features
   return userTierIndex >= requiredTierIndex;
 }
 import { checkMaterialsLimit, checkFormulationsLimit, checkVendorsLimit, getUserSubscriptionInfo } from "./subscription-middleware";
@@ -1976,19 +1979,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
     const tier = req.params.tier;
     
     try {
-      let reports = [];
-      
       // Get user's subscription info
       const user = await storage.getUser(userId);
       const userTier = user?.subscriptionPlan || 'free';
       
-      reports = await reportsService.generateAllReportsForTier(userId, tier);
+      // Check if user has access to the requested tier
+      if (!hasAccessToTier(userTier, tier)) {
+        return res.status(403).json({ 
+          error: "Access denied", 
+          message: `Your ${userTier} plan does not include ${tier} tier reports. Please upgrade your subscription.`,
+          currentTier: userTier,
+          requestedTier: tier
+        });
+      }
       
-      // Add access control information to each report
-      reports = reports.map(report => ({
-        ...report,
-        hasAccess: hasAccessToTier(userTier, report.tier)
-      }));
+      const reports = await reportsService.generateAllReportsForTier(userId, tier);
       
       res.json(reports);
     } catch (error) {
