@@ -490,14 +490,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json(categories);
   });
 
-  app.post("/api/material-categories", async (req, res) => {
+  app.post("/api/material-categories", requireAuth, async (req: any, res) => {
     try {
-      const categoryData = insertMaterialCategorySchema.parse({ ...req.body, userId: 1 });
+      const userId = req.userId;
+      const categoryData = insertMaterialCategorySchema.parse({ ...req.body, userId });
       const category = await storage.createMaterialCategory(categoryData);
       
       // Create audit log
       await storage.createAuditLog({
-        userId: 1,
+        userId,
         action: "create",
         entityType: "category",
         entityId: category.id,
@@ -513,9 +514,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.put("/api/material-categories/:id", async (req, res) => {
+  app.put("/api/material-categories/:id", requireAuth, async (req: any, res) => {
     try {
       const id = parseInt(req.params.id);
+      const userId = req.userId;
       const originalCategory = await storage.getMaterialCategory(id);
       if (!originalCategory) {
         return res.status(404).json({ error: "Category not found" });
@@ -530,7 +532,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           ? ` (color changed to ${category.color})`
           : '';
         await storage.createAuditLog({
-          userId: 1,
+          userId,
           action: "update",
           entityType: "category",
           entityId: id,
@@ -548,8 +550,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.delete("/api/material-categories/:id", async (req, res) => {
+  app.delete("/api/material-categories/:id", requireAuth, async (req: any, res) => {
     const id = parseInt(req.params.id);
+    const userId = req.userId;
     const category = await storage.getMaterialCategory(id);
     if (!category) {
       return res.status(404).json({ error: "Category not found" });
@@ -559,7 +562,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     
     // Create audit log
     await storage.createAuditLog({
-      userId: 1,
+      userId,
       action: "delete",
       entityType: "category",
       entityId: id,

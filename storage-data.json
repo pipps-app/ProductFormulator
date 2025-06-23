@@ -485,6 +485,20 @@
       "userId": 1,
       "createdAt": "2025-06-23T10:40:55.503Z",
       "updatedAt": "2025-06-23T10:40:55.503Z"
+    },
+    {
+      "id": 1621,
+      "name": "Concrete - Square Coasters x 2 Units; Airmail Delivery",
+      "color": "blue",
+      "userId": 1,
+      "createdAt": "2025-06-23T16:53:46.115Z"
+    },
+    {
+      "id": 1623,
+      "name": "Concrete - Square Coasters x 2 Units; Airmail Delivery",
+      "color": "blue",
+      "userId": 1,
+      "createdAt": "2025-06-23T16:53:52.430Z"
     }
   ],
   "rawMaterials": [
@@ -2991,6 +3005,76 @@
       "isActive": true,
       "userId": 1,
       "createdAt": "2025-06-23T11:41:22.630Z"
+    },
+    {
+      "id": 1604,
+      "name": "Bottle and cap - Gallon bottles & caps",
+      "sku": "",
+      "categoryId": null,
+      "vendorId": null,
+      "totalCost": "10000",
+      "quantity": "100",
+      "unit": "kg",
+      "notes": "",
+      "isActive": true,
+      "userId": 1597,
+      "createdAt": "2025-06-23T16:50:26.388Z"
+    },
+    {
+      "id": 1606,
+      "name": "Cooncrete - Square Coasters x 2 Units; Airmail Delivery",
+      "sku": "",
+      "categoryId": null,
+      "vendorId": null,
+      "totalCost": "10000",
+      "quantity": "202",
+      "unit": "kg",
+      "notes": "",
+      "isActive": true,
+      "userId": 1597,
+      "createdAt": "2025-06-23T16:50:41.251Z"
+    },
+    {
+      "id": 1608,
+      "name": "Gallon bottles x 4 units",
+      "sku": "",
+      "categoryId": null,
+      "vendorId": null,
+      "totalCost": "600",
+      "quantity": "32",
+      "unit": "kg",
+      "notes": "",
+      "isActive": true,
+      "userId": 1597,
+      "createdAt": "2025-06-23T16:50:54.238Z"
+    },
+    {
+      "id": 1610,
+      "name": "Jamaica Packaging",
+      "sku": "",
+      "categoryId": null,
+      "vendorId": null,
+      "totalCost": "9898989",
+      "quantity": "898989",
+      "unit": "kg",
+      "notes": "",
+      "isActive": true,
+      "userId": 1597,
+      "createdAt": "2025-06-23T16:51:11.543Z"
+    },
+    {
+      "id": 1612,
+      "name": "Hardware store",
+      "sku": "",
+      "categoryId": null,
+      "vendorId": null,
+      "totalCost": "55677",
+      "quantity": "6677777",
+      "unit": "kg",
+      "notes": "",
+      "isActive": true,
+      "userId": 1597,
+      "createdAt": "2025-06-23T16:51:27.414Z"
     }
   ],
   "formulations": [
@@ -3008,6 +3092,21 @@
       "unitCost": "563.0500",
       "profitMargin": "313.05",
       "targetPrice": "3000"
+    },
+    {
+      "id": 1614,
+      "name": "test formular",
+      "description": "ioipoipipi",
+      "batchSize": "1.000",
+      "batchUnit": "unit",
+      "markupPercentage": "30.00",
+      "isActive": true,
+      "userId": 1597,
+      "createdAt": "2025-06-23T16:52:58.316Z",
+      "totalCost": "167.56",
+      "unitCost": "167.5560",
+      "profitMargin": "50.27",
+      "targetPrice": "600"
     }
   ],
   "formulationIngredients": [
@@ -3117,6 +3216,24 @@
       "quantity": "8",
       "unit": "kg",
       "costContribution": "35.2",
+      "includeInMarkup": true
+    },
+    {
+      "id": 1618,
+      "formulationId": 1614,
+      "materialId": 1608,
+      "quantity": "6",
+      "unit": "kg",
+      "costContribution": "112.5",
+      "includeInMarkup": true
+    },
+    {
+      "id": 1619,
+      "formulationId": 1614,
+      "materialId": 1610,
+      "quantity": "5",
+      "unit": "kg",
+      "costContribution": "55.056000000000004",
       "includeInMarkup": true
     }
   ],
@@ -9143,6 +9260,96 @@
       "changes": "{\"description\":\"Added new vendor \\\"vendor 2\\\"\",\"data\":{\"id\":1602,\"name\":\"vendor 2\",\"contactEmail\":\"\",\"contactPhone\":\"\",\"address\":\"\",\"notes\":\"\",\"userId\":1597,\"createdAt\":\"2025-06-23T16:42:36.049Z\"}}",
       "createdAt": "2025-06-23T16:42:36.056Z",
       "timestamp": "2025-06-23T16:42:36.056Z"
+    },
+    {
+      "id": 1605,
+      "userId": 1,
+      "action": "create",
+      "entityType": "material",
+      "entityId": 1604,
+      "changes": "{\"description\":\"Added new raw material \\\"Bottle and cap - Gallon bottles & caps\\\" with a total cost of $10000 for 100 kg\",\"data\":{\"id\":1604,\"name\":\"Bottle and cap - Gallon bottles & caps\",\"sku\":\"\",\"categoryId\":null,\"vendorId\":null,\"totalCost\":\"10000\",\"quantity\":\"100\",\"unit\":\"kg\",\"notes\":\"\",\"isActive\":true,\"userId\":1597,\"createdAt\":\"2025-06-23T16:50:26.388Z\"}}",
+      "createdAt": "2025-06-23T16:50:26.395Z",
+      "timestamp": "2025-06-23T16:50:26.395Z"
+    },
+    {
+      "id": 1607,
+      "userId": 1,
+      "action": "create",
+      "entityType": "material",
+      "entityId": 1606,
+      "changes": "{\"description\":\"Added new raw material \\\"Cooncrete - Square Coasters x 2 Units; Airmail Delivery\\\" with a total cost of $10000 for 202 kg\",\"data\":{\"id\":1606,\"name\":\"Cooncrete - Square Coasters x 2 Units; Airmail Delivery\",\"sku\":\"\",\"categoryId\":null,\"vendorId\":null,\"totalCost\":\"10000\",\"quantity\":\"202\",\"unit\":\"kg\",\"notes\":\"\",\"isActive\":true,\"userId\":1597,\"createdAt\":\"2025-06-23T16:50:41.251Z\"}}",
+      "createdAt": "2025-06-23T16:50:41.258Z",
+      "timestamp": "2025-06-23T16:50:41.258Z"
+    },
+    {
+      "id": 1609,
+      "userId": 1,
+      "action": "create",
+      "entityType": "material",
+      "entityId": 1608,
+      "changes": "{\"description\":\"Added new raw material \\\"Gallon bottles x 4 units\\\" with a total cost of $600 for 32 kg\",\"data\":{\"id\":1608,\"name\":\"Gallon bottles x 4 units\",\"sku\":\"\",\"categoryId\":null,\"vendorId\":null,\"totalCost\":\"600\",\"quantity\":\"32\",\"unit\":\"kg\",\"notes\":\"\",\"isActive\":true,\"userId\":1597,\"createdAt\":\"2025-06-23T16:50:54.238Z\"}}",
+      "createdAt": "2025-06-23T16:50:54.246Z",
+      "timestamp": "2025-06-23T16:50:54.246Z"
+    },
+    {
+      "id": 1611,
+      "userId": 1,
+      "action": "create",
+      "entityType": "material",
+      "entityId": 1610,
+      "changes": "{\"description\":\"Added new raw material \\\"Jamaica Packaging\\\" with a total cost of $9898989 for 898989 kg\",\"data\":{\"id\":1610,\"name\":\"Jamaica Packaging\",\"sku\":\"\",\"categoryId\":null,\"vendorId\":null,\"totalCost\":\"9898989\",\"quantity\":\"898989\",\"unit\":\"kg\",\"notes\":\"\",\"isActive\":true,\"userId\":1597,\"createdAt\":\"2025-06-23T16:51:11.543Z\"}}",
+      "createdAt": "2025-06-23T16:51:11.548Z",
+      "timestamp": "2025-06-23T16:51:11.548Z"
+    },
+    {
+      "id": 1613,
+      "userId": 1,
+      "action": "create",
+      "entityType": "material",
+      "entityId": 1612,
+      "changes": "{\"description\":\"Added new raw material \\\"Hardware store\\\" with a total cost of $55677 for 6677777 kg\",\"data\":{\"id\":1612,\"name\":\"Hardware store\",\"sku\":\"\",\"categoryId\":null,\"vendorId\":null,\"totalCost\":\"55677\",\"quantity\":\"6677777\",\"unit\":\"kg\",\"notes\":\"\",\"isActive\":true,\"userId\":1597,\"createdAt\":\"2025-06-23T16:51:27.414Z\"}}",
+      "createdAt": "2025-06-23T16:51:27.421Z",
+      "timestamp": "2025-06-23T16:51:27.421Z"
+    },
+    {
+      "id": 1617,
+      "userId": 1597,
+      "action": "create",
+      "entityType": "formulation",
+      "entityId": 1614,
+      "changes": "{\"description\":\"Created new formulation \\\"test formular\\\" with batch size of 1.000 unit and 30.00% markup\",\"data\":{\"id\":1614,\"name\":\"test formular\",\"description\":\"ioipoipipi\",\"batchSize\":\"1.000\",\"batchUnit\":\"unit\",\"markupPercentage\":\"30.00\",\"isActive\":true,\"userId\":1597,\"createdAt\":\"2025-06-23T16:52:58.316Z\",\"totalCost\":\"167.56\",\"unitCost\":\"167.5560\",\"profitMargin\":\"50.27\"},\"ingredients\":[{\"materialId\":1608,\"quantity\":\"6\",\"unit\":\"kg\",\"costContribution\":\"112.5\",\"includeInMarkup\":true},{\"materialId\":1610,\"quantity\":\"5\",\"unit\":\"kg\",\"costContribution\":\"55.056000000000004\",\"includeInMarkup\":true}]}",
+      "createdAt": "2025-06-23T16:52:58.346Z",
+      "timestamp": "2025-06-23T16:52:58.346Z"
+    },
+    {
+      "id": 1620,
+      "userId": 1,
+      "action": "update",
+      "entityType": "formulation",
+      "entityId": 1614,
+      "changes": "{\"description\":\"Updated formulation \\\"test formular\\\" - batch size is now 1.000 unit with 30.00% markup\",\"before\":{\"id\":1614,\"name\":\"test formular\",\"description\":\"ioipoipipi\",\"batchSize\":\"1.000\",\"batchUnit\":\"unit\",\"markupPercentage\":\"30.00\",\"isActive\":true,\"userId\":1597,\"createdAt\":\"2025-06-23T16:52:58.316Z\",\"totalCost\":\"167.56\",\"unitCost\":\"167.5560\",\"profitMargin\":\"50.27\"},\"after\":{\"id\":1614,\"name\":\"test formular\",\"description\":\"ioipoipipi\",\"batchSize\":\"1.000\",\"batchUnit\":\"unit\",\"markupPercentage\":\"30.00\",\"isActive\":true,\"userId\":1597,\"createdAt\":\"2025-06-23T16:52:58.316Z\",\"totalCost\":\"167.56\",\"unitCost\":\"167.5560\",\"profitMargin\":\"50.27\",\"targetPrice\":\"600\"},\"ingredients\":[{\"materialId\":1608,\"quantity\":\"6\",\"unit\":\"kg\",\"costContribution\":\"112.5\",\"includeInMarkup\":true},{\"materialId\":1610,\"quantity\":\"5\",\"unit\":\"kg\",\"costContribution\":\"55.056000000000004\",\"includeInMarkup\":true}]}",
+      "createdAt": "2025-06-23T16:53:10.575Z",
+      "timestamp": "2025-06-23T16:53:10.575Z"
+    },
+    {
+      "id": 1622,
+      "userId": 1,
+      "action": "create",
+      "entityType": "category",
+      "entityId": 1621,
+      "changes": "{\"description\":\"Created new category \\\"Concrete - Square Coasters x 2 Units; Airmail Delivery\\\" with blue color\",\"data\":{\"id\":1621,\"name\":\"Concrete - Square Coasters x 2 Units; Airmail Delivery\",\"color\":\"blue\",\"userId\":1,\"createdAt\":\"2025-06-23T16:53:46.115Z\"}}",
+      "createdAt": "2025-06-23T16:53:46.123Z",
+      "timestamp": "2025-06-23T16:53:46.123Z"
+    },
+    {
+      "id": 1624,
+      "userId": 1,
+      "action": "create",
+      "entityType": "category",
+      "entityId": 1623,
+      "changes": "{\"description\":\"Created new category \\\"Concrete - Square Coasters x 2 Units; Airmail Delivery\\\" with blue color\",\"data\":{\"id\":1623,\"name\":\"Concrete - Square Coasters x 2 Units; Airmail Delivery\",\"color\":\"blue\",\"userId\":1,\"createdAt\":\"2025-06-23T16:53:52.430Z\"}}",
+      "createdAt": "2025-06-23T16:53:52.445Z",
+      "timestamp": "2025-06-23T16:53:52.445Z"
     }
   ],
   "passwordResetTokens": [
@@ -9163,6 +9370,6 @@
       "createdAt": "2025-06-23T16:33:29.469Z"
     }
   ],
-  "nextId": 1604,
+  "nextId": 1625,
   "payments": []
 }
