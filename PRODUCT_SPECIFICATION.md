@@ -288,38 +288,6 @@ Markup = (Selling Price - Unit Cost) ÷ Unit Cost × 100
 
 ---
 
-## Subscription Plans & Limits
-
-### Free Trial
-- **Duration**: Unlimited
-- **Materials**: 5 maximum
-- **Formulations**: 2 maximum
-- **Vendors**: 2 maximum
-- **Features**: All core functionality
-
-### Starter Plan
-- **Monthly Fee**: $29/month
-- **Materials**: 50 maximum
-- **Formulations**: 25 maximum
-- **Vendors**: 10 maximum
-- **Features**: Full feature access
-
-### Professional Plan
-- **Monthly Fee**: $79/month
-- **Materials**: 500 maximum
-- **Formulations**: 250 maximum
-- **Vendors**: 100 maximum
-- **Features**: Advanced analytics and reporting
-
-### Unlimited Plan
-- **Monthly Fee**: Custom pricing
-- **Materials**: Unlimited
-- **Formulations**: Unlimited
-- **Vendors**: Unlimited
-- **Features**: Enterprise support and customization
-
----
-
 ## Integration Capabilities
 
 ### Shopify Billing Integration
