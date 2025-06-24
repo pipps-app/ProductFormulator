@@ -52,10 +52,10 @@ PIPPS Maker Calc is a comprehensive product formulation and cost management tool
 - **Materials**: Unlimited raw materials
 - **Formulations**: Unlimited formulations
 - **Vendors**: Unlimited vendors
-- **Categories**: Up to 2 categories (enforced with validation)
+- **Categories**: Limited to 2 categories maximum (enforced with validation and error messaging)
 - **Reports**: Material Database Value and Basic Cost Analysis only
-- **Support**: Help documentation and community support
-- **Features**: Full material and formulation management, CSV import/export, duplicate removal
+- **Support**: Comprehensive help documentation with priority-labeled articles
+- **Features**: Complete material and formulation management, CSV import/export, automated vendor/category setup, duplicate removal, file attachments
 
 ### Pro Tier ($19/month)  
 - **Materials**: Unlimited raw materials
