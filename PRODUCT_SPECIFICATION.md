@@ -86,16 +86,18 @@ PIPPS Maker Calc is a comprehensive product formulation and cost management tool
 
 **Current Implementation**: The application currently has unlimited materials, formulations, and vendors with only a 2-category limit enforced for the free tier. The subscription system shows preview features for higher tiers but does not enforce the limits shown above. Payment processing is handled through Shopify with manual subscription management.
 
+**Note**: This document is for informational purposes only and does not contain actual user data.
+
 ## Application Modules
 
 ### 1. Dashboard
-- **Performance Metrics Display**: Real-time overview with material count (89), formulations (1), vendors (15)
+- **Performance Metrics Display**: Real-time overview with material count, formulations, and vendor totals
 - **Key Performance Indicators**: Total materials, active formulations, vendor relationships
 - **Recent Activity Feed**: Audit trail of system changes and updates with timestamps
 - **Quick Actions**: Direct access to add material and create formulation functions
 - **Navigation Hub**: Central access point to all application modules
 
-### 2. Raw Materials (89 items)
+### 2. Raw Materials
 - **Material Database**: Comprehensive listing of all raw materials with search and filtering
 - **Material Properties**: Name, SKU, category assignment, vendor linkage, cost tracking
 - **Bulk Operations**: CSV import, duplicate removal, batch editing capabilities
@@ -103,7 +105,7 @@ PIPPS Maker Calc is a comprehensive product formulation and cost management tool
 - **File Attachments**: Document and specification attachment system
 - **Advanced Search**: Filter by name, SKU, category, vendor, or cost ranges
 
-### 3. Formulations (1 active)
+### 3. Formulations
 - **Recipe Builder**: Create and edit product formulations with ingredient selection
 - **Ingredient Management**: Add/remove materials with quantity and percentage calculations
 - **Cost Analysis**: Automatic total cost, unit cost, and profit margin calculations
@@ -111,7 +113,7 @@ PIPPS Maker Calc is a comprehensive product formulation and cost management tool
 - **Status Management**: Active/inactive formulation states
 - **Documentation**: File attachment system for formulation specifications
 
-### 4. Vendors (15 suppliers)
+### 4. Vendors
 - **Supplier Database**: Complete vendor information management system
 - **Contact Management**: Email addresses, communication tracking, vendor details
 - **Material Relationships**: Link vendors to specific materials for sourcing
