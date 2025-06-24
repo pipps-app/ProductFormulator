@@ -2,6 +2,8 @@
 
 **Document Generated:** June 24, 2025
 
+**Note**: This document is for informational purposes only and does not contain actual user data.
+
 ## Product Overview
 **Product Name:** PIPPS Maker Calc  
 **Version:** 1.0  
