@@ -1,88 +1,50 @@
-# Pipps Maker Calc - Product Specification
-**Version 1.0**  
-**Date: June 2025**
+# PIPPS Maker Calc - Product Specification
 
-## Executive Summary
+**Document Generated:** June 24, 2025
 
-Pipps Maker Calc is a comprehensive SaaS application designed for small to medium businesses in product formulation industries. The platform streamlines product development by providing intelligent cost calculation, profit margin analysis, and material management capabilities. Built with React/TypeScript frontend and Express/PostgreSQL backend, it offers real-time financial insights for formulation-based businesses.
+## Product Overview
+**Product Name:** PIPPS Maker Calc  
+**Version:** 1.0  
+**Target Market:** Small to medium manufacturing businesses, product formulators, cosmetic manufacturers, food producers  
+**Platform:** Web Application (SaaS)  
+**Authentication:** Email-based login system
 
----
+## Core Purpose
+PIPPS Maker Calc is a comprehensive product formulation and cost management tool designed for businesses that create physical products. The platform enables users to manage raw materials, create formulations, track costs, and generate tiered reports for business decision-making with subscription-based access controls.
 
-## Core Features Overview
+## Key Features
 
-### 1. Dashboard & Analytics
-- **Performance Metrics Display**: Real-time overview of business performance
-- **Key Performance Indicators**:
-  - Total Materials count
-  - Active Formulations count  
-  - Vendor relationships count
-  - Average Profit Margin percentage
-- **Formulation Performance Widget**: 
-  - Total Target Revenue calculation
-  - Average Profit Margin across all formulations
-  - Total Production Cost summary
-- **Recent Activity Feed**: Audit trail of system changes and updates
-- **Materials Preview**: Quick view of recently added materials
+### 1. Material Management
+- **Raw Material Database**: Add, edit, and organize raw materials with name, SKU, cost, quantity, and unit information
+- **Vendor Management**: Track supplier information with contact details and email addresses
+- **Category Organization**: Organize materials by custom categories with color coding (Free tier: 2 categories)
+- **Cost Tracking**: Monitor total cost and automatically calculated unit costs
+- **File Attachments**: Attach specifications, certificates, and documents to materials
+- **Bulk Import**: CSV import functionality with automated vendor/category setup
+- **Duplicate Management**: Remove duplicate materials with one-click cleanup
 
-### 2. Material Management System
-- **Raw Materials Library**: Comprehensive material database
-- **Material Properties**:
-  - Name and SKU identification
-  - Category classification with color coding
-  - Vendor assignment and contact management
-  - Unit cost tracking per material unit
-  - Total quantity management
-  - Total value calculations
-  - Notes and documentation support
-- **Advanced Search & Filtering**: Find materials by name, SKU, or category
-- **Material Categories**: Organized classification system with color coding
-- **File Attachments**: Support for material documentation and specifications
+### 2. Formulation Creation
+- **Recipe Builder**: Create detailed product formulations with ingredients and quantities
+- **Cost Calculations**: Automatic cost calculations for total cost, unit cost, and profit margins
+- **Ingredient Management**: Add/remove ingredients with quantity and percentage calculations
+- **Batch Information**: Track batch size and scaling for different production volumes
+- **File Attachments**: Attach documents and specifications to formulations
+- **Export Options**: Generate reports and documentation
 
-### 3. Formulation Development
-- **Recipe Creation**: Build formulations with multiple ingredients
-- **Ingredient Management**:
-  - Material selection from library
-  - Quantity specification with units
-  - Cost contribution calculations
-  - Include/exclude from markup options
-- **Cost Calculations**:
-  - Total material cost computation
-  - Unit cost analysis
-  - Profit margin calculations (% of selling price)
-  - Markup calculations (% of cost)
-- **Pricing Strategy**:
-  - Target price setting
-  - Suggested price recommendations
-  - Profit analysis per unit
-- **Formulation Status**: Active/inactive formulation management
+### 3. Reporting & Analytics (Tiered Access)
+- **Free Tier**: Material Database Value and Basic Cost Analysis
+- **Pro Tier**: All Free reports plus Advanced Analytics and Custom Reports  
+- **Business Tier**: All Pro reports plus Multi-location Analysis and Team Reports
+- **Enterprise Tier**: All Business reports plus API Access and Custom Integrations
+- **Export Functionality**: PDF and JSON export for reports
+- **Preview System**: Higher tier features shown as previews with upgrade prompts
 
-### 4. Vendor & Supplier Management
-- **Vendor Database**: Complete supplier information management
-- **Contact Management**: Email and communication tracking
-- **Vendor-Material Relationships**: Link materials to specific suppliers
-- **Cost Tracking**: Monitor pricing changes from vendors
-
-### 5. Financial Analysis & Reporting
-- **Profit Margin Analysis**: Accurate profit calculations based on selling price
-- **Cost Breakdown**: Detailed material cost contributions
-- **Revenue Projections**: Target revenue calculations
-- **Performance Tracking**: Historical analysis of formulation performance
-
-### 6. User Management & Authentication
-- **User Profiles**: Personal account management
-- **Company Information**: Business details and settings
-- **Role-Based Access**: Admin and user permissions
-- **Password Management**: Secure authentication system
-
-### 7. Subscription Management
-- **Tiered Plans**: Free, Starter, Professional, and Unlimited options
-- **Usage Limits**: 
-  - Free: 5 materials, 2 formulations, 2 vendors
-  - Starter: 50 materials, 25 formulations, 10 vendors
-  - Professional: 500 materials, 250 formulations, 100 vendors
-  - Unlimited: No restrictions
-- **Shopify Integration**: Automated billing through Shopify store
-- **Trial Accounts**: Instant trial creation for new users
+### 4. User Management & Authentication
+- **Email-Only Authentication**: Secure login with email and password
+- **Password Reset**: Token-based password reset via email
+- **User Profiles**: Company name and contact information management
+- **Activity Logging**: Track user actions and changes for audit purposes
+- **Session Management**: Secure session handling with logout functionality
 
 ---
 
