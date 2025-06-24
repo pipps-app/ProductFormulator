@@ -71,18 +71,18 @@ PIPPS Maker Calc is a comprehensive product formulation and cost management tool
 - **Formulations**: Unlimited formulations  
 - **Vendors**: Unlimited vendors
 - **Categories**: Unlimited categories
-- **Reports**: All Pro reports plus Multi-location Analysis and Team Reports
+- **Reports**: All Pro reports plus additional advanced reporting features
 - **Support**: Priority email support
-- **Features**: Team collaboration features, multi-location analysis
+- **Features**: Enhanced reporting capabilities beyond Pro tier
 
 ### Enterprise Tier ($99/month)
 - **Materials**: Unlimited raw materials
 - **Formulations**: Unlimited formulations
 - **Vendors**: Unlimited vendors
 - **Categories**: Unlimited categories
-- **Reports**: All Business reports plus API Access and Custom Integrations
-- **Support**: Phone and email support
-- **Features**: API access, custom integrations, white-label options
+- **Reports**: All Business reports plus premium reporting features
+- **Support**: Priority email support
+- **Features**: Highest tier reporting and analytics
 
 **Note**: Currently implemented as preview system - higher tier features shown as previews with upgrade prompts. Payment processing handled through Shopify with manual subscription management.
 
