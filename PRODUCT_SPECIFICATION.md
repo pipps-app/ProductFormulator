@@ -48,43 +48,47 @@ PIPPS Maker Calc is a comprehensive product formulation and cost management tool
 
 ## Subscription Tiers
 
-### Free Tier
-- **Materials**: Unlimited raw materials
-- **Formulations**: Unlimited formulations
-- **Vendors**: Unlimited vendors
-- **Categories**: Limited to 2 categories maximum (enforced with validation and error messaging)
-- **Reports**: Material Database Value and Basic Cost Analysis only
-- **Support**: Comprehensive help documentation with priority-labeled articles
-- **Features**: Complete material and formulation management, CSV import/export, automated vendor/category setup, duplicate removal, file attachments
+### Free Tier ($0/month)
+- **Raw Materials**: 5 maximum
+- **Formulations**: 2 maximum  
+- **Vendors**: 2 maximum
+- **Categories**: 2 maximum
+- **File Attachments**: 5 maximum
+- **Storage**: 1MB total
+- **Support**: Help documentation
+- **Features**: Basic material and formulation management
 
-### Pro Tier ($19/month)  
-- **Materials**: Unlimited raw materials
-- **Formulations**: Unlimited formulations
-- **Vendors**: Unlimited vendors
-- **Categories**: Unlimited categories
-- **Reports**: All Free reports plus Advanced Analytics and Custom Reports
+### Pro Tier ($19/month)
+- **Raw Materials**: 100 maximum
+- **Formulations**: 25 maximum
+- **Vendors**: 10 maximum
+- **Categories**: 25 maximum
+- **File Attachments**: 25 maximum
+- **Storage**: 100MB total
 - **Support**: Email support
-- **Features**: Enhanced reporting capabilities, advanced analytics
+- **Features**: Enhanced capabilities, PDF export, cost optimization tools
 
 ### Business Tier ($49/month)
-- **Materials**: Unlimited raw materials
-- **Formulations**: Unlimited formulations  
-- **Vendors**: Unlimited vendors
-- **Categories**: Unlimited categories
-- **Reports**: All Pro reports plus additional advanced reporting features
+- **Raw Materials**: 500 maximum
+- **Formulations**: 100 maximum
+- **Vendors**: 25 maximum
+- **Categories**: 25 maximum
+- **File Attachments**: 50 maximum
+- **Storage**: 1GB total
 - **Support**: Priority email support
-- **Features**: Enhanced reporting capabilities beyond Pro tier
+- **Features**: Multi-user access, batch operations, API integrations
 
 ### Enterprise Tier ($99/month)
-- **Materials**: Unlimited raw materials
-- **Formulations**: Unlimited formulations
-- **Vendors**: Unlimited vendors
-- **Categories**: Unlimited categories
-- **Reports**: All Business reports plus premium reporting features
-- **Support**: Priority email support
-- **Features**: Highest tier reporting and analytics
+- **Raw Materials**: Unlimited
+- **Formulations**: Unlimited
+- **Vendors**: Unlimited
+- **Categories**: Unlimited
+- **File Attachments**: Unlimited
+- **Storage**: 30GB total
+- **Support**: Priority support with phone
+- **Features**: Dedicated support engineer, white-label options
 
-**Note**: Currently implemented as preview system - higher tier features shown as previews with upgrade prompts. Payment processing handled through Shopify with manual subscription management.
+**Current Implementation**: The application currently has unlimited materials, formulations, and vendors with only a 2-category limit enforced for the free tier. The subscription system shows preview features for higher tiers but does not enforce the limits shown above. Payment processing is handled through Shopify with manual subscription management.
 
 ## Application Modules
 
