@@ -77,9 +77,10 @@ PIPPS Maker Calc is a comprehensive SaaS formulation management platform designe
 ## External Dependencies
 
 ### Payment Processing
-- PayPal Web SDK for subscription payments
-- Shopify webhook integration for automated user provisioning
-- Manual payment recording system for admins
+- Shopify integration for secure payment processing
+- Manual subscription activation workflow
+- Admin interface for subscription management
+- SQL-based user provisioning for verified payments
 
 ### Email Services
 - Gmail SMTP integration for notifications
@@ -129,3 +130,4 @@ PIPPS Maker Calc is a comprehensive SaaS formulation management platform designe
 ## User Preferences
 
 Preferred communication style: Simple, everyday language.
+Subscription management: Manual activation preferred over automated webhooks for payment verification control.

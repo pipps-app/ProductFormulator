@@ -86,7 +86,7 @@ PIPPS Maker Calc is a comprehensive product formulation and cost management tool
 - **Storage**: 10GB total
 - **Support**: Dedicated support engineer
 
-**Current Implementation**: The application currently has unlimited materials, formulations, and vendors with only a 2-category limit enforced for the free tier. The subscription system shows preview features for higher tiers but does not enforce the limits shown above. Payment processing is handled through Shopify with manual subscription management.
+**Current Implementation**: The application currently has unlimited materials, formulations, and vendors with only a 2-category limit enforced for the free tier. The subscription system shows preview features for higher tiers but does not enforce the limits shown above. Payment processing is handled through Shopify with manual subscription activation - administrators receive payment notifications and manually activate subscriptions via the admin interface or direct database updates.
 
 **Note**: This document is for informational purposes only and does not contain actual user data.
 
@@ -291,10 +291,10 @@ Markup = (Selling Price - Unit Cost) ÷ Unit Cost × 100
 ## Integration Capabilities
 
 ### Shopify Billing Integration
-- **Webhook Processing**: Automatic subscription activation
-- **User Provisioning**: Account creation from purchases
-- **Plan Management**: Automated tier assignments
-- **Payment Processing**: Secure transaction handling
+- **Payment Notifications**: Payment confirmation through Shopify
+- **Manual User Provisioning**: Admin-controlled account creation and upgrades
+- **Plan Management**: Manual tier assignments via admin interface or SQL
+- **Payment Processing**: Secure transaction handling through Shopify
 
 ### Trial-to-Paid Conversion
 - **Seamless Upgrade**: Direct upgrade paths from trial
