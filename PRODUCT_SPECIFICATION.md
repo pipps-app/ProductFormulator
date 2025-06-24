@@ -46,6 +46,114 @@ PIPPS Maker Calc is a comprehensive product formulation and cost management tool
 - **Activity Logging**: Track user actions and changes for audit purposes
 - **Session Management**: Secure session handling with logout functionality
 
+## Subscription Tiers
+
+### Free Tier
+- **Materials**: Unlimited raw materials
+- **Formulations**: Unlimited formulations
+- **Vendors**: Unlimited vendors
+- **Categories**: Up to 2 categories (enforced with validation)
+- **Reports**: Material Database Value and Basic Cost Analysis only
+- **Support**: Help documentation and community support
+- **Features**: Full material and formulation management, CSV import/export, duplicate removal
+
+### Pro Tier ($19/month)  
+- **Materials**: Unlimited raw materials
+- **Formulations**: Unlimited formulations
+- **Vendors**: Unlimited vendors
+- **Categories**: Unlimited categories
+- **Reports**: All Free reports plus Advanced Analytics and Custom Reports
+- **Support**: Email support
+- **Features**: Enhanced reporting capabilities, advanced analytics
+
+### Business Tier ($49/month)
+- **Materials**: Unlimited raw materials
+- **Formulations**: Unlimited formulations  
+- **Vendors**: Unlimited vendors
+- **Categories**: Unlimited categories
+- **Reports**: All Pro reports plus Multi-location Analysis and Team Reports
+- **Support**: Priority email support
+- **Features**: Team collaboration features, multi-location analysis
+
+### Enterprise Tier ($99/month)
+- **Materials**: Unlimited raw materials
+- **Formulations**: Unlimited formulations
+- **Vendors**: Unlimited vendors
+- **Categories**: Unlimited categories
+- **Reports**: All Business reports plus API Access and Custom Integrations
+- **Support**: Phone and email support
+- **Features**: API access, custom integrations, white-label options
+
+**Note**: Currently implemented as preview system - higher tier features shown as previews with upgrade prompts. Payment processing handled through Shopify with manual subscription management.
+
+## Application Modules
+
+### 1. Dashboard
+- **Performance Metrics Display**: Real-time overview with material count (89), formulations (1), vendors (15)
+- **Key Performance Indicators**: Total materials, active formulations, vendor relationships
+- **Recent Activity Feed**: Audit trail of system changes and updates with timestamps
+- **Quick Actions**: Direct access to add material and create formulation functions
+- **Navigation Hub**: Central access point to all application modules
+
+### 2. Raw Materials (89 items)
+- **Material Database**: Comprehensive listing of all raw materials with search and filtering
+- **Material Properties**: Name, SKU, category assignment, vendor linkage, cost tracking
+- **Bulk Operations**: CSV import, duplicate removal, batch editing capabilities
+- **Cost Management**: Unit cost calculations, total cost tracking, price history
+- **File Attachments**: Document and specification attachment system
+- **Advanced Search**: Filter by name, SKU, category, vendor, or cost ranges
+
+### 3. Formulations (1 active)
+- **Recipe Builder**: Create and edit product formulations with ingredient selection
+- **Ingredient Management**: Add/remove materials with quantity and percentage calculations
+- **Cost Analysis**: Automatic total cost, unit cost, and profit margin calculations
+- **Batch Scaling**: Support for different production volumes and batch sizes
+- **Status Management**: Active/inactive formulation states
+- **Documentation**: File attachment system for formulation specifications
+
+### 4. Vendors (15 suppliers)
+- **Supplier Database**: Complete vendor information management system
+- **Contact Management**: Email addresses, communication tracking, vendor details
+- **Material Relationships**: Link vendors to specific materials for sourcing
+- **Cost Monitoring**: Track pricing changes and vendor performance
+- **Search and Filter**: Locate vendors by name, contact information, or linked materials
+
+### 5. Categories
+- **Organization System**: Color-coded classification for materials
+- **Tier Restrictions**: Free tier limited to 2 categories, unlimited for paid tiers
+- **Visual Management**: Color assignment for easy material identification
+- **Hierarchy**: Structured categorization for logical material grouping
+- **Material Assignment**: Link materials to appropriate categories
+
+### 6. Import/Export
+- **CSV Import**: Bulk material import with automated vendor/category creation
+- **Data Export**: Export materials, formulations, and reports in various formats
+- **Setup Automation**: One-click vendor and category setup for imports
+- **Duplicate Management**: Automated detection and removal of duplicate entries
+- **Format Support**: CSV, PDF, and JSON export capabilities
+
+### 7. Reports
+- **Tiered Access System**: Four-tier reporting (Free, Pro, Business, Enterprise)
+- **Free Reports**: Material Database Value and Basic Cost Analysis
+- **Advanced Analytics**: Pro+ tier features with detailed insights
+- **Preview System**: Higher-tier feature previews to encourage upgrades
+- **Export Options**: PDF and JSON report generation
+- **Real-time Updates**: Reports automatically refresh with data changes
+
+### 8. Payments
+- **Transaction History**: Record of all payment transactions and billing
+- **Subscription Status**: Current plan information and billing cycle
+- **Payment Integration**: Shopify-based payment processing system
+- **Manual Management**: Admin-controlled subscription updates
+- **Billing Records**: Complete payment audit trail
+
+### 9. Help & Support
+- **Documentation System**: Comprehensive help articles with priority labels
+- **Search Functionality**: Find help topics by keyword or category
+- **Priority Levels**: Essential, Helpful, and Advanced article classifications
+- **Category Organization**: Topics grouped by feature area and complexity
+- **Support Contact**: Email support access and contact information
+
 ---
 
 ## Technical Architecture
