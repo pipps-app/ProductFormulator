@@ -37,11 +37,11 @@ const planLimits: Record<string, SubscriptionLimits> = {
     maxStorageSize: 1000
   },
   enterprise: {
-    maxMaterials: -1,
-    maxFormulations: -1,
-    maxVendors: -1,
-    maxCategories: -1,
-    maxFileAttachments: -1,
+    maxMaterials: 1000,
+    maxFormulations: 250,
+    maxVendors: 50,
+    maxCategories: 50,
+    maxFileAttachments: 100,
     maxStorageSize: 10000
   }
 };

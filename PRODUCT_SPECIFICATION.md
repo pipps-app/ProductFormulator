@@ -50,41 +50,41 @@ PIPPS Maker Calc is a comprehensive product formulation and cost management tool
 
 ## Subscription Tiers
 
-### Free Tier ($0/month)
-- **Raw Materials**: 5 maximum
-- **Formulations**: 2 maximum  
-- **Vendors**: 2 maximum
-- **Categories**: 2 maximum
-- **File Attachments**: 5 maximum
-- **Storage**: 1MB total
+### Free Tier ($0/forever)
+- **Raw Materials**: Up to 5
+- **Formulations**: Up to 1
+- **Vendors**: 2 vendors & 2 categories
+- **Features**: Basic cost calculations
+- **File Attachments**: 1 file attachment
+- **Storage**: 5MB storage
 - **Support**: Help documentation
 
 ### Pro Tier ($19/month)
-- **Raw Materials**: 100 maximum
-- **Formulations**: 25 maximum
-- **Vendors**: 10 maximum
-- **Categories**: Unlimited
-- **File Attachments**: 25 maximum
-- **Storage**: 100MB total
+- **Raw Materials**: Up to 100
+- **Formulations**: Up to 25
+- **Vendors**: 10 vendors & 10 categories
+- **Features**: CSV import/export, Cost optimization tools
+- **File Attachments**: 10 file attachments
+- **Storage**: 100MB storage
 - **Support**: Email support
 
-### Business Tier ($49/month)
-- **Raw Materials**: 500 maximum
-- **Formulations**: 100 maximum
-- **Vendors**: 25 maximum
-- **Categories**: Unlimited
-- **File Attachments**: 50 maximum
-- **Storage**: 1GB total
+### Business Tier ($65/month)
+- **Raw Materials**: Up to 500
+- **Formulations**: Up to 100
+- **Vendors**: 25 vendors & 25 categories
+- **Features**: Advanced reporting & analytics, Batch cost optimization
+- **File Attachments**: 50 file attachments
+- **Storage**: 1GB storage
 - **Support**: Priority email support
 
 ### Enterprise Tier ($99/month)
-- **Raw Materials**: Unlimited
-- **Formulations**: Unlimited
-- **Vendors**: Unlimited
-- **Categories**: Unlimited
-- **File Attachments**: Unlimited
-- **Storage**: 10GB total
-- **Support**: Dedicated support engineer
+- **Raw Materials**: Up to 1,000
+- **Formulations**: Up to 250
+- **Vendors**: 50 vendors & 50 categories
+- **Features**: Premium reporting suite & custom analytics
+- **File Attachments**: 100 file attachments
+- **Storage**: 10GB storage
+- **Support**: Dedicated support manager, Phone support priority
 
 **Current Implementation**: The application enforces all subscription limits shown above. Free tier users are limited to 5 materials, 1 formulation, 2 vendors, and 2 categories. Higher tiers have their respective limits enforced, with Enterprise tier having unlimited access. Payment processing is handled through Shopify with manual subscription activation - administrators receive payment notifications and manually activate subscriptions via the admin interface or direct database updates.
 

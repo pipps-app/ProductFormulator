@@ -3,19 +3,17 @@
 ## Subscription Tier Structure
 
 ### Free Tier - "Starter"
-**Price**: $0/month
+**Price**: $0/forever
 **Target**: Individual formulators, hobbyists, small businesses starting out
 
 **Limitations**:
-- Maximum 10 raw materials
-- Maximum 3 formulations
-- Maximum 2 vendors
-- Maximum 2 categories
-- Basic file attachments (2 files per item, 5MB total storage)
-- Standard support (email only)
-- Basic dashboard metrics
-- No CSV import
-- No export functionality
+- Up to 5 raw materials
+- Up to 1 formulation
+- 2 vendors & 2 categories
+- Basic cost calculations
+- 1 file attachment
+- 5MB storage
+- Help documentation
 
 **Features Included**:
 - Full formulation cost calculations
@@ -30,15 +28,14 @@
 **Target**: Growing businesses, professional formulators, small manufacturing companies
 
 **Enhanced Limits**:
-- Maximum 100 raw materials
-- Maximum 25 formulations
-- Maximum 10 vendors
-- Maximum 10 categories
-- Enhanced file attachments (10 files per item, 100MB total storage)
-- Priority email support
-- Advanced dashboard with trends
-- CSV import/export functionality
-- Basic reporting features
+- Up to 100 raw materials
+- Up to 25 formulations
+- 10 vendors & 10 categories
+- CSV import/export
+- 10 file attachments
+- 100MB storage
+- Email support
+- Cost optimization tools
 
 **New Features**:
 - **CSV Import System** with validation
@@ -47,49 +44,47 @@
 - **Vendor performance tracking**
 - **Category color customization**
 - **Batch calculation tools**
-- **Email notifications** for low inventory (future feature)
+- **Cost optimization tools**
 
 ### Business Tier - "Business"
-**Price**: $49/month or $490/year (17% savings)
+**Price**: $65/month or $650/year (17% savings)
 **Target**: Medium businesses, R&D teams, multi-product manufacturers
 
 **Enhanced Limits**:
-- Maximum 500 raw materials
-- Maximum 100 formulations
-- Maximum 25 vendors
-- Maximum 25 categories
-- Premium file attachments (50 files per item, 1GB total storage)
-- Phone + email support
-- Executive dashboard with advanced analytics
-- Unlimited CSV operations
-- Advanced reporting suite
+- Up to 500 raw materials
+- Up to 100 formulations
+- 25 vendors & 25 categories
+- Advanced reporting & analytics
+- 50 file attachments
+- 1GB storage
+- Priority email support
+- Batch cost optimization
 
 **New Features**:
-- **Multi-user collaboration** (up to 5 users)
-- **Role-based permissions** (Admin, Editor, Viewer)
 - **Advanced reporting** with custom filters
-- **Inventory management** with low-stock alerts
-- **Formulation versioning** and change tracking
+- **Batch cost optimization**
+- **Enhanced analytics** dashboard
+- **Priority email support**
+- **Advanced export** capabilities
 - **Cost optimization suggestions**
-- **API access** for integrations
-- **White-label dashboard** option
+- **Enhanced data management**
 
 ### Enterprise Tier - "Enterprise"
 **Price**: $99/month or $990/year (17% savings)
 **Target**: Large manufacturers, enterprise clients, complex operations
 
-**Unlimited Access**:
-- Unlimited raw materials
-- Unlimited formulations
-- Unlimited vendors
-- Unlimited categories
-- Enterprise file storage (unlimited files, 10GB total)
-- Dedicated account manager
-- Custom dashboard and branding
-- Priority development requests
+**Premium Access**:
+- Up to 1,000 raw materials
+- Up to 250 formulations
+- 50 vendors & 50 categories
+- Premium reporting suite & custom analytics
+- 100 file attachments
+- 10GB storage
+- Dedicated support manager
+- Phone support priority
 
 **Enterprise Features**:
-- **Unlimited users** with advanced permissions
+- **Advanced users** with premium permissions
 - **Custom integrations** with existing systems
 - **Advanced API access** with higher rate limits
 - **Custom reporting** and analytics
@@ -97,7 +92,7 @@
 - **Audit trails** and compliance features
 - **Custom workflows** and approval processes
 - **Training and onboarding** assistance
-- **24/7 phone support**
+- **Phone support** with priority access
 - **SLA guarantees** for uptime and response
 
 ## Feature Progression Strategy
