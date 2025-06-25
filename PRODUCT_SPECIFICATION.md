@@ -224,6 +224,12 @@ PIPPS Maker Calc is a comprehensive product formulation and cost management tool
 - **Progress Indicators**: Loading and processing states
 - **Alert Systems**: Success, warning, and error messages
 
+### Customer Support Interface
+- **Live Chat Widget**: Floating chat button on all pages
+- **Contact Collection**: Name, email, and message capture
+- **Email Integration**: Direct delivery to support team inbox
+- **Real-time Notifications**: Success/error feedback to users
+
 ---
 
 ## Business Logic & Calculations
@@ -280,6 +286,9 @@ Markup = (Selling Price - Unit Cost) ÷ Unit Cost × 100
 ### Analytics
 - `GET /api/dashboard/stats` - Performance metrics
 - `GET /api/dashboard/recent-activity` - Activity feed
+
+### Support
+- `POST /api/support` - Submit support requests via chat widget or contact forms
 
 ### Subscription
 - `GET /api/subscription/status` - Current plan status
