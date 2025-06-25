@@ -415,7 +415,7 @@
     {
       "id": 644,
       "name": "Bottles",
-      "color": "blue",
+      "color": "red",
       "userId": 1,
       "createdAt": "2025-06-23T10:28:07.559Z"
     },
@@ -9450,6 +9450,16 @@
       "changes": "{\"description\":\"Deleted category \\\"Concrete - Square Coasters x 2 Units; Airmail Delivery\\\" (blue color)\",\"data\":{\"id\":1623,\"name\":\"Concrete - Square Coasters x 2 Units; Airmail Delivery\",\"color\":\"blue\",\"userId\":1,\"createdAt\":\"2025-06-23T16:53:52.430Z\"}}",
       "createdAt": "2025-06-23T18:17:12.513Z",
       "timestamp": "2025-06-23T18:17:12.513Z"
+    },
+    {
+      "id": 1640,
+      "userId": 1,
+      "action": "update",
+      "entityType": "category",
+      "entityId": 644,
+      "changes": "{\"description\":\"Updated category \\\"Bottles\\\" (color changed to red)\",\"before\":{\"id\":644,\"name\":\"Bottles\",\"color\":\"blue\",\"userId\":1,\"createdAt\":\"2025-06-23T10:28:07.559Z\"},\"after\":{\"id\":644,\"name\":\"Bottles\",\"color\":\"red\",\"userId\":1,\"createdAt\":\"2025-06-23T10:28:07.559Z\"}}",
+      "createdAt": "2025-06-24T19:56:23.280Z",
+      "timestamp": "2025-06-24T19:56:23.280Z"
     }
   ],
   "passwordResetTokens": [
@@ -9470,6 +9480,6 @@
       "createdAt": "2025-06-23T16:33:29.469Z"
     }
   ],
-  "nextId": 1640,
+  "nextId": 1641,
   "payments": []
 }

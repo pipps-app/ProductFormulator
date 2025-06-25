@@ -126,6 +126,7 @@ PIPPS Maker Calc is a comprehensive SaaS formulation management platform designe
 ## Changelog
 
 - June 24, 2025. Initial setup
+- June 24, 2025. Custom domain setup guide created for .pipps.app subdomain
 
 ## User Preferences
 
