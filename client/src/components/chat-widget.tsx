@@ -5,20 +5,66 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
+import { useToast } from "@/hooks/use-toast";
 
 export default function ChatWidget() {
   const [isOpen, setIsOpen] = useState(false);
   const [message, setMessage] = useState("");
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { toast } = useToast();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // In a real implementation, this would send the message to your chat system
-    // For now, we'll just show a confirmation
-    if (message.trim()) {
-      alert("Message sent! We'll respond shortly via email at maker-calc@pipps.app");
-      setMessage("");
-      setIsOpen(false);
+    
+    if (!message.trim() || !name.trim() || !email.trim()) {
+      toast({
+        title: "Missing information",
+        description: "Please fill in all fields before sending.",
+        variant: "destructive"
+      });
+      return;
     }
+
+    setIsSubmitting(true);
+    
+    try {
+      const response = await fetch('/api/support', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: name,
+          email: email,
+          subject: "Chat Support Request",
+          message: message
+        })
+      });
+
+      if (response.ok) {
+        toast({
+          title: "Message sent successfully",
+          description: "We'll respond to your email within 24 hours.",
+        });
+        
+        setMessage("");
+        setName("");
+        setEmail("");
+        setIsOpen(false);
+      } else {
+        throw new Error('Failed to send message');
+      }
+    } catch (error) {
+      toast({
+        title: "Error sending message",
+        description: "Please try again or email us directly at maker-calc@pipps.app",
+        variant: "destructive"
+      });
+    }
+    
+    setIsSubmitting(false);
   };
 
   return (
@@ -68,16 +114,36 @@ export default function ChatWidget() {
               </div>
               
               <form onSubmit={handleSubmit} className="space-y-3">
+                <div className="grid grid-cols-2 gap-2">
+                  <Input
+                    placeholder="Your name"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    required
+                  />
+                  <Input
+                    type="email"
+                    placeholder="Your email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                  />
+                </div>
                 <Textarea
                   placeholder="Type your message here..."
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
                   className="min-h-[80px] resize-none"
+                  required
                 />
                 <div className="flex gap-2">
-                  <Button type="submit" className="flex-1" disabled={!message.trim()}>
+                  <Button 
+                    type="submit" 
+                    className="flex-1" 
+                    disabled={!message.trim() || !name.trim() || !email.trim() || isSubmitting}
+                  >
                     <Send className="h-4 w-4 mr-2" />
-                    Send
+                    {isSubmitting ? "Sending..." : "Send"}
                   </Button>
                 </div>
               </form>
