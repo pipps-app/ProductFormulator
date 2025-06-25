@@ -141,6 +141,32 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Support email endpoint (before auth middleware)
+  app.post("/api/support", async (req, res) => {
+    try {
+      const { name, email, subject, message } = req.body;
+      console.log("Support request received:", { name, email, subject });
+
+      if (!name || !email || !subject || !message) {
+        return res.status(400).json({ error: "All fields are required" });
+      }
+
+      console.log("Email service configured:", emailService.isConfigured());
+      const success = await emailService.sendSupportEmail(name, email, subject, message);
+      
+      if (success) {
+        console.log("Support email sent successfully");
+        res.json({ success: true, message: "Support request sent successfully" });
+      } else {
+        console.log("Failed to send support email");
+        res.status(500).json({ error: "Failed to send support request" });
+      }
+    } catch (error) {
+      console.error("Support email error:", error);
+      res.status(500).json({ error: "Failed to send support request" });
+    }
+  });
+
   app.post("/api/auth/logout", (req, res) => {
     console.log("Logout endpoint hit - new version");
     try {
@@ -1517,27 +1543,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Support email endpoint
-  app.post("/api/support", async (req, res) => {
-    try {
-      const { name, email, subject, message } = req.body;
-
-      if (!name || !email || !subject || !message) {
-        return res.status(400).json({ error: "All fields are required" });
-      }
-
-      const success = await emailService.sendSupportEmail(name, email, subject, message);
-      
-      if (success) {
-        res.json({ success: true, message: "Support request sent successfully" });
-      } else {
-        res.status(500).json({ error: "Failed to send support request" });
-      }
-    } catch (error) {
-      console.error("Support email error:", error);
-      res.status(500).json({ error: "Failed to send support request" });
-    }
-  });
+  // Duplicate support endpoint removed (moved above auth middleware)
 
   // Instant trial account creation
   app.post("/api/users/create-trial", async (req, res) => {

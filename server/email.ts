@@ -44,7 +44,7 @@ class EmailService {
       }
     });
 
-    console.log('Email service initialized with Gmail SMTP');
+    console.log(`Email service initialized with Gmail SMTP for ${user}`);
   }
 
   async sendEmail(params: EmailParams): Promise<boolean> {
