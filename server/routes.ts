@@ -4,6 +4,7 @@ import { storage } from "./storage";
 import { createPaypalOrder, capturePaypalOrder, loadPaypalDefault } from "./paypal";
 import { reportsService } from "./reports";
 import { registerPaymentRoutes } from "./routes/payments";
+import { emailService } from "./email";
 
 function hasAccessToTier(userTier: string, requiredTier: string): boolean {
   const tierHierarchy = ['free', 'pro', 'business', 'enterprise'];
