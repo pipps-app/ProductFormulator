@@ -129,6 +129,7 @@ PIPPS Maker Calc is a comprehensive SaaS formulation management platform designe
 - June 24, 2025. Custom domain setup guide created for maker.pipps.app
 - June 24, 2025. GoDaddy DNS setup guide created with step-by-step instructions
 - June 25, 2025. Chat widget email functionality implemented and tested successfully
+- June 25, 2025. Updated subscription tiers to new pricing structure: Free ($0), Pro ($19), Business ($65), Enterprise ($99) with revised limits
 
 ## User Preferences
 

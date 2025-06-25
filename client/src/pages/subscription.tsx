@@ -75,7 +75,7 @@ const plans: SubscriptionPlan[] = [
   {
     id: "business",
     name: "Business", 
-    price: 49,
+    price: 65,
     interval: "month",
     maxMaterials: 500,
     maxFormulations: 100,
@@ -91,9 +91,8 @@ const plans: SubscriptionPlan[] = [
       "Advanced reporting & analytics",
       "50 file attachments",
       "1GB storage",
-      "Batch cost optimization",
-      "Multi-user access",
-      "Priority email support"
+      "Priority email support",
+      "Batch cost optimization"
     ]
   },
   {
@@ -101,19 +100,19 @@ const plans: SubscriptionPlan[] = [
     name: "Enterprise",
     price: 99,
     interval: "month",
-    maxMaterials: -1,
-    maxFormulations: -1,
-    maxVendors: -1,
-    maxCategories: -1,
-    maxFileAttachments: -1,
+    maxMaterials: 1000,
+    maxFormulations: 250,
+    maxVendors: 50,
+    maxCategories: 50,
+    maxFileAttachments: 100,
     maxStorageSize: 10000,
     support: "Dedicated support manager",
     features: [
-      "Unlimited materials",
-      "Unlimited formulations",
-      "Unlimited vendors & categories",
-      "API access",
-      "Unlimited file attachments",
+      "Up to 1,000 raw materials",
+      "Up to 250 formulations",
+      "50 vendors & 50 categories",
+      "Premium reporting suite & custom analytics",
+      "100 file attachments",
       "10GB storage",
       "Dedicated support manager",
       "Phone support priority"
