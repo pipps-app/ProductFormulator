@@ -115,27 +115,36 @@ export default function ChatWidget() {
               
               <form onSubmit={handleSubmit} className="space-y-3">
                 <div className="grid grid-cols-2 gap-2">
-                  <Input
-                    placeholder="Your name"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    required
-                  />
-                  <Input
-                    type="email"
-                    placeholder="Your email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                  <div>
+                    <label className="text-xs text-slate-600 mb-1 block">Name</label>
+                    <Input
+                      placeholder="Your name"
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="text-xs text-slate-600 mb-1 block">Email</label>
+                    <Input
+                      type="email"
+                      placeholder="Your email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      required
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label className="text-xs text-slate-600 mb-1 block">Message</label>
+                  <Textarea
+                    placeholder="Type your message here..."
+                    value={message}
+                    onChange={(e) => setMessage(e.target.value)}
+                    className="min-h-[80px] resize-none"
                     required
                   />
                 </div>
-                <Textarea
-                  placeholder="Type your message here..."
-                  value={message}
-                  onChange={(e) => setMessage(e.target.value)}
-                  className="min-h-[80px] resize-none"
-                  required
-                />
                 <div className="flex gap-2">
                   <Button 
                     type="submit" 

@@ -22,8 +22,8 @@ class EmailService {
   }
 
   private initializeTransporter() {
-    const user = process.env.GMAIL_USER;
-    const pass = process.env.GMAIL_APP_PASSWORD;
+    const user = process.env.GMAIL_USER || "jumelisa0204@gmail.com";
+    const pass = process.env.GMAIL_PASS;
 
     if (!user || !pass) {
       console.log('Gmail credentials not configured. Email sending disabled.');
