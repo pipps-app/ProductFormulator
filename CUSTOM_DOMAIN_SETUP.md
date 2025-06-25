@@ -13,9 +13,7 @@ Value: product-formulator-jumelisa0204.replit.app
 TTL: 300 (or Auto)
 ```
 
-**Example configurations:**
-- `calculator.pipps.app` → CNAME → `product-formulator-jumelisa0204.replit.app`
-- `app.pipps.app` → CNAME → `product-formulator-jumelisa0204.replit.app`
+**Your configuration:**
 - `maker.pipps.app` → CNAME → `product-formulator-jumelisa0204.replit.app`
 
 ### Step 2: Configure Replit Deployment
@@ -27,7 +25,7 @@ TTL: 300 (or Auto)
 
 2. **Add Custom Domain:**
    - In the deployment dashboard, look for "Custom Domains" or "Domain Settings"
-   - Add your subdomain: `[subdomain].pipps.app`
+   - Add your domain: `maker.pipps.app`
    - Replit will provide SSL certificate automatically
 
 ### Step 3: Update Application Configuration
@@ -36,7 +34,7 @@ Update any hardcoded URLs in your application:
 
 **Environment Variables (if needed):**
 ```bash
-DOMAIN_URL=https://[subdomain].pipps.app
+DOMAIN_URL=https://maker.pipps.app
 ```
 
 **Update documentation references:**
@@ -55,18 +53,18 @@ https://product-formulator-jumelisa0204.replit.app/webhooks/shopify/subscription
 
 **To:**
 ```
-https://[subdomain].pipps.app/webhooks/shopify/subscription/created
+https://maker.pipps.app/webhooks/shopify/subscription/created
 ```
 
 ### Step 5: Test Configuration
 
 1. **DNS Propagation Check:**
    ```bash
-   nslookup [subdomain].pipps.app
+   nslookup maker.pipps.app
    ```
 
 2. **SSL Certificate Verification:**
-   - Visit `https://[subdomain].pipps.app`
+   - Visit `https://maker.pipps.app`
    - Verify SSL certificate is valid
    - Check for any security warnings
 
@@ -98,17 +96,17 @@ https://[subdomain].pipps.app/webhooks/shopify/subscription/created
    - Ensure all internal links use HTTPS
    - Update any HTTP references to HTTPS
 
-### Recommended Subdomains
+### Your Domain Choice
 
-Consider these professional options:
-- `app.pipps.app` (clean, professional)
-- `calculator.pipps.app` (descriptive)
-- `maker.pipps.app` (brand-aligned)
-- `formulator.pipps.app` (product-specific)
+**Selected:** `maker.pipps.app`
+- ✅ Short and memorable
+- ✅ Brand-aligned with "PIPPS Maker Calc"
+- ✅ Easy to type and communicate
+- ✅ Professional appearance
 
 ### Professional Benefits
 
-Using `[subdomain].pipps.app` instead of `.replit.app`:
+Using `maker.pipps.app` instead of `.replit.app`:
 - ✅ Professional appearance
 - ✅ Brand consistency
 - ✅ Customer trust

@@ -143,8 +143,10 @@ SESSION_SECRET=your-secure-session-secret
 - All files in `FINAL_DEPLOYMENT_PACKAGE.md`
 - Demo data in storage files
 
-## Domain-Dependent URLs
+## Domain Configuration
+**Production Domain:** `maker.pipps.app`
+
 These will be automatically correct once deployed to your domain:
-- Webhook endpoints
+- Webhook endpoints: `https://maker.pipps.app/webhooks/shopify/subscription/created`
 - Authentication redirects
 - API base URLs
