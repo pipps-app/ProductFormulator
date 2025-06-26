@@ -17,10 +17,18 @@ function hasAccessToTier(userTier: string, requiredTier: string): boolean {
 }
 
 function getReportsPreview(userTier: string, requestedTier: string) {
-  const reportPreviews = {
+  const reportPreviews: Record<string, any> = {
+    starter: {
+      title: "Starter Plan Reports",
+      description: "Basic reporting features:",
+      reports: [
+        { title: "Basic Cost Summary", description: "Simple cost calculations and material usage" },
+        { title: "Formulation Overview", description: "Basic formulation cost breakdown" }
+      ]
+    },
     pro: {
       title: "Pro Plan Reports",
-      description: "All reports in the Free plan plus:",
+      description: "All Starter reports plus:",
       reports: [
         { title: "Cost Analysis by Category", description: "Detailed breakdown of material costs by category with trends" },
         { title: "Vendor Performance Report", description: "Analysis of vendor pricing, reliability, and cost efficiency" },
@@ -28,9 +36,18 @@ function getReportsPreview(userTier: string, requestedTier: string) {
         { title: "Price Trend Analysis", description: "Historical price movements and forecasting for materials" }
       ]
     },
+    professional: {
+      title: "Professional Plan Reports",
+      description: "All Pro reports plus:",
+      reports: [
+        { title: "Advanced Cost Analytics", description: "Enhanced cost modeling and trend analysis" },
+        { title: "Batch Optimization Report", description: "Batch size and efficiency optimization insights" },
+        { title: "Margin Analysis", description: "Detailed profit margin tracking and forecasting" }
+      ]
+    },
     business: {
       title: "Business Plan Reports", 
-      description: "All reports in the Free and Pro plans plus:",
+      description: "All Professional reports plus:",
       reports: [
         { title: "Profit Margin Analysis", description: "Detailed profit analysis by product and formulation" },
         { title: "Advanced Inventory Insights", description: "Stock optimization and reorder recommendations" },
@@ -40,7 +57,7 @@ function getReportsPreview(userTier: string, requestedTier: string) {
     },
     enterprise: {
       title: "Enterprise Plan Reports",
-      description: "All reports in the Free, Pro, and Business plans plus:",
+      description: "All Business reports plus:",
       reports: [
         { title: "Advanced Financial Analytics", description: "Comprehensive financial modeling and forecasting" },
         { title: "Multi-Location Analysis", description: "Cross-location performance and cost comparisons" },
@@ -531,14 +548,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const userTier = user?.subscriptionPlan || 'free';
       const existingCategories = await storage.getMaterialCategories(userId);
       
-      const tierLimits = {
+      const tierLimits: Record<string, number> = {
         free: 2,
-        pro: 20,
-        business: 50,
-        enterprise: Infinity
+        starter: 5,
+        pro: 10,
+        professional: 20,
+        business: 25,
+        enterprise: 50
       };
       
-      const limit = tierLimits[userTier];
+      const limit = tierLimits[userTier] || tierLimits.free;
       console.log(`Category limit check: User ${userId}, Tier: ${userTier}, Current: ${existingCategories.length}, Limit: ${limit}`);
       
       if (existingCategories.length >= limit) {

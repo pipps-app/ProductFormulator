@@ -99,7 +99,9 @@ export default function AdminSubscriptionsPage() {
   const getTierBadge = (tier: string) => {
     const colors: Record<string, string> = {
       free: "bg-gray-100 text-gray-800",
+      starter: "bg-green-100 text-green-800",
       pro: "bg-blue-100 text-blue-800",
+      professional: "bg-indigo-100 text-indigo-800",
       business: "bg-purple-100 text-purple-800",
       enterprise: "bg-yellow-100 text-yellow-800"
     };
@@ -157,7 +159,9 @@ export default function AdminSubscriptionsPage() {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="free">Free</SelectItem>
+                  <SelectItem value="starter">Starter</SelectItem>
                   <SelectItem value="pro">Pro</SelectItem>
+                  <SelectItem value="professional">Professional</SelectItem>
                   <SelectItem value="business">Business</SelectItem>
                   <SelectItem value="enterprise">Enterprise</SelectItem>
                 </SelectContent>

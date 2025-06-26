@@ -219,7 +219,7 @@ export default function Reports() {
 
   const canAccessTier = (tier: string) => {
     const userTier = userInfo?.subscriptionPlan || 'free';
-    const tierHierarchy = ['free', 'pro', 'business', 'enterprise'];
+    const tierHierarchy = ['free', 'starter', 'pro', 'professional', 'business', 'enterprise'];
     const userTierIndex = tierHierarchy.indexOf(userTier);
     const requiredTierIndex = tierHierarchy.indexOf(tier);
     return userTierIndex >= requiredTierIndex;
