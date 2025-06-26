@@ -32,6 +32,7 @@ PIPPS Maker Calc is a comprehensive product formulation and cost management tool
 - **Batch Information**: Track batch size and scaling for different production volumes
 - **File Attachments**: Attach documents and specifications to formulations
 - **Export Options**: Generate reports and documentation
+- **Manual Data Refresh**: Users can refresh formulation costs after material changes using the dedicated refresh button to ensure accurate calculations
 
 ### 3. Reporting & Analytics (Tiered Access)
 - **Free Tier**: Material Database Value and Basic Cost Analysis

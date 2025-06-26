@@ -181,6 +181,21 @@ export default function Formulations() {
         </CardContent>
       </Card>
 
+      {/* Refresh Notice */}
+      <Card className="bg-blue-50 border-blue-200">
+        <CardContent className="pt-4">
+          <div className="flex items-start space-x-3">
+            <RefreshCw className="h-5 w-5 text-blue-600 mt-0.5" />
+            <div>
+              <h4 className="font-medium text-blue-900 mb-1">Data Refresh Notice</h4>
+              <p className="text-sm text-blue-700">
+                After modifying raw material costs or formulation ingredients, click the "Refresh" button above to update calculated costs and see the latest values.
+              </p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
       {/* Formulations List */}
       <Card>
         <CardHeader>
