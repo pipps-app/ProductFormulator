@@ -3040,7 +3040,7 @@
       "sku": "",
       "categoryId": null,
       "vendorId": null,
-      "totalCost": "600",
+      "totalCost": "200",
       "quantity": "32",
       "unit": "kg",
       "unitCost": "18.7500",
@@ -3055,7 +3055,7 @@
       "sku": "",
       "categoryId": null,
       "vendorId": null,
-      "totalCost": "10000000",
+      "totalCost": "1000",
       "quantity": "898989",
       "unit": "kg",
       "unitCost": "0.0001",
@@ -3106,7 +3106,7 @@
       "userId": 1597,
       "createdAt": "2025-06-23T16:52:58.316Z",
       "totalCost": "146.25",
-      "unitCost": "0.1463",
+      "unitCost": "0.1125",
       "profitMargin": "33.75",
       "targetPrice": "600"
     }
@@ -3221,7 +3221,7 @@
       "includeInMarkup": true
     },
     {
-      "id": 1645,
+      "id": 1654,
       "formulationId": 1614,
       "materialId": 1608,
       "quantity": "6",
@@ -3230,7 +3230,7 @@
       "includeInMarkup": true
     },
     {
-      "id": 1646,
+      "id": 1655,
       "formulationId": 1614,
       "materialId": 1610,
       "quantity": "5",
@@ -9532,6 +9532,46 @@
       "changes": "{\"description\":\"Updated raw material \\\"Jamaica Packaging\\\" - total cost is now $10000000 for 898989 kg\",\"before\":{\"id\":1610,\"name\":\"Jamaica Packaging\",\"sku\":\"\",\"categoryId\":null,\"vendorId\":null,\"totalCost\":\"100\",\"quantity\":\"898989\",\"unit\":\"kg\",\"unitCost\":\"0.0001\",\"notes\":\"\",\"isActive\":true,\"userId\":1597,\"createdAt\":\"2025-06-23T16:51:11.543Z\"},\"after\":{\"id\":1610,\"name\":\"Jamaica Packaging\",\"sku\":\"\",\"categoryId\":null,\"vendorId\":null,\"totalCost\":\"10000000\",\"quantity\":\"898989\",\"unit\":\"kg\",\"unitCost\":\"0.0001\",\"notes\":\"\",\"isActive\":true,\"userId\":1597,\"createdAt\":\"2025-06-23T16:51:11.543Z\"}}",
       "createdAt": "2025-06-26T13:00:59.429Z",
       "timestamp": "2025-06-26T13:00:59.429Z"
+    },
+    {
+      "id": 1652,
+      "userId": 1,
+      "action": "update",
+      "entityType": "formulation",
+      "entityId": 1614,
+      "changes": "{\"description\":\"Updated formulation \\\"test formular\\\" - batch size is now 1 unit with 30.00% markup (total cost changed from $146.25 to $167.56)\",\"before\":{\"id\":1614,\"name\":\"test formular\",\"description\":\"ioipoipipi\",\"batchSize\":\"1000\",\"batchUnit\":\"unit\",\"markupPercentage\":\"30.00\",\"isActive\":true,\"userId\":1597,\"createdAt\":\"2025-06-23T16:52:58.316Z\",\"totalCost\":\"146.25\",\"unitCost\":\"0.1463\",\"profitMargin\":\"33.75\",\"targetPrice\":\"600\"},\"after\":{\"id\":1614,\"name\":\"test formular\",\"description\":\"ioipoipipi\",\"batchSize\":\"1\",\"batchUnit\":\"unit\",\"markupPercentage\":\"30.00\",\"isActive\":true,\"userId\":1597,\"createdAt\":\"2025-06-23T16:52:58.316Z\",\"totalCost\":\"167.56\",\"unitCost\":\"167.5560\",\"profitMargin\":\"50.27\",\"targetPrice\":\"600\"},\"ingredients\":[{\"materialId\":1608,\"quantity\":\"6\",\"unit\":\"kg\",\"costContribution\":\"112.5\",\"includeInMarkup\":true},{\"materialId\":1610,\"quantity\":\"5\",\"unit\":\"kg\",\"costContribution\":\"55.056000000000004\",\"includeInMarkup\":true}]}",
+      "createdAt": "2025-06-26T13:31:49.454Z",
+      "timestamp": "2025-06-26T13:31:49.454Z"
+    },
+    {
+      "id": 1653,
+      "userId": 1,
+      "action": "update",
+      "entityType": "material",
+      "entityId": 1610,
+      "changes": "{\"description\":\"Updated raw material \\\"Jamaica Packaging\\\" - total cost is now $1000 for 898989 kg\",\"before\":{\"id\":1610,\"name\":\"Jamaica Packaging\",\"sku\":\"\",\"categoryId\":null,\"vendorId\":null,\"totalCost\":\"10000000\",\"quantity\":\"898989\",\"unit\":\"kg\",\"unitCost\":\"0.0001\",\"notes\":\"\",\"isActive\":true,\"userId\":1597,\"createdAt\":\"2025-06-23T16:51:11.543Z\"},\"after\":{\"id\":1610,\"name\":\"Jamaica Packaging\",\"sku\":\"\",\"categoryId\":null,\"vendorId\":null,\"totalCost\":\"1000\",\"quantity\":\"898989\",\"unit\":\"kg\",\"unitCost\":\"0.0001\",\"notes\":\"\",\"isActive\":true,\"userId\":1597,\"createdAt\":\"2025-06-23T16:51:11.543Z\"}}",
+      "createdAt": "2025-06-26T13:32:21.962Z",
+      "timestamp": "2025-06-26T13:32:21.962Z"
+    },
+    {
+      "id": 1656,
+      "userId": 1,
+      "action": "update",
+      "entityType": "formulation",
+      "entityId": 1614,
+      "changes": "{\"description\":\"Updated formulation \\\"test formular\\\" - batch size is now 1 unit with 30.00% markup (total cost changed from $146.25 to $167.56)\",\"before\":{\"id\":1614,\"name\":\"test formular\",\"description\":\"ioipoipipi\",\"batchSize\":\"1\",\"batchUnit\":\"unit\",\"markupPercentage\":\"30.00\",\"isActive\":true,\"userId\":1597,\"createdAt\":\"2025-06-23T16:52:58.316Z\",\"totalCost\":\"146.25\",\"unitCost\":\"112.5005\",\"profitMargin\":\"33.75\",\"targetPrice\":\"600\"},\"after\":{\"id\":1614,\"name\":\"test formular\",\"description\":\"ioipoipipi\",\"batchSize\":\"1\",\"batchUnit\":\"unit\",\"markupPercentage\":\"30.00\",\"isActive\":true,\"userId\":1597,\"createdAt\":\"2025-06-23T16:52:58.316Z\",\"totalCost\":\"167.56\",\"unitCost\":\"167.5560\",\"profitMargin\":\"50.27\",\"targetPrice\":\"600\"},\"ingredients\":[{\"materialId\":1608,\"quantity\":\"6\",\"unit\":\"kg\",\"costContribution\":\"112.5\",\"includeInMarkup\":true},{\"materialId\":1610,\"quantity\":\"5\",\"unit\":\"kg\",\"costContribution\":\"55.056000000000004\",\"includeInMarkup\":true}]}",
+      "createdAt": "2025-06-26T13:33:10.247Z",
+      "timestamp": "2025-06-26T13:33:10.247Z"
+    },
+    {
+      "id": 1657,
+      "userId": 1,
+      "action": "update",
+      "entityType": "material",
+      "entityId": 1608,
+      "changes": "{\"description\":\"Updated raw material \\\"Gallon bottles x 4 units\\\" - total cost is now $200 for 32 kg\",\"before\":{\"id\":1608,\"name\":\"Gallon bottles x 4 units\",\"sku\":\"\",\"categoryId\":null,\"vendorId\":null,\"totalCost\":\"600\",\"quantity\":\"32\",\"unit\":\"kg\",\"unitCost\":\"18.7500\",\"notes\":\"\",\"isActive\":true,\"userId\":1597,\"createdAt\":\"2025-06-23T16:50:54.238Z\"},\"after\":{\"id\":1608,\"name\":\"Gallon bottles x 4 units\",\"sku\":\"\",\"categoryId\":null,\"vendorId\":null,\"totalCost\":\"200\",\"quantity\":\"32\",\"unit\":\"kg\",\"unitCost\":\"18.7500\",\"notes\":\"\",\"isActive\":true,\"userId\":1597,\"createdAt\":\"2025-06-23T16:50:54.238Z\"}}",
+      "createdAt": "2025-06-26T13:34:44.549Z",
+      "timestamp": "2025-06-26T13:34:44.549Z"
     }
   ],
   "passwordResetTokens": [
@@ -9552,6 +9592,6 @@
       "createdAt": "2025-06-23T16:33:29.469Z"
     }
   ],
-  "nextId": 1650,
+  "nextId": 1658,
   "payments": []
 }
