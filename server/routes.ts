@@ -835,7 +835,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
           for (const ingredient of ingredients) {
             const material = await storage.getRawMaterial(ingredient.materialId);
             if (material) {
-              const ingredientCost = parseFloat(ingredient.quantity) * parseFloat(material.unitCost || '0');
+              const quantity = parseFloat(ingredient.quantity);
+              const unitCost = parseFloat(material.unitCost || '0');
+              const ingredientCost = quantity * unitCost;
+              
+              console.log(`Refresh: Ingredient ${ingredient.materialId}, Qty: ${quantity}, Unit Cost: ${unitCost}, Total: ${ingredientCost}, Include Markup: ${ingredient.includeInMarkup}`);
               
               // Add all ingredient costs to total
               totalMaterialCost += ingredientCost;
@@ -860,6 +864,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
           const markupPercentage = parseFloat(formulation.markupPercentage || '30');
           const profitMargin = (markupEligibleCost * markupPercentage) / 100;
           const finalCost = totalMaterialCost + profitMargin;
+          
+          console.log(`Refresh: Formulation ${formulation.id} - Total Material Cost: ${totalMaterialCost}, Markup Eligible: ${markupEligibleCost}, Markup %: ${markupPercentage}, Profit Margin: ${profitMargin}, Final Cost: ${finalCost}`);
           
           await storage.updateFormulationCosts(formulation.id, {
             totalCost: finalCost.toFixed(2),

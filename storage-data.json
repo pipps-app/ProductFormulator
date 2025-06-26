@@ -3054,7 +3054,7 @@
       "sku": "",
       "categoryId": null,
       "vendorId": null,
-      "totalCost": "100000",
+      "totalCost": "100",
       "quantity": "898989",
       "unit": "kg",
       "notes": "",
@@ -3219,7 +3219,7 @@
       "includeInMarkup": true
     },
     {
-      "id": 1618,
+      "id": 1645,
       "formulationId": 1614,
       "materialId": 1608,
       "quantity": "6",
@@ -3228,7 +3228,7 @@
       "includeInMarkup": true
     },
     {
-      "id": 1619,
+      "id": 1646,
       "formulationId": 1614,
       "materialId": 1610,
       "quantity": "5",
@@ -9500,6 +9500,26 @@
       "changes": "{\"description\":\"Updated raw material \\\"Jamaica Packaging\\\" - total cost is now $100000 for 898989 kg\",\"before\":{\"id\":1610,\"name\":\"Jamaica Packaging\",\"sku\":\"\",\"categoryId\":null,\"vendorId\":null,\"totalCost\":\"100\",\"quantity\":\"898989\",\"unit\":\"kg\",\"notes\":\"\",\"isActive\":true,\"userId\":1597,\"createdAt\":\"2025-06-23T16:51:11.543Z\"},\"after\":{\"id\":1610,\"name\":\"Jamaica Packaging\",\"sku\":\"\",\"categoryId\":null,\"vendorId\":null,\"totalCost\":\"100000\",\"quantity\":\"898989\",\"unit\":\"kg\",\"notes\":\"\",\"isActive\":true,\"userId\":1597,\"createdAt\":\"2025-06-23T16:51:11.543Z\"}}",
       "createdAt": "2025-06-26T12:13:11.744Z",
       "timestamp": "2025-06-26T12:13:11.744Z"
+    },
+    {
+      "id": 1647,
+      "userId": 1,
+      "action": "update",
+      "entityType": "formulation",
+      "entityId": 1614,
+      "changes": "{\"description\":\"Updated formulation \\\"test formular\\\" - batch size is now 1.000 unit with 30.00% markup (total cost changed from $0.00 to $167.56)\",\"before\":{\"id\":1614,\"name\":\"test formular\",\"description\":\"ioipoipipi\",\"batchSize\":\"1.000\",\"batchUnit\":\"unit\",\"markupPercentage\":\"30.00\",\"isActive\":true,\"userId\":1597,\"createdAt\":\"2025-06-23T16:52:58.316Z\",\"totalCost\":\"0.00\",\"unitCost\":\"0.0000\",\"profitMargin\":\"0.00\",\"targetPrice\":\"600\"},\"after\":{\"id\":1614,\"name\":\"test formular\",\"description\":\"ioipoipipi\",\"batchSize\":\"1.000\",\"batchUnit\":\"unit\",\"markupPercentage\":\"30.00\",\"isActive\":true,\"userId\":1597,\"createdAt\":\"2025-06-23T16:52:58.316Z\",\"totalCost\":\"167.56\",\"unitCost\":\"167.5560\",\"profitMargin\":\"50.27\",\"targetPrice\":\"600\"},\"ingredients\":[{\"materialId\":1608,\"quantity\":\"6\",\"unit\":\"kg\",\"costContribution\":\"112.5\",\"includeInMarkup\":true},{\"materialId\":1610,\"quantity\":\"5\",\"unit\":\"kg\",\"costContribution\":\"55.056000000000004\",\"includeInMarkup\":true}]}",
+      "createdAt": "2025-06-26T12:46:22.124Z",
+      "timestamp": "2025-06-26T12:46:22.124Z"
+    },
+    {
+      "id": 1648,
+      "userId": 1,
+      "action": "update",
+      "entityType": "material",
+      "entityId": 1610,
+      "changes": "{\"description\":\"Updated raw material \\\"Jamaica Packaging\\\" - total cost is now $100 for 898989 kg\",\"before\":{\"id\":1610,\"name\":\"Jamaica Packaging\",\"sku\":\"\",\"categoryId\":null,\"vendorId\":null,\"totalCost\":\"100000\",\"quantity\":\"898989\",\"unit\":\"kg\",\"notes\":\"\",\"isActive\":true,\"userId\":1597,\"createdAt\":\"2025-06-23T16:51:11.543Z\"},\"after\":{\"id\":1610,\"name\":\"Jamaica Packaging\",\"sku\":\"\",\"categoryId\":null,\"vendorId\":null,\"totalCost\":\"100\",\"quantity\":\"898989\",\"unit\":\"kg\",\"notes\":\"\",\"isActive\":true,\"userId\":1597,\"createdAt\":\"2025-06-23T16:51:11.543Z\"}}",
+      "createdAt": "2025-06-26T12:46:39.213Z",
+      "timestamp": "2025-06-26T12:46:39.213Z"
     }
   ],
   "passwordResetTokens": [
@@ -9520,6 +9540,6 @@
       "createdAt": "2025-06-23T16:33:29.469Z"
     }
   ],
-  "nextId": 1645,
+  "nextId": 1649,
   "payments": []
 }
