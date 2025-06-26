@@ -484,8 +484,6 @@ export class ReportsService {
     const categories = await storage.getMaterialCategories(userId);
     const vendors = await storage.getVendors(userId);
     
-    const { calculateUnitCost } = await import('./utils/calculations.js');
-    
     return materials.map(material => {
       const category = categories.find(c => c.id === material.categoryId);
       const vendor = vendors.find(v => v.id === material.vendorId);
