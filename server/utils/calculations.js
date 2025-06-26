@@ -77,7 +77,7 @@ function enhanceMaterialsWithCalculatedCosts(materials) {
   return materials.map(enhanceMaterialWithCalculatedCosts);
 }
 
-module.exports = {
+export {
   calculateUnitCost,
   calculateIngredientCost,
   calculateFormulationUnitCost,

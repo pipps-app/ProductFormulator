@@ -364,7 +364,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
               if (ingredient.materialId) {
                 const material = await storage.getRawMaterial(ingredient.materialId);
                 if (material) {
-                  const { calculateIngredientCost, calculateUnitCost } = require('./utils/calculations');
+                  const { calculateIngredientCost, calculateUnitCost } = await import('./utils/calculations.js');
                   const quantity = parseFloat(ingredient.quantity) || 0;
                   const unitCost = calculateUnitCost(material);
                   const costContribution = calculateIngredientCost(material, quantity);
@@ -394,7 +394,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
             }
             
             // Calculate new formulation costs with robust validation
-            const { calculateFormulationUnitCost, calculateProfitMargin } = require('./utils/calculations');
+            const { calculateFormulationUnitCost, calculateProfitMargin } = await import('./utils/calculations.js');
             const batchSize = Math.max(parseFloat(formulation.batchSize) || 1, 0.001);
             const unitCost = calculateFormulationUnitCost(totalMaterialCost, batchSize);
             const markupPercentage = parseFloat(formulation.markupPercentage) || 30;
@@ -658,7 +658,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/raw-materials", requireAuth, async (req: any, res) => {
     const userId = req.userId;
     const materials = await storage.getRawMaterials(userId);
-    const { enhanceMaterialsWithCalculatedCosts } = require('./utils/calculations');
+    const { enhanceMaterialsWithCalculatedCosts } = await import('./utils/calculations.js');
     
     // Add cache control headers to prevent stale data
     res.set('Cache-Control', 'no-cache, no-store, must-revalidate');
@@ -675,7 +675,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     if (!material) {
       return res.status(404).json({ error: "Material not found" });
     }
-    const { enhanceMaterialWithCalculatedCosts } = require('./utils/calculations');
+    const { enhanceMaterialWithCalculatedCosts } = await import('./utils/calculations.js');
     res.json(enhanceMaterialWithCalculatedCosts(material));
   });
 
@@ -890,7 +890,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           for (const ingredient of ingredients) {
             const material = await storage.getRawMaterial(ingredient.materialId);
             if (material) {
-              const { calculateIngredientCost, calculateUnitCost } = require('./utils/calculations');
+              const { calculateIngredientCost, calculateUnitCost } = await import('./utils/calculations.js');
               const quantity = parseFloat(ingredient.quantity);
               const unitCost = calculateUnitCost(material);
               const ingredientCost = calculateIngredientCost(material, quantity);
@@ -915,7 +915,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           }
           
           // Calculate profit margin and final costs
-          const { calculateFormulationUnitCost, calculateProfitMargin } = require('./utils/calculations');
+          const { calculateFormulationUnitCost, calculateProfitMargin } = await import('./utils/calculations.js');
           const batchSize = parseFloat(formulation.batchSize || '1');
           const unitCost = calculateFormulationUnitCost(totalMaterialCost, batchSize);
           const markupPercentage = parseFloat(formulation.markupPercentage || '30');
