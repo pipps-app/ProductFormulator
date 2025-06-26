@@ -1,9 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
 import { type Formulation } from "@shared/schema";
 
-export function useFormulations() {
+export function useFormulations(forceRefresh?: boolean) {
+  const timestamp = forceRefresh ? Date.now() : undefined;
   return useQuery<Formulation[]>({
-    queryKey: ["/api/formulations"],
+    queryKey: ["/api/formulations", timestamp].filter(Boolean),
     staleTime: 0, // Always consider data stale
     gcTime: 0, // Don't cache responses
   });

@@ -3055,8 +3055,8 @@
       "sku": "",
       "categoryId": null,
       "vendorId": null,
-      "totalCost": "1000",
-      "quantity": "898989",
+      "totalCost": "199999",
+      "quantity": "100",
       "unit": "kg",
       "unitCost": "0.0001",
       "notes": "",
@@ -3221,7 +3221,7 @@
       "includeInMarkup": true
     },
     {
-      "id": 1670,
+      "id": 1681,
       "formulationId": 1614,
       "materialId": 1608,
       "quantity": "6",
@@ -3230,7 +3230,7 @@
       "includeInMarkup": true
     },
     {
-      "id": 1671,
+      "id": 1682,
       "formulationId": 1614,
       "materialId": 1610,
       "quantity": "5",
@@ -9642,6 +9642,56 @@
       "changes": "{\"description\":\"Updated formulation \\\"test formular\\\" - batch size is now 1 unit with 30.00% markup\",\"before\":{\"id\":1614,\"name\":\"test formular\",\"description\":\"ioipoipipi\",\"batchSize\":\"1\",\"batchUnit\":\"unit\",\"markupPercentage\":\"30.00\",\"isActive\":true,\"userId\":1597,\"createdAt\":\"2025-06-23T16:52:58.316Z\",\"totalCost\":\"167.56\",\"unitCost\":\"167.5560\",\"profitMargin\":\"50.27\",\"targetPrice\":\"600\"},\"after\":{\"id\":1614,\"name\":\"test formular\",\"description\":\"ioipoipipi\",\"batchSize\":\"1\",\"batchUnit\":\"unit\",\"markupPercentage\":\"30.00\",\"isActive\":true,\"userId\":1597,\"createdAt\":\"2025-06-23T16:52:58.316Z\",\"totalCost\":\"167.56\",\"unitCost\":\"167.5560\",\"profitMargin\":\"50.27\",\"targetPrice\":\"600\"},\"ingredients\":[{\"materialId\":1608,\"quantity\":\"6\",\"unit\":\"kg\",\"costContribution\":\"112.5\",\"includeInMarkup\":true},{\"materialId\":1610,\"quantity\":\"5\",\"unit\":\"kg\",\"costContribution\":\"55.056000000000004\",\"includeInMarkup\":true}]}",
       "createdAt": "2025-06-26T14:00:49.390Z",
       "timestamp": "2025-06-26T14:00:49.390Z"
+    },
+    {
+      "id": 1673,
+      "userId": 1,
+      "action": "update",
+      "entityType": "material",
+      "entityId": 1610,
+      "changes": "{\"description\":\"Updated raw material \\\"Jamaica Packaging\\\" - total cost is now $1000000 for 898989 kg\",\"before\":{\"id\":1610,\"name\":\"Jamaica Packaging\",\"sku\":\"\",\"categoryId\":null,\"vendorId\":null,\"totalCost\":\"1000\",\"quantity\":\"898989\",\"unit\":\"kg\",\"unitCost\":\"0.0001\",\"notes\":\"\",\"isActive\":true,\"userId\":1597,\"createdAt\":\"2025-06-23T16:51:11.543Z\"},\"after\":{\"id\":1610,\"name\":\"Jamaica Packaging\",\"sku\":\"\",\"categoryId\":null,\"vendorId\":null,\"totalCost\":\"1000000\",\"quantity\":\"898989\",\"unit\":\"kg\",\"unitCost\":\"0.0001\",\"notes\":\"\",\"isActive\":true,\"userId\":1597,\"createdAt\":\"2025-06-23T16:51:11.543Z\"}}",
+      "createdAt": "2025-06-26T14:04:03.998Z",
+      "timestamp": "2025-06-26T14:04:03.998Z"
+    },
+    {
+      "id": 1676,
+      "userId": 1,
+      "action": "update",
+      "entityType": "formulation",
+      "entityId": 1614,
+      "changes": "{\"description\":\"Updated formulation \\\"test formular\\\" - batch size is now 1 unit with 30.00% markup (total cost changed from $146.25 to $167.56)\",\"before\":{\"id\":1614,\"name\":\"test formular\",\"description\":\"ioipoipipi\",\"batchSize\":\"1\",\"batchUnit\":\"unit\",\"markupPercentage\":\"30.00\",\"isActive\":true,\"userId\":1597,\"createdAt\":\"2025-06-23T16:52:58.316Z\",\"totalCost\":\"146.25\",\"unitCost\":\"112.5005\",\"profitMargin\":\"33.75\",\"targetPrice\":\"600\"},\"after\":{\"id\":1614,\"name\":\"test formular\",\"description\":\"ioipoipipi\",\"batchSize\":\"1\",\"batchUnit\":\"unit\",\"markupPercentage\":\"30.00\",\"isActive\":true,\"userId\":1597,\"createdAt\":\"2025-06-23T16:52:58.316Z\",\"totalCost\":\"167.56\",\"unitCost\":\"167.5560\",\"profitMargin\":\"50.27\",\"targetPrice\":\"600\"},\"ingredients\":[{\"materialId\":1608,\"quantity\":\"6\",\"unit\":\"kg\",\"costContribution\":\"112.5\",\"includeInMarkup\":true},{\"materialId\":1610,\"quantity\":\"5\",\"unit\":\"kg\",\"costContribution\":\"55.056000000000004\",\"includeInMarkup\":true}]}",
+      "createdAt": "2025-06-26T14:10:25.712Z",
+      "timestamp": "2025-06-26T14:10:25.712Z"
+    },
+    {
+      "id": 1677,
+      "userId": 1,
+      "action": "update",
+      "entityType": "material",
+      "entityId": 1610,
+      "changes": "{\"description\":\"Updated raw material \\\"Jamaica Packaging\\\" - total cost is now $199999 for 100 kg\",\"before\":{\"id\":1610,\"name\":\"Jamaica Packaging\",\"sku\":\"\",\"categoryId\":null,\"vendorId\":null,\"totalCost\":\"1000000\",\"quantity\":\"898989\",\"unit\":\"kg\",\"unitCost\":\"0.0001\",\"notes\":\"\",\"isActive\":true,\"userId\":1597,\"createdAt\":\"2025-06-23T16:51:11.543Z\"},\"after\":{\"id\":1610,\"name\":\"Jamaica Packaging\",\"sku\":\"\",\"categoryId\":null,\"vendorId\":null,\"totalCost\":\"199999\",\"quantity\":\"100\",\"unit\":\"kg\",\"unitCost\":\"0.0001\",\"notes\":\"\",\"isActive\":true,\"userId\":1597,\"createdAt\":\"2025-06-23T16:51:11.543Z\"}}",
+      "createdAt": "2025-06-26T14:11:03.441Z",
+      "timestamp": "2025-06-26T14:11:03.441Z"
+    },
+    {
+      "id": 1680,
+      "userId": 1,
+      "action": "update",
+      "entityType": "formulation",
+      "entityId": 1614,
+      "changes": "{\"description\":\"Updated formulation \\\"test formular\\\" - batch size is now 1 unit with 30.00% markup (total cost changed from $146.25 to $167.56)\",\"before\":{\"id\":1614,\"name\":\"test formular\",\"description\":\"ioipoipipi\",\"batchSize\":\"1\",\"batchUnit\":\"unit\",\"markupPercentage\":\"30.00\",\"isActive\":true,\"userId\":1597,\"createdAt\":\"2025-06-23T16:52:58.316Z\",\"totalCost\":\"146.25\",\"unitCost\":\"112.5005\",\"profitMargin\":\"33.75\",\"targetPrice\":\"600\"},\"after\":{\"id\":1614,\"name\":\"test formular\",\"description\":\"ioipoipipi\",\"batchSize\":\"1\",\"batchUnit\":\"unit\",\"markupPercentage\":\"30.00\",\"isActive\":true,\"userId\":1597,\"createdAt\":\"2025-06-23T16:52:58.316Z\",\"totalCost\":\"167.56\",\"unitCost\":\"167.5560\",\"profitMargin\":\"50.27\",\"targetPrice\":\"600\"},\"ingredients\":[{\"materialId\":1608,\"quantity\":\"6\",\"unit\":\"kg\",\"costContribution\":\"112.5\",\"includeInMarkup\":true},{\"materialId\":1610,\"quantity\":\"5\",\"unit\":\"kg\",\"costContribution\":\"55.056000000000004\",\"includeInMarkup\":true}]}",
+      "createdAt": "2025-06-26T14:11:16.360Z",
+      "timestamp": "2025-06-26T14:11:16.360Z"
+    },
+    {
+      "id": 1683,
+      "userId": 1,
+      "action": "update",
+      "entityType": "formulation",
+      "entityId": 1614,
+      "changes": "{\"description\":\"Updated formulation \\\"test formular\\\" - batch size is now 1 unit with 30.00% markup\",\"before\":{\"id\":1614,\"name\":\"test formular\",\"description\":\"ioipoipipi\",\"batchSize\":\"1\",\"batchUnit\":\"unit\",\"markupPercentage\":\"30.00\",\"isActive\":true,\"userId\":1597,\"createdAt\":\"2025-06-23T16:52:58.316Z\",\"totalCost\":\"167.56\",\"unitCost\":\"167.5560\",\"profitMargin\":\"50.27\",\"targetPrice\":\"600\"},\"after\":{\"id\":1614,\"name\":\"test formular\",\"description\":\"ioipoipipi\",\"batchSize\":\"1\",\"batchUnit\":\"unit\",\"markupPercentage\":\"30.00\",\"isActive\":true,\"userId\":1597,\"createdAt\":\"2025-06-23T16:52:58.316Z\",\"totalCost\":\"167.56\",\"unitCost\":\"167.5560\",\"profitMargin\":\"50.27\",\"targetPrice\":\"600\"},\"ingredients\":[{\"materialId\":1608,\"quantity\":\"6\",\"unit\":\"kg\",\"costContribution\":\"112.5\",\"includeInMarkup\":true},{\"materialId\":1610,\"quantity\":\"5\",\"unit\":\"kg\",\"costContribution\":\"55.056000000000004\",\"includeInMarkup\":true}]}",
+      "createdAt": "2025-06-26T14:12:22.697Z",
+      "timestamp": "2025-06-26T14:12:22.697Z"
     }
   ],
   "passwordResetTokens": [
@@ -9662,6 +9712,6 @@
       "createdAt": "2025-06-23T16:33:29.469Z"
     }
   ],
-  "nextId": 1673,
+  "nextId": 1684,
   "payments": []
 }

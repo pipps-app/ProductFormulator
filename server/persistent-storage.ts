@@ -337,9 +337,21 @@ export class PersistentStorage implements IStorage {
 
   async updateFormulationCosts(id: number, costs: { totalCost: string; unitCost: string; profitMargin: string; }): Promise<boolean> {
     const formulation = this.data.formulations.find(f => f.id === id);
-    if (!formulation) return false;
+    if (!formulation) {
+      console.log(`UpdateFormulationCosts: Formulation ${id} not found`);
+      return false;
+    }
+    
+    console.log(`UpdateFormulationCosts: Before update - ID: ${id}, unitCost: ${formulation.unitCost}`);
     Object.assign(formulation, costs);
+    console.log(`UpdateFormulationCosts: After update - ID: ${id}, unitCost: ${formulation.unitCost}`);
+    
     await this.saveData();
+    
+    // Verify the update was saved
+    const verifyFormulation = this.data.formulations.find(f => f.id === id);
+    console.log(`UpdateFormulationCosts: After save verification - ID: ${id}, unitCost: ${verifyFormulation?.unitCost}`);
+    
     return true;
   }
 
