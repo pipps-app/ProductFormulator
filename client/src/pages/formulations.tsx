@@ -95,18 +95,18 @@ export default function Formulations() {
       // Small delay to ensure database writes are complete
       await new Promise(resolve => setTimeout(resolve, 100));
       
-      // Force invalidate all formulation-related queries
-      queryClient.invalidateQueries({ queryKey: ["/api/formulations"] });
-      queryClient.invalidateQueries({ queryKey: ["/api/raw-materials"] });
-      queryClient.invalidateQueries({ queryKey: ["/api/dashboard/stats"] });
-      queryClient.invalidateQueries({ 
+      // Remove all cached data to force fresh requests
+      queryClient.removeQueries({ queryKey: ["/api/formulations"] });
+      queryClient.removeQueries({ queryKey: ["/api/raw-materials"] });
+      queryClient.removeQueries({ queryKey: ["/api/dashboard/stats"] });
+      queryClient.removeQueries({ 
         predicate: (query) => {
           const key = query.queryKey[0] as string;
           return key?.includes('/api/formulations') || key?.includes('/ingredients');
         }
       });
       
-      // Force refetch with fresh data
+      // Force complete refetch with fresh data
       await refetch();
       
       toast({ title: "Costs refreshed and updated" });

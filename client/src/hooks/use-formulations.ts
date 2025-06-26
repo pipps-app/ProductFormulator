@@ -4,6 +4,8 @@ import { type Formulation } from "@shared/schema";
 export function useFormulations() {
   return useQuery<Formulation[]>({
     queryKey: ["/api/formulations"],
+    staleTime: 0, // Always consider data stale
+    gcTime: 0, // Don't cache responses
   });
 }
 

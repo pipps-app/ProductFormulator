@@ -812,6 +812,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/formulations", requireAuth, async (req: any, res) => {
     const userId = req.userId;
     const formulations = await storage.getFormulations(userId);
+    
+    // Add cache control headers to prevent stale data
+    res.set('Cache-Control', 'no-cache, no-store, must-revalidate');
+    res.set('Pragma', 'no-cache');
+    res.set('Expires', '0');
+    res.set('ETag', Date.now().toString());
+    
     res.json(formulations);
   });
 
@@ -922,10 +929,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
       }
       
+      // Add cache control headers to prevent stale data
+      res.set('Cache-Control', 'no-cache, no-store, must-revalidate');
+      res.set('Pragma', 'no-cache');
+      res.set('Expires', '0');
+      
       res.json({ 
         success: true, 
         message: `Refreshed costs for ${updatedCount} formulations`,
-        updatedCount 
+        updatedCount,
+        timestamp: Date.now()
       });
       
     } catch (error) {
