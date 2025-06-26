@@ -829,6 +829,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           if (ingredients.length === 0) continue;
           
           let totalMaterialCost = 0;
+          let markupEligibleCost = 0;
           let updatedIngredients = [];
           
           for (const ingredient of ingredients) {
@@ -836,9 +837,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
             if (material) {
               const ingredientCost = parseFloat(ingredient.quantity) * parseFloat(material.unitCost || '0');
               
+              // Add all ingredient costs to total
+              totalMaterialCost += ingredientCost;
+              
               // Only include in markup calculation if includeInMarkup is true
               if (ingredient.includeInMarkup) {
-                totalMaterialCost += ingredientCost;
+                markupEligibleCost += ingredientCost;
               }
               
               updatedIngredients.push({
@@ -853,8 +857,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
           // Calculate profit margin and final costs
           const batchSize = parseFloat(formulation.batchSize || '1');
           const unitCost = totalMaterialCost / batchSize;
-          const markupPercentage = parseFloat(formulation.profitMargin || '0');
-          const profitMargin = (totalMaterialCost * markupPercentage) / 100;
+          const markupPercentage = parseFloat(formulation.markupPercentage || '30');
+          const profitMargin = (markupEligibleCost * markupPercentage) / 100;
           const finalCost = totalMaterialCost + profitMargin;
           
           await storage.updateFormulationCosts(formulation.id, {
