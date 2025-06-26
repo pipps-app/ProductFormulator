@@ -3040,7 +3040,7 @@
       "sku": "",
       "categoryId": null,
       "vendorId": null,
-      "totalCost": "200",
+      "totalCost": "100",
       "quantity": "32",
       "unit": "kg",
       "unitCost": "18.7500",
@@ -3106,7 +3106,7 @@
       "userId": 1597,
       "createdAt": "2025-06-23T16:52:58.316Z",
       "totalCost": "146.25",
-      "unitCost": "0.1125",
+      "unitCost": "112.5005",
       "profitMargin": "33.75",
       "targetPrice": "600"
     }
@@ -3221,7 +3221,7 @@
       "includeInMarkup": true
     },
     {
-      "id": 1654,
+      "id": 1662,
       "formulationId": 1614,
       "materialId": 1608,
       "quantity": "6",
@@ -3230,7 +3230,7 @@
       "includeInMarkup": true
     },
     {
-      "id": 1655,
+      "id": 1663,
       "formulationId": 1614,
       "materialId": 1610,
       "quantity": "5",
@@ -9572,6 +9572,46 @@
       "changes": "{\"description\":\"Updated raw material \\\"Gallon bottles x 4 units\\\" - total cost is now $200 for 32 kg\",\"before\":{\"id\":1608,\"name\":\"Gallon bottles x 4 units\",\"sku\":\"\",\"categoryId\":null,\"vendorId\":null,\"totalCost\":\"600\",\"quantity\":\"32\",\"unit\":\"kg\",\"unitCost\":\"18.7500\",\"notes\":\"\",\"isActive\":true,\"userId\":1597,\"createdAt\":\"2025-06-23T16:50:54.238Z\"},\"after\":{\"id\":1608,\"name\":\"Gallon bottles x 4 units\",\"sku\":\"\",\"categoryId\":null,\"vendorId\":null,\"totalCost\":\"200\",\"quantity\":\"32\",\"unit\":\"kg\",\"unitCost\":\"18.7500\",\"notes\":\"\",\"isActive\":true,\"userId\":1597,\"createdAt\":\"2025-06-23T16:50:54.238Z\"}}",
       "createdAt": "2025-06-26T13:34:44.549Z",
       "timestamp": "2025-06-26T13:34:44.549Z"
+    },
+    {
+      "id": 1658,
+      "userId": 1,
+      "action": "update",
+      "entityType": "material",
+      "entityId": 1608,
+      "changes": "{\"description\":\"Updated raw material \\\"Gallon bottles x 4 units\\\" - total cost is now $5000 for 32 kg\",\"before\":{\"id\":1608,\"name\":\"Gallon bottles x 4 units\",\"sku\":\"\",\"categoryId\":null,\"vendorId\":null,\"totalCost\":\"200\",\"quantity\":\"32\",\"unit\":\"kg\",\"unitCost\":\"18.7500\",\"notes\":\"\",\"isActive\":true,\"userId\":1597,\"createdAt\":\"2025-06-23T16:50:54.238Z\"},\"after\":{\"id\":1608,\"name\":\"Gallon bottles x 4 units\",\"sku\":\"\",\"categoryId\":null,\"vendorId\":null,\"totalCost\":\"5000\",\"quantity\":\"32\",\"unit\":\"kg\",\"unitCost\":\"18.7500\",\"notes\":\"\",\"isActive\":true,\"userId\":1597,\"createdAt\":\"2025-06-23T16:50:54.238Z\"}}",
+      "createdAt": "2025-06-26T13:40:08.288Z",
+      "timestamp": "2025-06-26T13:40:08.288Z"
+    },
+    {
+      "id": 1661,
+      "userId": 1,
+      "action": "update",
+      "entityType": "formulation",
+      "entityId": 1614,
+      "changes": "{\"description\":\"Updated formulation \\\"test formular\\\" - batch size is now 1000 unit with 30.00% markup (total cost changed from $146.25 to $167.56)\",\"before\":{\"id\":1614,\"name\":\"test formular\",\"description\":\"ioipoipipi\",\"batchSize\":\"1000\",\"batchUnit\":\"unit\",\"markupPercentage\":\"30.00\",\"isActive\":true,\"userId\":1597,\"createdAt\":\"2025-06-23T16:52:58.316Z\",\"totalCost\":\"146.25\",\"unitCost\":\"0.1125\",\"profitMargin\":\"33.75\",\"targetPrice\":\"600\"},\"after\":{\"id\":1614,\"name\":\"test formular\",\"description\":\"ioipoipipi\",\"batchSize\":\"1000\",\"batchUnit\":\"unit\",\"markupPercentage\":\"30.00\",\"isActive\":true,\"userId\":1597,\"createdAt\":\"2025-06-23T16:52:58.316Z\",\"totalCost\":\"167.56\",\"unitCost\":\"0.1676\",\"profitMargin\":\"50.27\",\"targetPrice\":\"600\"},\"ingredients\":[{\"materialId\":1608,\"quantity\":\"6\",\"unit\":\"kg\",\"costContribution\":\"112.5\",\"includeInMarkup\":true},{\"materialId\":1610,\"quantity\":\"5\",\"unit\":\"kg\",\"costContribution\":\"55.056000000000004\",\"includeInMarkup\":true}]}",
+      "createdAt": "2025-06-26T13:40:27.831Z",
+      "timestamp": "2025-06-26T13:40:27.831Z"
+    },
+    {
+      "id": 1664,
+      "userId": 1,
+      "action": "update",
+      "entityType": "formulation",
+      "entityId": 1614,
+      "changes": "{\"description\":\"Updated formulation \\\"test formular\\\" - batch size is now 1 unit with 30.00% markup\",\"before\":{\"id\":1614,\"name\":\"test formular\",\"description\":\"ioipoipipi\",\"batchSize\":\"1000\",\"batchUnit\":\"unit\",\"markupPercentage\":\"30.00\",\"isActive\":true,\"userId\":1597,\"createdAt\":\"2025-06-23T16:52:58.316Z\",\"totalCost\":\"167.56\",\"unitCost\":\"0.1676\",\"profitMargin\":\"50.27\",\"targetPrice\":\"600\"},\"after\":{\"id\":1614,\"name\":\"test formular\",\"description\":\"ioipoipipi\",\"batchSize\":\"1\",\"batchUnit\":\"unit\",\"markupPercentage\":\"30.00\",\"isActive\":true,\"userId\":1597,\"createdAt\":\"2025-06-23T16:52:58.316Z\",\"totalCost\":\"167.56\",\"unitCost\":\"167.5560\",\"profitMargin\":\"50.27\",\"targetPrice\":\"600\"},\"ingredients\":[{\"materialId\":1608,\"quantity\":\"6\",\"unit\":\"kg\",\"costContribution\":\"112.5\",\"includeInMarkup\":true},{\"materialId\":1610,\"quantity\":\"5\",\"unit\":\"kg\",\"costContribution\":\"55.056000000000004\",\"includeInMarkup\":true}]}",
+      "createdAt": "2025-06-26T13:40:40.265Z",
+      "timestamp": "2025-06-26T13:40:40.265Z"
+    },
+    {
+      "id": 1665,
+      "userId": 1,
+      "action": "update",
+      "entityType": "material",
+      "entityId": 1608,
+      "changes": "{\"description\":\"Updated raw material \\\"Gallon bottles x 4 units\\\" - total cost is now $100 for 32 kg\",\"before\":{\"id\":1608,\"name\":\"Gallon bottles x 4 units\",\"sku\":\"\",\"categoryId\":null,\"vendorId\":null,\"totalCost\":\"5000\",\"quantity\":\"32\",\"unit\":\"kg\",\"unitCost\":\"18.7500\",\"notes\":\"\",\"isActive\":true,\"userId\":1597,\"createdAt\":\"2025-06-23T16:50:54.238Z\"},\"after\":{\"id\":1608,\"name\":\"Gallon bottles x 4 units\",\"sku\":\"\",\"categoryId\":null,\"vendorId\":null,\"totalCost\":\"100\",\"quantity\":\"32\",\"unit\":\"kg\",\"unitCost\":\"18.7500\",\"notes\":\"\",\"isActive\":true,\"userId\":1597,\"createdAt\":\"2025-06-23T16:50:54.238Z\"}}",
+      "createdAt": "2025-06-26T13:41:05.731Z",
+      "timestamp": "2025-06-26T13:41:05.731Z"
     }
   ],
   "passwordResetTokens": [
@@ -9592,6 +9632,6 @@
       "createdAt": "2025-06-23T16:33:29.469Z"
     }
   ],
-  "nextId": 1658,
+  "nextId": 1666,
   "payments": []
 }

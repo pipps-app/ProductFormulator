@@ -123,7 +123,7 @@ export default function FormulationForm({ formulation, onSuccess }: FormulationF
       form.reset({
         name: formulation.name,
         description: formulation.description || "",
-        batchSize: formulation.batchSize || "1",
+        batchSize: formulation.batchSize === "1" ? "1000" : formulation.batchSize || "1000",
         batchUnit: formulation.batchUnit || "unit",
         markupPercentage: formulation.markupPercentage || "30.00",
         isActive: formulation.isActive ?? true,
