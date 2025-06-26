@@ -444,9 +444,10 @@ export class ReportsService {
       const ingredientCosts = ingredients.map(ingredient => {
         const material = materials.find(m => m.id === ingredient.materialId);
         const quantity = parseFloat(ingredient.quantity) || 0;
-        const unitCost = material ? parseFloat(material.unitCost) : 0;
-        // Use stored costContribution instead of recalculating
-        const totalCost = parseFloat(ingredient.costContribution) || 0;
+        const { calculateUnitCost, calculateIngredientCost } = require('./utils/calculations');
+        const unitCost = material ? calculateUnitCost(material) : 0;
+        // Calculate cost contribution dynamically
+        const totalCost = material ? calculateIngredientCost(material, quantity) : 0;
         
         return {
           formulation: formulation.name,
@@ -486,6 +487,8 @@ export class ReportsService {
     return materials.map(material => {
       const category = categories.find(c => c.id === material.categoryId);
       const vendor = vendors.find(v => v.id === material.vendorId);
+      const { calculateUnitCost } = require('./utils/calculations');
+      const calculatedUnitCost = calculateUnitCost(material);
       
       return {
         name: material.name,
@@ -495,10 +498,10 @@ export class ReportsService {
         totalCost: `$${isNaN(parseFloat(material.totalCost)) ? '0.00' : parseFloat(material.totalCost).toFixed(2)}`,
         quantity: material.quantity || 'Not specified',
         unit: material.unit || 'Not specified',
-        unitCost: `$${isNaN(parseFloat(material.unitCost)) ? '0.0000' : parseFloat(material.unitCost).toFixed(4)}`,
+        unitCost: `$${isNaN(calculatedUnitCost) ? '0.0000' : calculatedUnitCost.toFixed(4)}`,
         notes: material.notes || 'No notes'
       };
-    }).sort((a, b) => parseFloat(b.unitCost) - parseFloat(a.unitCost));
+    }).sort((a, b) => parseFloat(b.unitCost.replace('$', '')) - parseFloat(a.unitCost.replace('$', '')));
   }
 
   private async getCostPerUnitByCategory(userId: number) {

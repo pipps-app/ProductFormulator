@@ -363,10 +363,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
             for (const ingredient of ingredients) {
               if (ingredient.materialId) {
                 const material = await storage.getRawMaterial(ingredient.materialId);
-                if (material && material.unitCost) {
+                if (material) {
+                  const { calculateIngredientCost, calculateUnitCost } = require('./utils/calculations');
                   const quantity = parseFloat(ingredient.quantity) || 0;
-                  const unitCost = parseFloat(material.unitCost) || 0;
-                  const costContribution = quantity * unitCost;
+                  const unitCost = calculateUnitCost(material);
+                  const costContribution = calculateIngredientCost(material, quantity);
                   
                   // Only include in markup if specified
                   if (ingredient.includeInMarkup !== false) {
@@ -393,10 +394,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
             }
             
             // Calculate new formulation costs with robust validation
+            const { calculateFormulationUnitCost, calculateProfitMargin } = require('./utils/calculations');
             const batchSize = Math.max(parseFloat(formulation.batchSize) || 1, 0.001);
-            const unitCost = totalMaterialCost / batchSize;
+            const unitCost = calculateFormulationUnitCost(totalMaterialCost, batchSize);
             const markupPercentage = parseFloat(formulation.markupPercentage) || 30;
-            const profitMargin = (markupPercentage / 100) * totalMaterialCost;
+            const profitMargin = calculateProfitMargin(totalMaterialCost, markupPercentage);
             
             // Update formulation with new calculated costs
             await storage.updateFormulationCosts(formulation.id, {
@@ -913,10 +915,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
           }
           
           // Calculate profit margin and final costs
+          const { calculateFormulationUnitCost, calculateProfitMargin } = require('./utils/calculations');
           const batchSize = parseFloat(formulation.batchSize || '1');
-          const unitCost = totalMaterialCost / batchSize;
+          const unitCost = calculateFormulationUnitCost(totalMaterialCost, batchSize);
           const markupPercentage = parseFloat(formulation.markupPercentage || '30');
-          const profitMargin = (markupEligibleCost * markupPercentage) / 100;
+          const profitMargin = calculateProfitMargin(markupEligibleCost, markupPercentage);
           const finalCost = totalMaterialCost + profitMargin;
           
           console.log(`Refresh: Formulation ${formulation.id} - Total Material Cost: ${totalMaterialCost}, Markup Eligible: ${markupEligibleCost}, Markup %: ${markupPercentage}, Profit Margin: ${profitMargin}, Final Cost: ${finalCost}`);
@@ -993,10 +996,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
         const markupEligibleCost = ingredients.reduce((total, ing) => 
           (ing.includeInMarkup !== false) ? total + Number(ing.costContribution || 0) : total, 0);
         
+        const { calculateFormulationUnitCost, calculateProfitMargin } = require('./utils/calculations');
         const batchSize = Number(formulation.batchSize || 1);
-        const unitCost = batchSize > 0 ? totalMaterialCost / batchSize : 0;
+        const unitCost = calculateFormulationUnitCost(totalMaterialCost, batchSize);
         const markupPercentage = Number(formulation.markupPercentage || 30);
-        const profitMargin = (markupPercentage / 100) * markupEligibleCost;
+        const profitMargin = calculateProfitMargin(markupEligibleCost, markupPercentage);
         
         // Update formulation with calculated costs
         const updateSuccess = await storage.updateFormulationCosts(formulation.id, {
