@@ -81,7 +81,6 @@
 - 100 file attachments
 - 10GB storage
 - Dedicated support manager
-- Phone support priority
 
 **Enterprise Features**:
 - **Advanced users** with premium permissions
@@ -92,7 +91,7 @@
 - **Audit trails** and compliance features
 - **Custom workflows** and approval processes
 - **Training and onboarding** assistance
-- **Phone support** with priority access
+- **Priority email support** with dedicated manager
 - **SLA guarantees** for uptime and response
 
 ## Feature Progression Strategy

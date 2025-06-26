@@ -747,6 +747,31 @@ export async function registerRoutes(app: Express): Promise<Server> {
       return res.status(404).json({ error: "Material not found" });
     }
 
+    // Check if material is used in any formulations
+    try {
+      const allFormulations = await storage.getFormulations(material.userId);
+      const formulationsUsingMaterial = [];
+      
+      for (const formulation of allFormulations) {
+        const ingredients = await storage.getFormulationIngredients(formulation.id);
+        const hasIngredient = ingredients.some(ingredient => ingredient.materialId === id);
+        if (hasIngredient) {
+          formulationsUsingMaterial.push(formulation.name);
+        }
+      }
+      
+      if (formulationsUsingMaterial.length > 0) {
+        return res.status(400).json({ 
+          error: "Cannot delete material that is used in formulations",
+          message: `This material is currently used in the following formulations: ${formulationsUsingMaterial.join(', ')}. Please remove it from these formulations first.`,
+          formulationsUsing: formulationsUsingMaterial
+        });
+      }
+    } catch (error) {
+      console.error("Error checking formulation usage:", error);
+      return res.status(500).json({ error: "Error checking material usage" });
+    }
+
     const deleted = await storage.deleteRawMaterial(id);
     
     // Create audit log
@@ -769,6 +794,73 @@ export async function registerRoutes(app: Express): Promise<Server> {
     const userId = req.userId;
     const formulations = await storage.getFormulations(userId);
     res.json(formulations);
+  });
+
+  // Refresh formulation costs endpoint
+  app.post("/api/formulations/refresh-costs", requireAuth, async (req: any, res) => {
+    try {
+      const userId = req.userId;
+      const formulations = await storage.getFormulations(userId);
+      let updatedCount = 0;
+      
+      for (const formulation of formulations) {
+        try {
+          const ingredients = await storage.getFormulationIngredients(formulation.id);
+          
+          if (ingredients.length === 0) continue;
+          
+          let totalMaterialCost = 0;
+          let updatedIngredients = [];
+          
+          for (const ingredient of ingredients) {
+            const material = await storage.getRawMaterial(ingredient.materialId);
+            if (material) {
+              const ingredientCost = parseFloat(ingredient.quantity) * parseFloat(material.unitCost || '0');
+              
+              // Only include in markup calculation if includeInMarkup is true
+              if (ingredient.includeInMarkup) {
+                totalMaterialCost += ingredientCost;
+              }
+              
+              updatedIngredients.push({
+                ...ingredient,
+                materialName: material.name,
+                unitCost: material.unitCost,
+                cost: ingredientCost.toFixed(4)
+              });
+            }
+          }
+          
+          // Calculate profit margin and final costs
+          const batchSize = parseFloat(formulation.batchSize || '1');
+          const unitCost = totalMaterialCost / batchSize;
+          const markupPercentage = parseFloat(formulation.profitMargin || '0');
+          const profitMargin = (totalMaterialCost * markupPercentage) / 100;
+          const finalCost = totalMaterialCost + profitMargin;
+          
+          await storage.updateFormulationCosts(formulation.id, {
+            totalCost: finalCost.toFixed(2),
+            unitCost: unitCost.toFixed(4),
+            profitMargin: profitMargin.toFixed(2)
+          });
+          
+          updatedCount++;
+          
+        } catch (error) {
+          console.error(`Error refreshing formulation ${formulation.id}:`, error);
+        }
+      }
+      
+      res.json({ 
+        success: true, 
+        message: `Refreshed costs for ${updatedCount} formulations`,
+        updatedCount 
+      });
+      
+    } catch (error) {
+      console.error("Error refreshing formulation costs:", error);
+      res.status(500).json({ error: "Failed to refresh formulation costs" });
+    }
   });
 
   app.get("/api/formulations/:id", async (req, res) => {

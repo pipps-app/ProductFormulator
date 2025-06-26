@@ -2005,10 +2005,10 @@
     {
       "id": 1201,
       "name": "Boxes - Mailer - small 9 x 6 x 4",
-      "sku": null,
+      "sku": "",
       "categoryId": 646,
       "vendorId": 672,
-      "totalCost": "139.15",
+      "totalCost": "400",
       "quantity": "1",
       "unit": "pcs",
       "notes": "box with flaps - not used often",
@@ -3088,9 +3088,9 @@
       "isActive": true,
       "userId": 1,
       "createdAt": "2025-06-23T11:10:14.228Z",
-      "totalCost": "563.05",
-      "unitCost": "563.0500",
-      "profitMargin": "313.05",
+      "totalCost": "277.85",
+      "unitCost": "277.8522",
+      "profitMargin": "277.85",
       "targetPrice": "3000"
     },
     {
@@ -3152,7 +3152,7 @@
       "materialId": 1207,
       "quantity": "330",
       "unit": "g",
-      "costContribution": "36.3",
+      "costContribution": "36.30",
       "includeInMarkup": true
     },
     {
@@ -3197,7 +3197,7 @@
       "materialId": 1203,
       "quantity": "2",
       "unit": "pcs",
-      "costContribution": "24.9",
+      "costContribution": "24.90",
       "includeInMarkup": true
     },
     {
@@ -3206,7 +3206,7 @@
       "materialId": 1273,
       "quantity": "1",
       "unit": "pcs",
-      "costContribution": "250",
+      "costContribution": "250.00",
       "includeInMarkup": false
     },
     {
@@ -9460,6 +9460,26 @@
       "changes": "{\"description\":\"Updated category \\\"Bottles\\\" (color changed to red)\",\"before\":{\"id\":644,\"name\":\"Bottles\",\"color\":\"blue\",\"userId\":1,\"createdAt\":\"2025-06-23T10:28:07.559Z\"},\"after\":{\"id\":644,\"name\":\"Bottles\",\"color\":\"red\",\"userId\":1,\"createdAt\":\"2025-06-23T10:28:07.559Z\"}}",
       "createdAt": "2025-06-24T19:56:23.280Z",
       "timestamp": "2025-06-24T19:56:23.280Z"
+    },
+    {
+      "id": 1641,
+      "userId": 1,
+      "action": "update",
+      "entityType": "formulation",
+      "entityId": 1506,
+      "changes": "{\"description\":\"Automatically updated formulation \\\"Concrete - Square Coasters x 2 Units; Airmail Delivery\\\" costs due to material price change. New total cost: $277.85\",\"reason\":\"Material price change\",\"materialId\":1201,\"previousTotalCost\":\"277.85\",\"newTotalCost\":\"277.85\",\"updatedIngredients\":[{\"materialId\":1207,\"materialName\":\"Cement - white 40kg bag\",\"quantity\":\"330\",\"unit\":\"g\",\"costContribution\":\"36.30\",\"includeInMarkup\":true},{\"materialId\":1209,\"materialName\":\"Sand\",\"quantity\":\"170\",\"unit\":\"g\",\"costContribution\":\"1.33\",\"includeInMarkup\":true},{\"materialId\":1213,\"materialName\":\"oxides - blue\",\"quantity\":\"25\",\"unit\":\"pcs\",\"costContribution\":\"55.06\",\"includeInMarkup\":true},{\"materialId\":1201,\"materialName\":\"Boxes - Mailer - small 9 x 6 x 4\",\"quantity\":\"1\",\"unit\":\"pcs\",\"costContribution\":\"139.15\",\"includeInMarkup\":true},{\"materialId\":1255,\"materialName\":\"Brown paper roll 36 (local)\",\"quantity\":\"2\",\"unit\":\"pcs\",\"costContribution\":\"21.11\",\"includeInMarkup\":true},{\"materialId\":1203,\"materialName\":\"Boxes - slip sheet\",\"quantity\":\"2\",\"unit\":\"pcs\",\"costContribution\":\"24.90\",\"includeInMarkup\":true},{\"materialId\":1273,\"materialName\":\"Shipping - Airmail up to 500g\",\"quantity\":\"1\",\"unit\":\"pcs\",\"costContribution\":\"250.00\",\"includeInMarkup\":false}],\"calculationDetails\":{\"batchSize\":1,\"unitCost\":\"277.8522\",\"markupPercentage\":100,\"profitMargin\":\"277.85\"}}",
+      "createdAt": "2025-06-26T11:58:14.024Z",
+      "timestamp": "2025-06-26T11:58:14.024Z"
+    },
+    {
+      "id": 1642,
+      "userId": 1,
+      "action": "update",
+      "entityType": "material",
+      "entityId": 1201,
+      "changes": "{\"description\":\"Updated raw material \\\"Boxes - Mailer - small 9 x 6 x 4\\\" - total cost is now $400 for 1 pcs\",\"before\":{\"id\":1201,\"name\":\"Boxes - Mailer - small 9 x 6 x 4\",\"sku\":null,\"categoryId\":646,\"vendorId\":672,\"totalCost\":\"139.15\",\"quantity\":\"1\",\"unit\":\"pcs\",\"notes\":\"box with flaps - not used often\",\"isActive\":true,\"userId\":1,\"createdAt\":\"2025-06-23T10:51:41.052Z\",\"unitCost\":\"139.1500\"},\"after\":{\"id\":1201,\"name\":\"Boxes - Mailer - small 9 x 6 x 4\",\"sku\":\"\",\"categoryId\":646,\"vendorId\":672,\"totalCost\":\"400\",\"quantity\":\"1\",\"unit\":\"pcs\",\"notes\":\"box with flaps - not used often\",\"isActive\":true,\"userId\":1,\"createdAt\":\"2025-06-23T10:51:41.052Z\",\"unitCost\":\"139.1500\"}}",
+      "createdAt": "2025-06-26T11:58:14.040Z",
+      "timestamp": "2025-06-26T11:58:14.040Z"
     }
   ],
   "passwordResetTokens": [
@@ -9480,6 +9500,6 @@
       "createdAt": "2025-06-23T16:33:29.469Z"
     }
   ],
-  "nextId": 1641,
+  "nextId": 1643,
   "payments": []
 }

@@ -35,11 +35,18 @@ export default function MaterialList({ materials, isLoading, onEdit, sortField, 
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/raw-materials"] });
       queryClient.invalidateQueries({ queryKey: ["/api/dashboard/stats"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/formulations"] });
       toast({ title: "Material deleted successfully" });
       setDeletingMaterial(null);
     },
-    onError: () => {
-      toast({ title: "Failed to delete material", variant: "destructive" });
+    onError: (error: any) => {
+      const errorMsg = error?.response?.data?.message || error?.message || "Failed to delete material";
+      toast({ 
+        title: "Cannot delete material", 
+        description: errorMsg,
+        variant: "destructive" 
+      });
+      setDeletingMaterial(null);
     },
   });
 

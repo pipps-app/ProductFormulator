@@ -89,10 +89,20 @@ export default function Materials() {
     setIsRefreshing(true);
     try {
       await refetch();
+      // Refresh formulation costs to ensure they're up to date
+      await apiRequest("POST", "/api/formulations/refresh-costs");
       // Invalidate related caches to ensure fresh data
       queryClient.invalidateQueries({ queryKey: ["/api/material-categories"] });
       queryClient.invalidateQueries({ queryKey: ["/api/vendors"] });
       queryClient.invalidateQueries({ queryKey: ["/api/dashboard/stats"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/formulations"] });
+      toast({ title: "Data refreshed successfully" });
+    } catch (error) {
+      toast({ 
+        title: "Refresh completed", 
+        description: "Materials updated, some formulation costs may need manual refresh",
+        variant: "default"
+      });
     } finally {
       setTimeout(() => setIsRefreshing(false), 500);
     }

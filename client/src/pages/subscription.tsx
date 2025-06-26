@@ -114,8 +114,7 @@ const plans: SubscriptionPlan[] = [
       "Premium reporting suite & custom analytics",
       "100 file attachments",
       "10GB storage",
-      "Dedicated support manager",
-      "Phone support priority"
+      "Dedicated support manager"
     ]
   }
 ];

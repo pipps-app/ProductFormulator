@@ -84,7 +84,7 @@ PIPPS Maker Calc is a comprehensive product formulation and cost management tool
 - **Features**: Premium reporting suite & custom analytics
 - **File Attachments**: 100 file attachments
 - **Storage**: 10GB storage
-- **Support**: Dedicated support manager, Phone support priority
+- **Support**: Dedicated support manager
 
 **Current Implementation**: The application enforces all subscription limits shown above. Free tier users are limited to 5 materials, 1 formulation, 2 vendors, and 2 categories. Higher tiers have their respective limits enforced, with Enterprise tier having unlimited access. Payment processing is handled through Shopify with manual subscription activation - administrators receive payment notifications and manually activate subscriptions via the admin interface or direct database updates.
 
