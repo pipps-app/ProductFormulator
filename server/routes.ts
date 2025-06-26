@@ -904,13 +904,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
           
           console.log(`Refresh: Formulation ${formulation.id} - Total Material Cost: ${totalMaterialCost}, Markup Eligible: ${markupEligibleCost}, Markup %: ${markupPercentage}, Profit Margin: ${profitMargin}, Final Cost: ${finalCost}`);
           
-          await storage.updateFormulationCosts(formulation.id, {
+          const updateResult = await storage.updateFormulationCosts(formulation.id, {
             totalCost: finalCost.toFixed(2),
             unitCost: unitCost.toFixed(4),
             profitMargin: profitMargin.toFixed(2)
           });
           
-          updatedCount++;
+          if (updateResult) {
+            updatedCount++;
+            console.log(`Successfully updated formulation ${formulation.id} - Unit Cost: ${unitCost.toFixed(4)}`);
+          } else {
+            console.error(`Failed to update formulation ${formulation.id}`);
+          }
           
         } catch (error) {
           console.error(`Error refreshing formulation ${formulation.id}:`, error);

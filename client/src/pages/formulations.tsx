@@ -91,17 +91,25 @@ export default function Formulations() {
     try {
       // First refresh formulation costs to ensure they're up to date
       await apiRequest("POST", "/api/formulations/refresh-costs");
-      await refetch();
-      // Invalidate related caches to ensure fresh data
+      
+      // Small delay to ensure database writes are complete
+      await new Promise(resolve => setTimeout(resolve, 100));
+      
+      // Force invalidate all formulation-related queries
+      queryClient.invalidateQueries({ queryKey: ["/api/formulations"] });
       queryClient.invalidateQueries({ queryKey: ["/api/raw-materials"] });
       queryClient.invalidateQueries({ queryKey: ["/api/dashboard/stats"] });
       queryClient.invalidateQueries({ 
         predicate: (query) => {
           const key = query.queryKey[0] as string;
-          return key?.includes('/api/formulations') && key?.includes('/ingredients');
+          return key?.includes('/api/formulations') || key?.includes('/ingredients');
         }
       });
-      toast({ title: "Formulation costs refreshed successfully" });
+      
+      // Force refetch with fresh data
+      await refetch();
+      
+      toast({ title: "Costs refreshed and updated" });
     } catch (error) {
       toast({ 
         title: "Refresh completed", 
