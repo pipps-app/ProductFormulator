@@ -44,10 +44,12 @@ export default function FormulationForm({ formulation, onSuccess }: FormulationF
   const [sellingPrice, setSellingPrice] = useState<string>("");
 
   const form = useForm({
-    resolver: zodResolver(insertFormulationSchema.omit({ userId: true, batchSize: true, batchUnit: true })),
+    resolver: zodResolver(insertFormulationSchema.omit({ userId: true })),
     defaultValues: {
       name: "",
       description: "",
+      batchSize: "1",
+      batchUnit: "unit",
       markupPercentage: "30.00",
       isActive: true,
     },
@@ -57,7 +59,8 @@ export default function FormulationForm({ formulation, onSuccess }: FormulationF
   const totalMaterialCost = ingredients.reduce((sum, ing) => sum + ing.totalCost, 0);
   const markupEligibleCost = ingredients.reduce((sum, ing) => 
     ing.includeInMarkup ? sum + ing.totalCost : sum, 0);
-  const unitCost = totalMaterialCost; // Direct cost since we removed batch sizing
+  const batchSize = parseFloat(form.watch("batchSize") || "1");
+  const unitCost = batchSize > 0 ? totalMaterialCost / batchSize : 0;
   const markupPercentage = parseFloat(form.watch("markupPercentage") || "30");
   const suggestedPrice = markupEligibleCost * (1 + markupPercentage / 100);
   const actualSellingPrice = parseFloat(sellingPrice || "0");
@@ -120,6 +123,8 @@ export default function FormulationForm({ formulation, onSuccess }: FormulationF
       form.reset({
         name: formulation.name,
         description: formulation.description || "",
+        batchSize: formulation.batchSize || "1",
+        batchUnit: formulation.batchUnit || "unit",
         markupPercentage: formulation.markupPercentage || "30.00",
         isActive: formulation.isActive ?? true,
       });
@@ -220,8 +225,6 @@ export default function FormulationForm({ formulation, onSuccess }: FormulationF
 
     const formulationData = {
       ...data,
-      batchSize: "1.000", // Default batch size since we removed the field
-      batchUnit: "unit", // Default unit since we removed the field
       targetPrice: sellingPrice || undefined,
       totalCost: totalMaterialCost.toString(),
       unitCost: unitCost.toString(),
@@ -282,6 +285,54 @@ export default function FormulationForm({ formulation, onSuccess }: FormulationF
                 )}
               />
 
+              <div className="grid grid-cols-2 gap-4">
+                <FormField
+                  control={form.control}
+                  name="batchSize"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Batch Size</FormLabel>
+                      <FormControl>
+                        <Input 
+                          {...field} 
+                          type="number" 
+                          step="0.001"
+                          placeholder="1000" 
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="batchUnit"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Batch Unit</FormLabel>
+                      <FormControl>
+                        <Select value={field.value} onValueChange={field.onChange}>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select unit" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="unit">unit</SelectItem>
+                            <SelectItem value="kg">kg</SelectItem>
+                            <SelectItem value="lbs">lbs</SelectItem>
+                            <SelectItem value="g">g</SelectItem>
+                            <SelectItem value="oz">oz</SelectItem>
+                            <SelectItem value="liters">liters</SelectItem>
+                            <SelectItem value="ml">ml</SelectItem>
+                            <SelectItem value="pieces">pieces</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
 
             </CardContent>
           </Card>
