@@ -132,6 +132,7 @@ PIPPS Maker Calc is a comprehensive SaaS formulation management platform designe
 - June 25, 2025. Updated subscription tiers to new pricing structure: Free ($0), Pro ($19), Business ($65), Enterprise ($99) with revised limits
 - June 26, 2025. Implemented 6-tier subscription structure: Free ($0), Starter ($7), Pro ($19), Professional ($39), Business ($65), Enterprise ($149) with comprehensive limits including vendors, categories, file attachments, and storage quotas
 - June 26, 2025. Fixed critical cost calculation bug in formulation refresh endpoint - was using profitMargin field instead of markupPercentage, causing $0.00 total cost display issue
+- June 26, 2025. Resolved ES module compatibility issues that prevented app startup - converted all CommonJS require() statements to ES module imports, updated calculations utility exports, app now running successfully
 
 ## User Preferences
 

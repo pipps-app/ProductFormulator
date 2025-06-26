@@ -3040,8 +3040,8 @@
       "sku": "",
       "categoryId": null,
       "vendorId": null,
-      "totalCost": "100",
-      "quantity": "10",
+      "totalCost": "10000",
+      "quantity": "56",
       "unit": "kg",
       "unitCost": "18.7500",
       "notes": "",
@@ -3105,9 +3105,9 @@
       "isActive": true,
       "userId": 1597,
       "createdAt": "2025-06-23T16:52:58.316Z",
-      "totalCost": "166.25",
-      "unitCost": "166.2500",
-      "profitMargin": "49.88",
+      "totalCost": "245.14",
+      "unitCost": "188.5714",
+      "profitMargin": "56.57",
       "targetPrice": "600"
     }
   ],
@@ -9762,6 +9762,16 @@
       "changes": "{\"description\":\"Updated formulation \\\"test formular\\\" - batch size is now 1 unit with 30.00% markup (total cost changed from $24.38 to $166.25)\",\"before\":{\"id\":1614,\"name\":\"test formular\",\"description\":\"ioipoipipi\",\"batchSize\":\"1\",\"batchUnit\":\"unit\",\"markupPercentage\":\"30.00\",\"isActive\":true,\"userId\":1597,\"createdAt\":\"2025-06-23T16:52:58.316Z\",\"totalCost\":\"24.38\",\"unitCost\":\"18.7501\",\"profitMargin\":\"5.63\",\"targetPrice\":\"600\"},\"after\":{\"id\":1614,\"name\":\"test formular\",\"description\":\"ioipoipipi\",\"batchSize\":\"1\",\"batchUnit\":\"unit\",\"markupPercentage\":\"30.00\",\"isActive\":true,\"userId\":1597,\"createdAt\":\"2025-06-23T16:52:58.316Z\",\"totalCost\":\"166.25\",\"unitCost\":\"166.2500\",\"profitMargin\":\"49.88\",\"targetPrice\":\"600\"},\"ingredients\":[{\"materialId\":1610,\"quantity\":\"1\",\"unit\":\"kg\",\"costContribution\":\"10\",\"includeInMarkup\":true},{\"materialId\":1608,\"quantity\":\"1\",\"unit\":\"kg\",\"costContribution\":\"156.25\",\"includeInMarkup\":true}]}",
       "createdAt": "2025-06-26T16:01:43.545Z",
       "timestamp": "2025-06-26T16:01:43.545Z"
+    },
+    {
+      "id": 1701,
+      "userId": 1,
+      "action": "update",
+      "entityType": "material",
+      "entityId": 1608,
+      "changes": "{\"description\":\"Updated raw material \\\"Gallon bottles x 4 units\\\" - total cost is now $10000 for 56 kg\",\"before\":{\"id\":1608,\"name\":\"Gallon bottles x 4 units\",\"sku\":\"\",\"categoryId\":null,\"vendorId\":null,\"totalCost\":\"100\",\"quantity\":\"10\",\"unit\":\"kg\",\"unitCost\":\"18.7500\",\"notes\":\"\",\"isActive\":true,\"userId\":1597,\"createdAt\":\"2025-06-23T16:50:54.238Z\"},\"after\":{\"id\":1608,\"name\":\"Gallon bottles x 4 units\",\"sku\":\"\",\"categoryId\":null,\"vendorId\":null,\"totalCost\":\"10000\",\"quantity\":\"56\",\"unit\":\"kg\",\"unitCost\":\"18.7500\",\"notes\":\"\",\"isActive\":true,\"userId\":1597,\"createdAt\":\"2025-06-23T16:50:54.238Z\"}}",
+      "createdAt": "2025-06-26T16:39:19.677Z",
+      "timestamp": "2025-06-26T16:39:19.677Z"
     }
   ],
   "passwordResetTokens": [
@@ -9782,6 +9792,6 @@
       "createdAt": "2025-06-23T16:33:29.469Z"
     }
   ],
-  "nextId": 1701,
+  "nextId": 1702,
   "payments": []
 }
