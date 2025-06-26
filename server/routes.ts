@@ -656,7 +656,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/raw-materials", requireAuth, async (req: any, res) => {
     const userId = req.userId;
     const materials = await storage.getRawMaterials(userId);
-    res.json(materials);
+    const { enhanceMaterialsWithCalculatedCosts } = require('./utils/calculations');
+    
+    // Add cache control headers to prevent stale data
+    res.set('Cache-Control', 'no-cache, no-store, must-revalidate');
+    res.set('Pragma', 'no-cache');
+    res.set('Expires', '0');
+    res.set('ETag', Date.now().toString());
+    
+    res.json(enhanceMaterialsWithCalculatedCosts(materials));
   });
 
   app.get("/api/raw-materials/:id", async (req, res) => {
@@ -665,7 +673,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     if (!material) {
       return res.status(404).json({ error: "Material not found" });
     }
-    res.json(material);
+    const { enhanceMaterialWithCalculatedCosts } = require('./utils/calculations');
+    res.json(enhanceMaterialWithCalculatedCosts(material));
   });
 
   app.post("/api/raw-materials", requireAuth, checkMaterialsLimit, async (req: any, res) => {
@@ -879,9 +888,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
           for (const ingredient of ingredients) {
             const material = await storage.getRawMaterial(ingredient.materialId);
             if (material) {
+              const { calculateIngredientCost, calculateUnitCost } = require('./utils/calculations');
               const quantity = parseFloat(ingredient.quantity);
-              const unitCost = parseFloat(material.unitCost || '0');
-              const ingredientCost = quantity * unitCost;
+              const unitCost = calculateUnitCost(material);
+              const ingredientCost = calculateIngredientCost(material, quantity);
               
               console.log(`Refresh: Ingredient ${ingredient.materialId}, Qty: ${quantity}, Unit Cost: ${unitCost}, Total: ${ingredientCost}, Include Markup: ${ingredient.includeInMarkup}`);
               
