@@ -815,6 +815,43 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json(formulations);
   });
 
+  // Fix material unit costs endpoint
+  app.post("/api/materials/fix-unit-costs", requireAuth, async (req: any, res) => {
+    try {
+      const userId = req.userId;
+      const materials = await storage.getRawMaterials(userId);
+      let fixedCount = 0;
+      
+      for (const material of materials) {
+        const totalCost = parseFloat(material.totalCost || '0');
+        const quantity = parseFloat(material.quantity || '1');
+        const currentUnitCost = parseFloat(material.unitCost || '0');
+        
+        if (quantity > 0 && totalCost > 0) {
+          const calculatedUnitCost = totalCost / quantity;
+          
+          if (Math.abs(currentUnitCost - calculatedUnitCost) > 0.0001) {
+            await storage.updateRawMaterial(material.id, {
+              unitCost: calculatedUnitCost.toFixed(4)
+            });
+            fixedCount++;
+            console.log(`Fixed material ${material.id} (${material.name}): Unit cost ${currentUnitCost} -> ${calculatedUnitCost.toFixed(4)}`);
+          }
+        }
+      }
+      
+      res.json({ 
+        success: true, 
+        message: `Fixed unit costs for ${fixedCount} materials`,
+        fixedCount 
+      });
+      
+    } catch (error) {
+      console.error("Error fixing material unit costs:", error);
+      res.status(500).json({ error: "Failed to fix material unit costs" });
+    }
+  });
+
   // Refresh formulation costs endpoint
   app.post("/api/formulations/refresh-costs", requireAuth, async (req: any, res) => {
     try {
