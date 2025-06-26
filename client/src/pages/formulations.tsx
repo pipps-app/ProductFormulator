@@ -9,6 +9,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { useFormulations } from "@/hooks/use-formulations";
 import { useQueryClient } from "@tanstack/react-query";
 import { LandscapeNotice } from "@/components/common/mobile-notice";
+import { useToast } from "@/hooks/use-toast";
+import { apiRequest } from "@/lib/queryClient";
 
 type FormulationSortField = 'name' | 'totalCost' | 'profitMargin';
 type SortDirection = 'asc' | 'desc';
@@ -23,6 +25,7 @@ export default function Formulations() {
   
   const { data: formulations, isLoading, refetch } = useFormulations();
   const queryClient = useQueryClient();
+  const { toast } = useToast();
 
   const filteredAndSortedFormulations = useMemo(() => {
     const filtered = formulations?.filter(formulation =>
@@ -86,6 +89,8 @@ export default function Formulations() {
   const handleRefresh = async () => {
     setIsRefreshing(true);
     try {
+      // First refresh formulation costs to ensure they're up to date
+      await apiRequest("POST", "/api/formulations/refresh-costs");
       await refetch();
       // Invalidate related caches to ensure fresh data
       queryClient.invalidateQueries({ queryKey: ["/api/raw-materials"] });
@@ -95,6 +100,13 @@ export default function Formulations() {
           const key = query.queryKey[0] as string;
           return key?.includes('/api/formulations') && key?.includes('/ingredients');
         }
+      });
+      toast({ title: "Formulation costs refreshed successfully" });
+    } catch (error) {
+      toast({ 
+        title: "Refresh completed", 
+        description: "Some costs may need manual calculation",
+        variant: "default"
       });
     } finally {
       setTimeout(() => setIsRefreshing(false), 500);

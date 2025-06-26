@@ -9,6 +9,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { useMaterials } from "@/hooks/use-materials";
 import { useQueryClient } from "@tanstack/react-query";
 import { LandscapeNotice } from "@/components/common/mobile-notice";
+import { useToast } from "@/hooks/use-toast";
+import { apiRequest } from "@/lib/queryClient";
 
 type SortField = 'name' | 'unitCost' | 'totalValue' | 'category' | 'vendor';
 type SortDirection = 'asc' | 'desc';
@@ -23,6 +25,7 @@ export default function Materials() {
   
   const { data: materials, isLoading, refetch } = useMaterials();
   const queryClient = useQueryClient();
+  const { toast } = useToast();
 
   const filteredAndSortedMaterials = useMemo(() => {
     const filtered = materials?.filter(material =>
