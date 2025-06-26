@@ -47,7 +47,28 @@ const plans: SubscriptionPlan[] = [
       "Help documentation"
     ]
   },
-
+  {
+    id: "starter",
+    name: "Starter",
+    price: 7,
+    interval: "month",
+    maxMaterials: 20,
+    maxFormulations: 8,
+    maxVendors: 5,
+    maxCategories: 5,
+    maxFileAttachments: 5,
+    maxStorageSize: 30,
+    support: "Email support",
+    features: [
+      "Up to 20 raw materials",
+      "Up to 8 formulations",
+      "5 vendors & 5 categories",
+      "Basic cost calculations",
+      "5 file attachments",
+      "30MB storage",
+      "Email support"
+    ]
+  },
   {
     id: "pro",
     name: "Pro",
@@ -73,6 +94,29 @@ const plans: SubscriptionPlan[] = [
     ]
   },
   {
+    id: "professional",
+    name: "Professional",
+    price: 39,
+    interval: "month",
+    maxMaterials: 300,
+    maxFormulations: 60,
+    maxVendors: 20,
+    maxCategories: 20,
+    maxFileAttachments: 25,
+    maxStorageSize: 500,
+    support: "Priority email support",
+    features: [
+      "Up to 300 raw materials",
+      "Up to 60 formulations",
+      "20 vendors & 20 categories",
+      "Advanced cost analytics",
+      "25 file attachments",
+      "500MB storage",
+      "Priority email support",
+      "Batch optimization"
+    ]
+  },
+  {
     id: "business",
     name: "Business", 
     price: 65,
@@ -92,13 +136,13 @@ const plans: SubscriptionPlan[] = [
       "50 file attachments",
       "1GB storage",
       "Priority email support",
-      "Batch cost optimization"
+      "Multi-user access"
     ]
   },
   {
     id: "enterprise",
     name: "Enterprise",
-    price: 99,
+    price: 149,
     interval: "month",
     maxMaterials: 1000,
     maxFormulations: 250,
@@ -114,7 +158,8 @@ const plans: SubscriptionPlan[] = [
       "Premium reporting suite & custom analytics",
       "100 file attachments",
       "10GB storage",
-      "Dedicated support manager"
+      "Dedicated support manager",
+      "Custom integrations"
     ]
   }
 ];

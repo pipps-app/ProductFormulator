@@ -19,7 +19,14 @@ const planLimits: Record<string, SubscriptionLimits> = {
     maxFileAttachments: 1,
     maxStorageSize: 5
   },
-
+  starter: {
+    maxMaterials: 20,
+    maxFormulations: 8,
+    maxVendors: 5,
+    maxCategories: 5,
+    maxFileAttachments: 5,
+    maxStorageSize: 30
+  },
   pro: {
     maxMaterials: 100,
     maxFormulations: 25,
@@ -27,6 +34,14 @@ const planLimits: Record<string, SubscriptionLimits> = {
     maxCategories: 10,
     maxFileAttachments: 10,
     maxStorageSize: 100
+  },
+  professional: {
+    maxMaterials: 300,
+    maxFormulations: 60,
+    maxVendors: 20,
+    maxCategories: 20,
+    maxFileAttachments: 25,
+    maxStorageSize: 500
   },
   business: {
     maxMaterials: 500,

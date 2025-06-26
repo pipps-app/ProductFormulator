@@ -130,6 +130,7 @@ PIPPS Maker Calc is a comprehensive SaaS formulation management platform designe
 - June 24, 2025. GoDaddy DNS setup guide created with step-by-step instructions
 - June 25, 2025. Chat widget email functionality implemented and tested successfully
 - June 25, 2025. Updated subscription tiers to new pricing structure: Free ($0), Pro ($19), Business ($65), Enterprise ($99) with revised limits
+- June 26, 2025. Implemented 6-tier subscription structure: Free ($0), Starter ($7), Pro ($19), Professional ($39), Business ($65), Enterprise ($149) with comprehensive limits including vendors, categories, file attachments, and storage quotas
 
 ## User Preferences
 

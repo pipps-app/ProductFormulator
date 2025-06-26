@@ -2,9 +2,9 @@
 
 ## Subscription Tier Structure
 
-### Free Tier - "Starter"
+### Free Tier
 **Price**: $0/forever
-**Target**: Individual formulators, hobbyists, small businesses starting out
+**Target**: Trial users, students
 
 **Limitations**:
 - Up to 5 raw materials
@@ -23,9 +23,27 @@
 - Mobile-responsive access
 - Data persistence and security
 
-### Professional Tier - "Pro"
-**Price**: $19/month or $190/year (17% savings)
-**Target**: Growing businesses, professional formulators, small manufacturing companies
+### Starter Tier
+**Price**: $7/month
+**Target**: Serious hobbyists
+
+**Enhanced Limits**:
+- Up to 20 raw materials
+- Up to 8 formulations
+- 5 vendors & 5 categories
+- Basic cost calculations
+- 5 file attachments
+- 30MB storage
+- Email support
+
+**Features Included**:
+- All Free tier features
+- Extended limits for growing hobby businesses
+- Email support for guidance
+
+### Pro Tier ⭐ Most Popular
+**Price**: $19/month
+**Target**: Indie formulators
 
 **Enhanced Limits**:
 - Up to 100 raw materials
@@ -46,9 +64,30 @@
 - **Batch calculation tools**
 - **Cost optimization tools**
 
-### Business Tier - "Business"
-**Price**: $65/month or $650/year (17% savings)
-**Target**: Medium businesses, R&D teams, multi-product manufacturers
+### Professional Tier
+**Price**: $39/month
+**Target**: Growing businesses
+
+**Enhanced Limits**:
+- Up to 300 raw materials
+- Up to 60 formulations
+- 20 vendors & 20 categories
+- Advanced cost analytics
+- 25 file attachments
+- 500MB storage
+- Priority email support
+- Batch optimization
+
+**New Features**:
+- **Advanced cost analytics** with detailed insights
+- **Batch optimization** tools
+- **Priority email support**
+- **Enhanced reporting** capabilities
+- **Advanced data management**
+
+### Business Tier
+**Price**: $65/month
+**Target**: Established businesses
 
 **Enhanced Limits**:
 - Up to 500 raw materials
@@ -58,20 +97,20 @@
 - 50 file attachments
 - 1GB storage
 - Priority email support
-- Batch cost optimization
+- Multi-user access
 
 **New Features**:
 - **Advanced reporting** with custom filters
-- **Batch cost optimization**
+- **Multi-user access** and collaboration
 - **Enhanced analytics** dashboard
 - **Priority email support**
 - **Advanced export** capabilities
 - **Cost optimization suggestions**
-- **Enhanced data management**
+- **Team collaboration** features
 
-### Enterprise Tier - "Enterprise"
-**Price**: $99/month or $990/year (17% savings)
-**Target**: Large manufacturers, enterprise clients, complex operations
+### Enterprise Tier
+**Price**: $149/month
+**Target**: Large companies
 
 **Premium Access**:
 - Up to 1,000 raw materials
@@ -91,7 +130,7 @@
 - **Audit trails** and compliance features
 - **Custom workflows** and approval processes
 - **Training and onboarding** assistance
-- **Priority email support** with dedicated manager
+- **Dedicated support manager**
 - **SLA guarantees** for uptime and response
 
 ## Feature Progression Strategy

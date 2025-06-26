@@ -3054,7 +3054,7 @@
       "sku": "",
       "categoryId": null,
       "vendorId": null,
-      "totalCost": "9898989",
+      "totalCost": "100000",
       "quantity": "898989",
       "unit": "kg",
       "notes": "",
@@ -3103,9 +3103,9 @@
       "isActive": true,
       "userId": 1597,
       "createdAt": "2025-06-23T16:52:58.316Z",
-      "totalCost": "167.56",
-      "unitCost": "167.5560",
-      "profitMargin": "50.27",
+      "totalCost": "0.00",
+      "unitCost": "0.0000",
+      "profitMargin": "0.00",
       "targetPrice": "600"
     }
   ],
@@ -9480,6 +9480,26 @@
       "changes": "{\"description\":\"Updated raw material \\\"Boxes - Mailer - small 9 x 6 x 4\\\" - total cost is now $400 for 1 pcs\",\"before\":{\"id\":1201,\"name\":\"Boxes - Mailer - small 9 x 6 x 4\",\"sku\":null,\"categoryId\":646,\"vendorId\":672,\"totalCost\":\"139.15\",\"quantity\":\"1\",\"unit\":\"pcs\",\"notes\":\"box with flaps - not used often\",\"isActive\":true,\"userId\":1,\"createdAt\":\"2025-06-23T10:51:41.052Z\",\"unitCost\":\"139.1500\"},\"after\":{\"id\":1201,\"name\":\"Boxes - Mailer - small 9 x 6 x 4\",\"sku\":\"\",\"categoryId\":646,\"vendorId\":672,\"totalCost\":\"400\",\"quantity\":\"1\",\"unit\":\"pcs\",\"notes\":\"box with flaps - not used often\",\"isActive\":true,\"userId\":1,\"createdAt\":\"2025-06-23T10:51:41.052Z\",\"unitCost\":\"139.1500\"}}",
       "createdAt": "2025-06-26T11:58:14.040Z",
       "timestamp": "2025-06-26T11:58:14.040Z"
+    },
+    {
+      "id": 1643,
+      "userId": 1,
+      "action": "update",
+      "entityType": "material",
+      "entityId": 1610,
+      "changes": "{\"description\":\"Updated raw material \\\"Jamaica Packaging\\\" - total cost is now $100 for 898989 kg\",\"before\":{\"id\":1610,\"name\":\"Jamaica Packaging\",\"sku\":\"\",\"categoryId\":null,\"vendorId\":null,\"totalCost\":\"9898989\",\"quantity\":\"898989\",\"unit\":\"kg\",\"notes\":\"\",\"isActive\":true,\"userId\":1597,\"createdAt\":\"2025-06-23T16:51:11.543Z\"},\"after\":{\"id\":1610,\"name\":\"Jamaica Packaging\",\"sku\":\"\",\"categoryId\":null,\"vendorId\":null,\"totalCost\":\"100\",\"quantity\":\"898989\",\"unit\":\"kg\",\"notes\":\"\",\"isActive\":true,\"userId\":1597,\"createdAt\":\"2025-06-23T16:51:11.543Z\"}}",
+      "createdAt": "2025-06-26T12:12:41.917Z",
+      "timestamp": "2025-06-26T12:12:41.917Z"
+    },
+    {
+      "id": 1644,
+      "userId": 1,
+      "action": "update",
+      "entityType": "material",
+      "entityId": 1610,
+      "changes": "{\"description\":\"Updated raw material \\\"Jamaica Packaging\\\" - total cost is now $100000 for 898989 kg\",\"before\":{\"id\":1610,\"name\":\"Jamaica Packaging\",\"sku\":\"\",\"categoryId\":null,\"vendorId\":null,\"totalCost\":\"100\",\"quantity\":\"898989\",\"unit\":\"kg\",\"notes\":\"\",\"isActive\":true,\"userId\":1597,\"createdAt\":\"2025-06-23T16:51:11.543Z\"},\"after\":{\"id\":1610,\"name\":\"Jamaica Packaging\",\"sku\":\"\",\"categoryId\":null,\"vendorId\":null,\"totalCost\":\"100000\",\"quantity\":\"898989\",\"unit\":\"kg\",\"notes\":\"\",\"isActive\":true,\"userId\":1597,\"createdAt\":\"2025-06-23T16:51:11.543Z\"}}",
+      "createdAt": "2025-06-26T12:13:11.744Z",
+      "timestamp": "2025-06-26T12:13:11.744Z"
     }
   ],
   "passwordResetTokens": [
@@ -9500,6 +9520,6 @@
       "createdAt": "2025-06-23T16:33:29.469Z"
     }
   ],
-  "nextId": 1643,
+  "nextId": 1645,
   "payments": []
 }
