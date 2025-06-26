@@ -3055,7 +3055,7 @@
       "sku": "",
       "categoryId": null,
       "vendorId": null,
-      "totalCost": "100",
+      "totalCost": "10000000",
       "quantity": "898989",
       "unit": "kg",
       "unitCost": "0.0001",
@@ -3099,15 +3099,15 @@
       "id": 1614,
       "name": "test formular",
       "description": "ioipoipipi",
-      "batchSize": "1.000",
+      "batchSize": "1000",
       "batchUnit": "unit",
       "markupPercentage": "30.00",
       "isActive": true,
       "userId": 1597,
       "createdAt": "2025-06-23T16:52:58.316Z",
-      "totalCost": "0.00",
-      "unitCost": "0.0000",
-      "profitMargin": "0.00",
+      "totalCost": "146.25",
+      "unitCost": "0.1463",
+      "profitMargin": "33.75",
       "targetPrice": "600"
     }
   ],
@@ -9522,6 +9522,16 @@
       "changes": "{\"description\":\"Updated raw material \\\"Jamaica Packaging\\\" - total cost is now $100 for 898989 kg\",\"before\":{\"id\":1610,\"name\":\"Jamaica Packaging\",\"sku\":\"\",\"categoryId\":null,\"vendorId\":null,\"totalCost\":\"100000\",\"quantity\":\"898989\",\"unit\":\"kg\",\"notes\":\"\",\"isActive\":true,\"userId\":1597,\"createdAt\":\"2025-06-23T16:51:11.543Z\"},\"after\":{\"id\":1610,\"name\":\"Jamaica Packaging\",\"sku\":\"\",\"categoryId\":null,\"vendorId\":null,\"totalCost\":\"100\",\"quantity\":\"898989\",\"unit\":\"kg\",\"notes\":\"\",\"isActive\":true,\"userId\":1597,\"createdAt\":\"2025-06-23T16:51:11.543Z\"}}",
       "createdAt": "2025-06-26T12:46:39.213Z",
       "timestamp": "2025-06-26T12:46:39.213Z"
+    },
+    {
+      "id": 1649,
+      "userId": 1,
+      "action": "update",
+      "entityType": "material",
+      "entityId": 1610,
+      "changes": "{\"description\":\"Updated raw material \\\"Jamaica Packaging\\\" - total cost is now $10000000 for 898989 kg\",\"before\":{\"id\":1610,\"name\":\"Jamaica Packaging\",\"sku\":\"\",\"categoryId\":null,\"vendorId\":null,\"totalCost\":\"100\",\"quantity\":\"898989\",\"unit\":\"kg\",\"unitCost\":\"0.0001\",\"notes\":\"\",\"isActive\":true,\"userId\":1597,\"createdAt\":\"2025-06-23T16:51:11.543Z\"},\"after\":{\"id\":1610,\"name\":\"Jamaica Packaging\",\"sku\":\"\",\"categoryId\":null,\"vendorId\":null,\"totalCost\":\"10000000\",\"quantity\":\"898989\",\"unit\":\"kg\",\"unitCost\":\"0.0001\",\"notes\":\"\",\"isActive\":true,\"userId\":1597,\"createdAt\":\"2025-06-23T16:51:11.543Z\"}}",
+      "createdAt": "2025-06-26T13:00:59.429Z",
+      "timestamp": "2025-06-26T13:00:59.429Z"
     }
   ],
   "passwordResetTokens": [
@@ -9542,6 +9552,6 @@
       "createdAt": "2025-06-23T16:33:29.469Z"
     }
   ],
-  "nextId": 1649,
+  "nextId": 1650,
   "payments": []
 }
