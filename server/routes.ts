@@ -996,7 +996,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         const markupEligibleCost = ingredients.reduce((total, ing) => 
           (ing.includeInMarkup !== false) ? total + Number(ing.costContribution || 0) : total, 0);
         
-        const { calculateFormulationUnitCost, calculateProfitMargin } = require('./utils/calculations');
+        const { calculateFormulationUnitCost, calculateProfitMargin } = await import('./utils/calculations.js');
         const batchSize = Number(formulation.batchSize || 1);
         const unitCost = calculateFormulationUnitCost(totalMaterialCost, batchSize);
         const markupPercentage = Number(formulation.markupPercentage || 30);

@@ -1,5 +1,6 @@
 import { storage } from "./storage";
 import type { User, RawMaterial, Formulation, FormulationIngredient, Vendor, MaterialCategory, AuditLog } from "@shared/schema";
+import { calculateUnitCost, calculateIngredientCost } from "./utils/calculations.js";
 
 export interface ReportData {
   title: string;
@@ -444,7 +445,6 @@ export class ReportsService {
       const ingredientCosts = ingredients.map(ingredient => {
         const material = materials.find(m => m.id === ingredient.materialId);
         const quantity = parseFloat(ingredient.quantity) || 0;
-        const { calculateUnitCost, calculateIngredientCost } = require('./utils/calculations');
         const unitCost = material ? calculateUnitCost(material) : 0;
         // Calculate cost contribution dynamically
         const totalCost = material ? calculateIngredientCost(material, quantity) : 0;
@@ -484,10 +484,11 @@ export class ReportsService {
     const categories = await storage.getMaterialCategories(userId);
     const vendors = await storage.getVendors(userId);
     
+    const { calculateUnitCost } = await import('./utils/calculations.js');
+    
     return materials.map(material => {
       const category = categories.find(c => c.id === material.categoryId);
       const vendor = vendors.find(v => v.id === material.vendorId);
-      const { calculateUnitCost } = require('./utils/calculations');
       const calculatedUnitCost = calculateUnitCost(material);
       
       return {
