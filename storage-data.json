@@ -3099,7 +3099,7 @@
       "id": 1614,
       "name": "test formular",
       "description": "ioipoipipi",
-      "batchSize": "1000",
+      "batchSize": "1",
       "batchUnit": "unit",
       "markupPercentage": "30.00",
       "isActive": true,
