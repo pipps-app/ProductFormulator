@@ -106,7 +106,21 @@ export default function Formulations() {
         }
       });
       
-      // Force complete refetch with fresh data
+      // Force complete refetch with fresh data - use timestamp to bypass server cache
+      await queryClient.fetchQuery({
+        queryKey: ["/api/formulations", Date.now()],
+        queryFn: () => fetch(`/api/formulations?_t=${Date.now()}`, {
+          headers: {
+            'Cache-Control': 'no-cache',
+            'Pragma': 'no-cache'
+          }
+        }).then(res => res.json()),
+        staleTime: 0,
+        gcTime: 0
+      });
+      
+      // Now invalidate and refetch the normal query
+      await queryClient.invalidateQueries({ queryKey: ["/api/formulations"] });
       await refetch();
       
       toast({ title: "Costs refreshed and updated" });

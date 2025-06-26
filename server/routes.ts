@@ -989,14 +989,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
         const profitMargin = (markupPercentage / 100) * markupEligibleCost;
         
         // Update formulation with calculated costs
-        await storage.updateFormulationCosts(formulation.id, {
+        const updateSuccess = await storage.updateFormulationCosts(formulation.id, {
           totalCost: totalMaterialCost.toFixed(2),
           unitCost: unitCost.toFixed(4),
           profitMargin: profitMargin.toFixed(2),
         });
         
-        // Refresh formulation data
+        console.log(`Formulation ${formulation.id} cost update success: ${updateSuccess}`);
+        
+        // Refresh formulation data to verify update
         formulation = await storage.getFormulation(formulation.id);
+        console.log(`After update - Formulation ${formulation.id} unitCost: ${formulation?.unitCost}`);
       }
       
       // Create audit log
