@@ -21,7 +21,11 @@ export async function apiRequest(
   url: string,
   data?: unknown | undefined,
 ): Promise<Response> {
-  const res = await fetch(url, {
+  // Prepend VITE_API_BASE_URL to relative URLs
+  const isAbsolute = url.startsWith('http://') || url.startsWith('https://');
+  const baseUrl = import.meta.env.VITE_API_BASE_URL?.replace(/\/$/, '');
+  const fullUrl = isAbsolute ? url : `${baseUrl || ''}${url.startsWith('/') ? url : `/${url}`}`;
+  const res = await fetch(fullUrl, {
     method,
     headers: data ? { "Content-Type": "application/json" } : {},
     body: data ? JSON.stringify(data) : undefined,

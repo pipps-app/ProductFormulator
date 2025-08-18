@@ -2,13 +2,17 @@ import { drizzle } from 'drizzle-orm/postgres-js';
 import postgres from 'postgres';
 import * as schema from "@shared/schema";
 
+console.log("--- DATABASE CONNECTION TRUTH ---");
+console.log("Attempting to connect to:", process.env.DATABASE_URL);
+console.log("---------------------------------");
+
 // Simple in-memory fallback for development
 let client: any;
 let db: any;
 
 try {
-  // Try to connect to PostgreSQL
-  const connectionString = `postgresql://${process.env.PGUSER}:${process.env.PGPASSWORD}@${process.env.PGHOST}:${process.env.PGPORT}/${process.env.PGDATABASE}?sslmode=require`;
+  // Use DATABASE_URL from environment only
+  const connectionString = process.env.DATABASE_URL!;
   client = postgres(connectionString, {
     max: 5,
     idle_timeout: 10,

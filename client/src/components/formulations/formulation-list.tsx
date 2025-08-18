@@ -1,44 +1,93 @@
-import { useState } from "react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useState, useMemo, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Edit, Trash2, FlaskRound, Calculator, ChevronUp, ChevronDown, Eye } from "lucide-react";
 import { Link } from "wouter";
-import { type Formulation } from "@shared/schema";
-import { apiRequest } from "@/lib/queryClient";
-import { useToast } from "@/hooks/use-toast";
 import ConfirmationModal from "@/components/common/confirmation-modal";
+import { useAppSelector, useAppDispatch } from "@/store/hooks";
+import { fetchFormulations, Formulation } from "@/store/formulationsSlice";
+import { selectRawMaterials } from "@/store/selectors";
+import { updateRawMaterialPrice } from "@/store/rawMaterialsSlice";
+import { updateFormulation } from "@/store/formulationsSlice";
 
 type FormulationSortField = 'name' | 'totalCost' | 'profitMargin';
 type SortDirection = 'asc' | 'desc';
 
 interface FormulationListProps {
-  formulations: Formulation[];
-  isLoading: boolean;
-  onEdit: (formulation: Formulation) => void;
   sortField: FormulationSortField;
   sortDirection: SortDirection;
+  onEdit: (formulation: Formulation) => void;
   onSort: (field: FormulationSortField) => void;
 }
 
-export default function FormulationList({ formulations, isLoading, onEdit, sortField, sortDirection, onSort }: FormulationListProps) {
+export default function FormulationList({ sortField, sortDirection, onEdit, onSort }: FormulationListProps) {
   const [deletingFormulation, setDeletingFormulation] = useState<Formulation | null>(null);
-  const { toast } = useToast();
-  const queryClient = useQueryClient();
+  const dispatch = useAppDispatch();
+  const formulations: Formulation[] = useAppSelector(state => state.formulations);
+  const rawMaterials = useAppSelector(selectRawMaterials);
 
-  const deleteMutation = useMutation({
-    mutationFn: (id: number) => apiRequest("DELETE", `/api/formulations/${id}`),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/formulations"] });
-      queryClient.invalidateQueries({ queryKey: ["/api/dashboard/stats"] });
-      toast({ title: "Formulation deleted successfully" });
-      setDeletingFormulation(null);
-    },
-    onError: () => {
-      toast({ title: "Failed to delete formulation", variant: "destructive" });
-    },
-  });
+  useEffect(() => {
+    dispatch(fetchFormulations());
+  }, [dispatch]);
+
+  // Recalculate all costs and margins using latest Redux state
+  const recalculatedFormulations: Formulation[] = useMemo(() => {
+    return formulations.map((formulation: Formulation): Formulation => {
+      const ingredients = (formulation.ingredients || []).map((ing: any) => {
+        const material = rawMaterials.find((m: any) => m.id === ing.materialId);
+        const unitCost = material ? material.unitCost : 0;
+        const totalCost = unitCost * ing.quantity;
+        return { ...ing, unitCost, totalCost };
+      });
+      const totalMaterialCost = ingredients.reduce((sum: number, ing: any) => sum + ing.totalCost, 0);
+      const batchSize = formulation.batchSize || 1;
+      const unitCost = batchSize > 0 ? totalMaterialCost / batchSize : 0;
+      const markupEligibleCost = ingredients.reduce((sum: number, ing: any) => ing.includeInMarkup ? sum + ing.totalCost : sum, 0);
+      const markupPercentage = formulation.markupPercentage || 30;
+      const suggestedPrice = markupEligibleCost * (1 + markupPercentage / 100);
+      const targetPrice = formulation.targetPrice || suggestedPrice;
+      const profit = targetPrice - markupEligibleCost;
+      const profitMargin = targetPrice > 0 ? (profit / targetPrice) * 100 : 0;
+      return {
+        ...formulation,
+        ingredients,
+        totalMaterialCost,
+        totalCost: totalMaterialCost,
+        unitCost,
+        suggestedPrice,
+        profitMargin,
+      };
+    });
+  }, [formulations, rawMaterials]);
+
+  // Sorting and filtering logic (adapt as needed)
+  const sortedFormulations: Formulation[] = useMemo(() => {
+    return recalculatedFormulations.slice().sort((a: Formulation, b: Formulation) => {
+      let aValue: string | number;
+      let bValue: string | number;
+      switch (sortField) {
+        case 'name':
+          aValue = a.name.toLowerCase();
+          bValue = b.name.toLowerCase();
+          break;
+        case 'totalCost':
+          aValue = (a as any).totalMaterialCost;
+          bValue = (b as any).totalMaterialCost;
+          break;
+        case 'profitMargin':
+          aValue = (a as any).profitMargin;
+          bValue = (b as any).profitMargin;
+          break;
+        default:
+          aValue = a.name.toLowerCase();
+          bValue = b.name.toLowerCase();
+      }
+      if (aValue < bValue) return sortDirection === 'asc' ? -1 : 1;
+      if (aValue > bValue) return sortDirection === 'asc' ? 1 : -1;
+      return 0;
+    });
+  }, [recalculatedFormulations, sortField, sortDirection]);
 
   const handleDelete = (formulation: Formulation) => {
     setDeletingFormulation(formulation);
@@ -46,9 +95,13 @@ export default function FormulationList({ formulations, isLoading, onEdit, sortF
 
   const confirmDelete = () => {
     if (deletingFormulation) {
-      deleteMutation.mutate(deletingFormulation.id);
+      // dispatch(deleteFormulation(deletingFormulation.id));
+      setDeletingFormulation(null);
     }
   };
+
+  const formatCurrency = (value?: number) =>
+    `$${(value ?? 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
   const getStatusBadge = (isActive: boolean) => {
     return isActive ? (
@@ -65,12 +118,12 @@ export default function FormulationList({ formulations, isLoading, onEdit, sortF
     return "text-red-600";
   };
 
-  const SortableHeader = ({ field, children, className = "" }: { 
-    field: FormulationSortField; 
-    children: React.ReactNode; 
-    className?: string; 
+  const SortableHeader = ({ field, children, className = "" }: {
+    field: FormulationSortField;
+    children: React.ReactNode;
+    className?: string;
   }) => (
-    <th 
+    <th
       className={`p-4 text-sm font-medium text-slate-600 cursor-pointer hover:bg-slate-100 transition-colors ${className}`}
       onClick={() => {
         console.log('Sorting formulations by:', field);
@@ -80,8 +133,8 @@ export default function FormulationList({ formulations, isLoading, onEdit, sortF
       <div className="flex items-center space-x-1">
         <span>{children}</span>
         {sortField === field ? (
-          sortDirection === 'asc' ? 
-            <ChevronUp className="h-4 w-4" /> : 
+          sortDirection === 'asc' ?
+            <ChevronUp className="h-4 w-4" /> :
             <ChevronDown className="h-4 w-4" />
         ) : (
           <div className="h-4 w-4 opacity-30">
@@ -92,29 +145,7 @@ export default function FormulationList({ formulations, isLoading, onEdit, sortF
     </th>
   );
 
-  if (isLoading) {
-    return (
-      <div className="space-y-4">
-        {Array.from({ length: 5 }).map((_, i) => (
-          <div key={i} className="flex items-center justify-between p-4 border border-slate-200 rounded-lg">
-            <div className="flex items-center space-x-4">
-              <Skeleton className="w-10 h-10 rounded-lg" />
-              <div className="space-y-2">
-                <Skeleton className="h-4 w-40" />
-                <Skeleton className="h-3 w-32" />
-              </div>
-            </div>
-            <div className="flex items-center space-x-4">
-              <Skeleton className="h-6 w-16" />
-              <Skeleton className="h-8 w-20" />
-            </div>
-          </div>
-        ))}
-      </div>
-    );
-  }
-
-  if (formulations.length === 0) {
+  if (recalculatedFormulations.length === 0) {
     return (
       <div className="text-center py-12">
         <FlaskRound className="h-12 w-12 text-slate-400 mx-auto mb-4" />
@@ -134,6 +165,7 @@ export default function FormulationList({ formulations, isLoading, onEdit, sortF
               <th className="text-left p-4 text-sm font-medium text-slate-600">Batch Size</th>
               <SortableHeader field="totalCost" className="text-right">Total Cost</SortableHeader>
               <th className="text-right p-4 text-sm font-medium text-slate-600">Unit Cost</th>
+              <th className="text-center p-4 text-sm font-medium text-slate-600"># Ingredients</th>
               <SortableHeader field="profitMargin" className="text-right">Profit Margin</SortableHeader>
               <th className="text-right p-4 text-sm font-medium text-slate-600">Target Price</th>
               <th className="text-center p-4 text-sm font-medium text-slate-600">Status</th>
@@ -141,15 +173,19 @@ export default function FormulationList({ formulations, isLoading, onEdit, sortF
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-200">
-            {formulations.map((formulation) => {
-              const hasTargetPrice = formulation.targetPrice && Number(formulation.targetPrice) > 0;
-              const targetPrice = Number(formulation.targetPrice || 0);
-              const totalCost = Number(formulation.totalCost || 0);
-              const actualProfitMargin = hasTargetPrice && targetPrice > 0 
-                ? ((targetPrice - totalCost) / targetPrice * 100) 
-                : 0;
-              const profitMarginColor = getProfitMarginColor(actualProfitMargin.toString());
-              
+            {sortedFormulations.map((formulation: Formulation) => {
+              const c = (formulation as any)._calculated || formulation;
+              const profitMarginColor = getProfitMarginColor(c.profitMargin?.toString() ?? "0");
+              let targetPriceDisplay;
+              if (c.hasTargetPrice) {
+                targetPriceDisplay = (
+                  <span className="text-slate-900 font-medium">{formatCurrency(c.enteredTargetPrice)}</span>
+                );
+              } else {
+                targetPriceDisplay = (
+                  <span className="italic text-blue-600" title="Suggested price (30% markup)">{formatCurrency(c.suggestedTargetPrice)}</span>
+                );
+              }
               return (
                 <tr key={formulation.id} className="hover:bg-slate-50">
                   <td className="p-4">
@@ -174,27 +210,22 @@ export default function FormulationList({ formulations, isLoading, onEdit, sortF
                   </td>
                   <td className="p-4 text-right">
                     <p className="text-sm font-medium text-slate-900">
-                      ${Number(formulation.totalCost).toFixed(2)}
+                      {formatCurrency(c.totalCost)}
                     </p>
                   </td>
                   <td className="p-4 text-right">
                     <p className="text-sm font-medium text-slate-900">
-                      ${Number(formulation.unitCost).toFixed(4)}
+                      {formatCurrency(c.unitCost)}
                     </p>
                   </td>
-                  <td className="p-4 text-right">
-                    <p className={`text-sm font-medium ${profitMarginColor}`}>
-                      {hasTargetPrice ? actualProfitMargin.toFixed(1) : "0.0"}%
-                    </p>
+                  <td className="p-4 text-center">
+                    <span className="text-sm font-medium text-slate-900">{c.numIngredients}</span>
                   </td>
                   <td className="p-4 text-right">
-                    {hasTargetPrice ? (
-                      <p className="text-sm font-medium text-slate-900">
-                        ${Number(formulation.targetPrice).toFixed(2)}
-                      </p>
-                    ) : (
-                      <p className="text-sm text-slate-500">Not set</p>
-                    )}
+                    <p className={`text-sm font-medium ${profitMarginColor}`}>{c.profitMargin?.toFixed(1) ?? "0.0"}%</p>
+                  </td>
+                  <td className="p-4 text-right">
+                    {targetPriceDisplay}
                   </td>
                   <td className="p-4 text-center">
                     {getStatusBadge(formulation.isActive ?? true)}
@@ -233,7 +264,7 @@ export default function FormulationList({ formulations, isLoading, onEdit, sortF
         title="Delete Formulation"
         description={`Are you sure you want to delete "${deletingFormulation?.name}"? This action cannot be undone and will remove all associated ingredients.`}
         confirmText="Delete"
-        isLoading={deleteMutation.isPending}
+        isLoading={false} // Set to true if you have a loading state for deletion
       />
     </>
   );

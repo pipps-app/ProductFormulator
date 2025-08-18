@@ -1,0 +1,32 @@
+[
+  {
+    "name": "Olive Oil",
+    "categoryName": "Oils",
+    "vendorName": "SupplierA",
+    "totalCost": "50.00",
+    "quantity": "10",
+    "unit": "kg",
+    "sku": "OLV-001",
+    "notes": "High quality"
+  },
+  {
+    "name": "Coconut Oil",
+    "categoryName": "Oils",
+    "vendorName": "SupplierB",
+    "totalCost": "30.00",
+    "quantity": "5",
+    "unit": "kg",
+    "sku": "COC-002",
+    "notes": "Organic"
+  },
+  {
+    "name": "Lye",
+    "categoryName": "Chemicals",
+    "vendorName": "SupplierC",
+    "totalCost": "20.00",
+    "quantity": "2",
+    "unit": "kg",
+    "sku": "LYE-003",
+    "notes": "For saponification"
+  }
+]

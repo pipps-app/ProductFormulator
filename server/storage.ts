@@ -370,7 +370,13 @@ class MemoryStorage implements IStorage {
   }
 
   async getFormulations(userId: number): Promise<Formulation[]> {
-    return this.formulations.filter(f => f.userId === userId);
+    // For each formulation, attach an ingredients array (empty if none)
+    return this.formulations
+      .filter(f => f.userId === userId)
+      .map(f => ({
+        ...f,
+        ingredients: this.formulationIngredients.filter(i => i.formulationId === f.id)
+      }));
   }
 
   async getFormulation(id: number): Promise<Formulation | undefined> {
@@ -378,6 +384,10 @@ class MemoryStorage implements IStorage {
   }
 
   async createFormulation(formulation: InsertFormulation): Promise<Formulation> {
+    // Backend validation: prevent saving if no ingredients
+    if (!('ingredients' in formulation) || !Array.isArray((formulation as any).ingredients) || (formulation as any).ingredients.length === 0) {
+      throw new Error('A formulation must have at least one ingredient.');
+    }
     const newFormulation: Formulation = {
       id: this.nextId++,
       ...formulation,

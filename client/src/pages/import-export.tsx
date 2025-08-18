@@ -7,6 +7,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import FileUpload from "@/components/common/file-upload";
+import { ImportNotifier } from "@/components/ImportNotifier";
 
 export default function ImportExport() {
   const [importing, setImporting] = useState(false);
@@ -158,27 +159,10 @@ export default function ImportExport() {
         const result = await response.json();
         
         if (result.failed > 0) {
-          // Show detailed step-by-step instructions
-          const steps = result.actionSteps || [];
-          const stepsText = steps.length > 0 ? steps.map((step, i) => `${i + 1}. ${step}`).join('\n') : 'Check missing vendors/categories and create them first.';
-          
-          toast({ 
-            title: `${result.failed} materials failed to import`, 
-            description: `${result.successful} succeeded. TO FIX:\n${stepsText}`,
-            variant: "destructive"
-          });
-          
-          // Also show in console for debugging
-          console.log('=== IMPORT ISSUE RESOLUTION ===');
-          console.log('Problem:', result.guidance);
-          console.log('Action Steps:');
-          steps.forEach((step, i) => console.log(`${i + 1}. ${step}`));
-          console.log('Detailed errors:', result.errors);
+          // Use ImportNotifier's handler for detailed error toast
+          (ImportNotifier as any).handleImportResponse(result);
         } else {
-          toast({ 
-            title: "Import successful", 
-            description: `All ${result.successful} materials imported successfully`
-          });
+          (ImportNotifier as any).handleImportResponse(result);
         }
       } else {
         toast({ 
@@ -331,59 +315,30 @@ export default function ImportExport() {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <Alert className="border-green-200 bg-green-50">
-                <Info className="h-4 w-4 text-green-600" />
+              <Alert className="border-blue-200 bg-blue-50">
+                <Info className="h-4 w-4 text-blue-600" />
                 <AlertDescription>
                   <div className="space-y-2 text-sm">
-                    <p><strong className="text-green-800">CSV Import Process:</strong></p>
-                    <ol className="list-decimal list-inside space-y-1 text-green-700 ml-4">
-                      <li>Upload your CSV file below</li>
-                      <li>If materials fail, you'll get EXACT instructions on what to create</li>
-                      <li>Create the missing vendors/categories</li>
-                      <li>Re-upload the SAME file - only failed items will import</li>
+                    <p><strong className="text-blue-800">Import Workflow:</strong></p>
+                    <ol className="list-decimal list-inside space-y-1 text-blue-700 ml-4">
+                      <li><b>Step 1:</b> <a href="/vendors" className="underline text-blue-700">Create your vendors</a> and <a href="/categories" className="underline text-blue-700">categories</a> first.</li>
+                      <li><b>Step 2:</b> Download the <a href="/templates/material_import_template.xlsx" className="underline text-blue-700">Excel/CSV template</a> or <a href="/templates/material_import_template.json" className="underline text-blue-700">JSON template</a>.</li>
+                      <li><b>Step 3:</b> Fill in your data using the template.</li>
+                      <li><b>Step 4:</b> Upload your file below.</li>
+                      <li><b>Step 5:</b> Review the results and fix any errors.</li>
                     </ol>
-                    <p className="text-green-600 text-xs mt-2 font-medium">
-                      ✓ Required format: name,sku,categoryName,vendorName,totalCost,quantity,unit,notes
+                    <p className="text-blue-600 text-xs mt-2 font-medium">
+                      Required columns: name, sku, categoryName, vendorName, totalCost, quantity, unit, notes
                     </p>
                   </div>
                 </AlertDescription>
               </Alert>
-              
               <FileUpload
                 onUpload={handleImport}
-                accept=".csv,.json"
+                accept=".csv,.json,.xlsx"
                 maxSize={5 * 1024 * 1024}
                 isLoading={importing}
               />
-              
-              <div className="flex space-x-3">
-                <Button 
-                  variant="outline" 
-                  size="sm"
-                  onClick={handleSetupImportData}
-                  disabled={importing}
-                >
-                  <Upload className="h-4 w-4 mr-2" />
-                  Setup Vendors & Categories
-                </Button>
-                <Button 
-                  variant="outline" 
-                  size="sm"
-                  onClick={handleRemoveDuplicates}
-                  disabled={importing}
-                >
-                  <AlertCircle className="h-4 w-4 mr-2" />
-                  Remove Duplicates
-                </Button>
-                <Button 
-                  variant="outline" 
-                  size="sm"
-                  onClick={() => handleDownloadTemplate('materials')}
-                >
-                  <FileText className="h-4 w-4 mr-2" />
-                  Download Template
-                </Button>
-              </div>
             </CardContent>
           </Card>
 

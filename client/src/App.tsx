@@ -25,6 +25,7 @@ import Onboarding from "@/pages/onboarding";
 import Login from "@/pages/login";
 import AppLayout from "@/components/layout/app-layout";
 import ProtectedRoute from "@/components/protected-route";
+import { ImportNotifier } from "@/components/ImportNotifier";
 
 function ProtectedAppRoute({ path, component: Component }: { path: string; component: any }) {
   return (
@@ -72,6 +73,7 @@ function App() {
           <Router />
           <TourTooltip />
           <FirstTimeGuide />
+          <ImportNotifier />
         </TourProvider>
       </TooltipProvider>
     </QueryClientProvider>

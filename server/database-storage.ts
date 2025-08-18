@@ -128,7 +128,12 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getFormulations(userId: number): Promise<Formulation[]> {
-    return await db.select().from(schema.formulations).where(eq(schema.formulations.userId, userId));
+    // Use Drizzle ORM relational query to fetch formulations with their ingredients
+    // @ts-ignore: Drizzle query typing may not reflect .with
+    return await db.query.formulations.findMany({
+      where: (formulations, { eq }) => eq(formulations.userId, userId),
+      with: { ingredients: true },
+    });
   }
 
   async getFormulation(id: number): Promise<Formulation | undefined> {

@@ -1,10 +1,20 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { createPaypalOrder, capturePaypalOrder, loadPaypalDefault } from "./paypal";
 import { reportsService } from "./reports";
 import { registerPaymentRoutes } from "./routes/payments";
 import { emailService } from "./email";
+import path from "path";
+import express from "express";
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+import { withTransaction } from "./transaction-utils";
+import { db } from "./db";
+import { eq } from "drizzle-orm";
+import { formulations, rawMaterials, formulationIngredients } from "@shared/schema";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 function hasAccessToTier(userTier: string, requiredTier: string): boolean {
   const tierHierarchy = ['free', 'pro', 'business', 'enterprise'];
@@ -273,23 +283,31 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Get base URL for the reset link
       const baseUrl = req.headers.origin || `${req.protocol}://${req.get('host')}`;
       
-      // Send email
-      const emailSent = await emailService.sendPasswordResetEmail(email, token, baseUrl);
-      
-      if (emailSent) {
-        res.json({ 
-          success: true, 
-          message: "Password reset email has been sent to your email address."
-        });
-      } else {
-        // If email service is not configured, fall back to demo mode
-        console.log('Email service not configured, using demo mode');
-        res.json({ 
-          success: true, 
-          message: "Email service not configured. Demo mode - token:",
-          // Demo mode - return token for testing
-          resetToken: token
-        });
+      console.log('🔧 Preparing to send password reset email...');
+      console.log(`- Email: ${email}`);
+      console.log(`- Token: ${token}`);
+      console.log(`- Base URL: ${baseUrl}`);
+
+      try {
+        const emailSent = await emailService.sendPasswordResetEmail(email, token, baseUrl);
+
+        if (emailSent) {
+          console.log('✅ Password reset email sent successfully.');
+          res.json({ 
+            success: true, 
+            message: "Password reset email has been sent to your email address."
+          });
+        } else {
+          console.log('❌ Email service not configured, using demo mode');
+          res.json({ 
+            success: true, 
+            message: "Email service not configured. Demo mode - token:",
+            resetToken: token // Demo mode - return token for testing
+          });
+        }
+      } catch (error) {
+        console.error('❌ Error sending password reset email:', error);
+        res.status(500).json({ error: "Failed to process password reset request" });
       }
     } catch (error) {
       console.error("Password reset request error:", error);
@@ -972,64 +990,41 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/formulations", requireAuth, checkFormulationsLimit, async (req: any, res) => {
     try {
       const { ingredients, ...formulationData } = req.body;
+      if (!ingredients || !Array.isArray(ingredients) || ingredients.length === 0) {
+        return res.status(400).json({ error: "A formulation must have at least one ingredient." });
+      }
+      // Ensure userId is included from the authenticated session
       const parsedFormulationData = insertFormulationSchema.parse({ ...formulationData, userId: req.userId });
-      let formulation = await storage.createFormulation(parsedFormulationData);
-      
-      // Create formulation ingredients if provided
-      if (ingredients && Array.isArray(ingredients)) {
+      let formulation;
+      await withTransaction(async (trx) => {
+        // Create formulation
+        const results = await trx.insert(formulations).values(parsedFormulationData).returning();
+        formulation = results[0];
+        // Insert ingredients robustly
         for (const ingredient of ingredients) {
-          await storage.createFormulationIngredient({
+          // Fetch material details
+          const [material] = await trx.select().from(rawMaterials).where(eq(rawMaterials.id, ingredient.materialId));
+          if (!material) throw new Error(`Material with id ${ingredient.materialId} not found`);
+          const unit = material.unit;
+          const unitCost = parseFloat(material.unitCost);
+          const quantity = parseFloat(ingredient.quantity);
+          const costContribution = (unitCost * quantity).toFixed(4);
+          await trx.insert(formulationIngredients).values({
             formulationId: formulation.id,
             materialId: ingredient.materialId,
             quantity: ingredient.quantity,
-            unit: ingredient.unit,
-            costContribution: ingredient.costContribution,
+            unit,
+            costContribution,
             includeInMarkup: ingredient.includeInMarkup !== false,
           });
         }
-        
-        // Calculate formulation costs based on ingredients
-        const totalMaterialCost = ingredients.reduce((total, ing) => 
-          total + Number(ing.costContribution || 0), 0);
-        
-        // Calculate markup-eligible cost (only ingredients marked for markup)
-        const markupEligibleCost = ingredients.reduce((total, ing) => 
-          (ing.includeInMarkup !== false) ? total + Number(ing.costContribution || 0) : total, 0);
-        
-        const { calculateFormulationUnitCost, calculateProfitMargin } = await import('./utils/calculations.js');
-        const batchSize = Number(formulation.batchSize || 1);
-        const unitCost = calculateFormulationUnitCost(totalMaterialCost, batchSize);
-        const markupPercentage = Number(formulation.markupPercentage || 30);
-        const profitMargin = calculateProfitMargin(markupEligibleCost, markupPercentage);
-        
-        // Update formulation with calculated costs
-        const updateSuccess = await storage.updateFormulationCosts(formulation.id, {
-          totalCost: totalMaterialCost.toFixed(2),
-          unitCost: unitCost.toFixed(4),
-          profitMargin: profitMargin.toFixed(2),
-        });
-        
-        console.log(`Formulation ${formulation.id} cost update success: ${updateSuccess}`);
-        
-        // Refresh formulation data to verify update
-        formulation = await storage.getFormulation(formulation.id);
-        console.log(`After update - Formulation ${formulation.id} unitCost: ${formulation?.unitCost}`);
-      }
-      
-      // Create audit log
-      await storage.createAuditLog({
-        userId: req.userId,
-        action: "create",
-        entityType: "formulation",
-        entityId: formulation.id,
-        changes: JSON.stringify({
-          description: `Created new formulation "${formulation.name}" with batch size of ${formulation.batchSize} ${formulation.batchUnit} and ${formulation.markupPercentage}% markup`,
-          data: formulation,
-          ingredients: ingredients
-        }),
       });
-      
-      res.json(formulation);
+      // Fetch the full formulation with ingredients
+      const fullFormulation = await db.query.formulations.findFirst({
+        where: eq(formulations.id, formulation.id),
+        with: { ingredients: true },
+      });
+      res.json(fullFormulation);
     } catch (error) {
       console.error("Error creating formulation:", error);
       res.status(400).json({ error: "Invalid formulation data" });
@@ -1043,78 +1038,45 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (!originalFormulation) {
         return res.status(404).json({ error: "Formulation not found" });
       }
-
       const { ingredients, ...formulationData } = req.body;
-      console.log("Updating formulation with ingredients:", ingredients);
-      const parsedFormulationData = insertFormulationSchema.partial().parse(formulationData);
-      let formulation = await storage.updateFormulation(id, parsedFormulationData);
-      
-      // Update formulation ingredients if provided
-      if (ingredients && Array.isArray(ingredients)) {
-        // Get existing ingredients
-        const existingIngredients = await storage.getFormulationIngredients(id);
-        
-        // Delete existing ingredients
-        for (const existingIngredient of existingIngredients) {
-          await storage.deleteFormulationIngredient(existingIngredient.id);
+      let formulation;
+      await withTransaction(async (trx) => {
+        // Update formulation
+        const results = await trx.update(formulations)
+          .set(formulationData)
+          .where(eq(formulations.id, id))
+          .returning();
+        formulation = results[0];
+        // Delete all existing ingredients
+        await trx.delete(formulationIngredients)
+          .where(eq(formulationIngredients.formulationId, id));
+        // Insert new ingredients robustly
+        if (ingredients && Array.isArray(ingredients)) {
+          for (const ingredient of ingredients) {
+            // Fetch material details
+            const [material] = await trx.select().from(rawMaterials).where(eq(rawMaterials.id, ingredient.materialId));
+            if (!material) throw new Error(`Material with id ${ingredient.materialId} not found`);
+            const unit = material.unit;
+            const unitCost = parseFloat(material.unitCost);
+            const quantity = parseFloat(ingredient.quantity);
+            const costContribution = (unitCost * quantity).toFixed(4);
+            await trx.insert(formulationIngredients).values({
+              formulationId: id,
+              materialId: ingredient.materialId,
+              quantity: ingredient.quantity,
+              unit,
+              costContribution,
+              includeInMarkup: ingredient.includeInMarkup !== false,
+            });
+          }
         }
-        
-        // Create new ingredients
-        for (const ingredient of ingredients) {
-          await storage.createFormulationIngredient({
-            formulationId: id,
-            materialId: ingredient.materialId,
-            quantity: ingredient.quantity,
-            unit: ingredient.unit,
-            costContribution: ingredient.costContribution,
-            includeInMarkup: ingredient.includeInMarkup !== false,
-          });
-        }
-        
-        // Recalculate formulation costs based on new ingredients
-        const totalMaterialCost = ingredients.reduce((total, ing) => 
-          total + Number(ing.costContribution || 0), 0);
-        
-        // Calculate markup-eligible cost (only ingredients marked for markup)
-        const markupEligibleCost = ingredients.reduce((total, ing) => 
-          (ing.includeInMarkup !== false) ? total + Number(ing.costContribution || 0) : total, 0);
-        
-        const batchSize = Number(formulation?.batchSize || 1);
-        const unitCost = batchSize > 0 ? totalMaterialCost / batchSize : 0;
-        const markupPercentage = Number(formulation?.markupPercentage || 30);
-        const profitMargin = (markupPercentage / 100) * markupEligibleCost;
-        
-        // Update formulation with calculated costs using storage updateFormulationCosts method
-        await storage.updateFormulationCosts(id, {
-          totalCost: totalMaterialCost.toFixed(2),
-          unitCost: unitCost.toFixed(4),
-          profitMargin: profitMargin.toFixed(2),
-        });
-        
-        // Refresh formulation data
-        formulation = await storage.getFormulation(id);
-      }
-      
-      // Create audit log
-      if (formulation) {
-        const costChange = originalFormulation.totalCost !== formulation.totalCost 
-          ? ` (total cost changed from $${originalFormulation.totalCost} to $${formulation.totalCost})`
-          : '';
-        await storage.createAuditLog({
-          userId: 1,
-          action: "update",
-          entityType: "formulation",
-          entityId: id,
-          changes: JSON.stringify({
-            description: `Updated formulation "${formulation.name}" - batch size is now ${formulation.batchSize} ${formulation.batchUnit} with ${formulation.markupPercentage}% markup${costChange}`,
-            before: originalFormulation,
-            after: formulation,
-            ingredients: ingredients
-          }),
-        });
-      }
-      
-      res.json(formulation);
+      });
+      // Fetch the full formulation with ingredients
+      const fullFormulation = await db.query.formulations.findFirst({
+        where: eq(formulations.id, id),
+        with: { ingredients: true },
+      });
+      res.json(fullFormulation);
     } catch (error) {
       console.error("Error updating formulation:", error);
       res.status(400).json({ error: "Invalid formulation data" });
@@ -1210,7 +1172,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }, 0) / activeFormulationsWithTarget.length
       : 0;
 
-    // Add cache control headers to prevent stale data
+    // Add cache control headers
     res.set('Cache-Control', 'no-cache, no-store, must-revalidate');
     res.set('Pragma', 'no-cache');
     res.set('Expires', '0');
@@ -1299,12 +1261,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Import materials
-  app.post("/api/import/materials", requireAuth, async (req: any, res) => {
+  app.post("/api/import/materials", requireAuth, async (req, res) => {
     const userId = req.userId;
     const { materials } = req.body;
     
     if (!Array.isArray(materials)) {
-      return res.status(400).json({ error: "Materials must be an array" });
+      return res.status(400).json({
+        message: "Import failed: materials must be an array.",
+        failed: 0,
+        successful: 0,
+        errors: ["No materials array provided in request body."],
+        guidance: "Please upload a valid CSV or JSON file with an array of materials.",
+        actionSteps: [
+          "Check your file format. It must be a .csv or .json file with the correct columns.",
+          "Download the template and compare your file structure.",
+          "Try again with a corrected file."
+        ],
+        availableCategories: [],
+        availableVendors: []
+      });
     }
 
     let successful = 0;
@@ -1343,13 +1318,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
         if (!categoryId) {
           failed++;
-          errors.push(`Category "${materialData.categoryName}" not found for material "${materialData.name}". Available: ${categories.map(c => c.name).join(', ')}`);
+          errors.push(`Category '${materialData.categoryName}' not found for material '${materialData.name}'.`);
           continue;
         }
-
         if (!vendorId) {
           failed++;
-          errors.push(`Vendor "${materialData.vendorName}" not found for material "${materialData.name}". Available: ${vendors.map(v => v.name).join(', ')}`);
+          errors.push(`Vendor '${materialData.vendorName}' not found for material '${materialData.name}'.`);
           continue;
         }
 
@@ -1376,48 +1350,31 @@ export async function registerRoutes(app: Express): Promise<Server> {
         // Validate with schema
         const validatedData = insertRawMaterialSchema.parse(newMaterial);
         await storage.createRawMaterial(validatedData);
-        
         successful++;
-        
-        // Create audit log
         await storage.createAuditLog({
-          userId,
+          userId: req.userId,
           action: "create",
           entityType: "material",
           entityId: 0, // Will be updated after creation
           changes: JSON.stringify({
-            description: `Imported raw material "${materialData.name}" via CSV import`,
+            description: `Imported raw material '${materialData.name}' via CSV import`,
             data: validatedData
           }),
         });
-        
       } catch (error) {
         failed++;
         const errorMsg = error instanceof Error ? error.message : 'Unknown error';
-        errors.push(`Failed to import "${materialData.name}": ${errorMsg}`);
+        errors.push(`Failed to import '${materialData.name}': ${errorMsg}`);
       }
     }
 
-    // Create crystal-clear error guidance for clients
-    let guidance = "";
-    let actionSteps = [];
-    
-    if (failed > 0) {
-      const missingVendors = [...new Set(errors.filter(e => e.includes('vendor')).map(e => e.match(/"([^"]+)"/)?.[1]).filter(Boolean))];
-      const missingCategories = [...new Set(errors.filter(e => e.includes('category')).map(e => e.match(/"([^"]+)"/)?.[1]).filter(Boolean))];
-      
-      if (missingVendors.length > 0) {
-        guidance += `MISSING VENDORS: ${missingVendors.join(', ')}`;
-        actionSteps.push(`Go to VENDORS section → Click ADD VENDOR → Create: ${missingVendors.join(', ')}`);
-      }
-      if (missingCategories.length > 0) {
-        if (guidance) guidance += " | ";
-        guidance += `MISSING CATEGORIES: ${missingCategories.join(', ')}`;
-        actionSteps.push(`Go to CATEGORIES section → Click ADD CATEGORY → Create: ${missingCategories.join(', ')}`);
-      }
-      
-      actionSteps.push("Re-upload the SAME CSV file - only failed materials will be imported");
-    }
+    // Always return static guidance and action steps
+    const guidance = "Some materials failed to import. Please check the Setup Guide and ensure all vendors and categories exist before importing.";
+    const actionSteps = [
+      "Review the errors above.",
+      "Create missing vendors and categories using the Setup Guide.",
+      "Re-upload the same CSV or JSON file."
+    ];
 
     res.json({
       message: `Import completed: ${successful} successful, ${failed} failed`,
@@ -1429,649 +1386,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
       availableCategories: categories.map(c => c.name),
       availableVendors: vendors.map(v => v.name)
     });
-  });
-
-  // User endpoints
-  app.get("/api/user", async (req, res) => {
-    const userId = req.session?.userId;
-    
-    if (!userId) {
-      return res.status(401).json({ error: "Not authenticated" });
-    }
-    
-    const user = await storage.getUser(userId);
-    if (!user) {
-      return res.status(404).json({ error: "User not found" });
-    }
-    
-    // Return user without password
-    const { password, ...userWithoutPassword } = user;
-    res.json(userWithoutPassword);
-  });
-
-  // User profile management
-  app.get("/api/user/profile", async (req, res) => {
-    if (!req.session.userId) {
-      return res.status(401).json({ error: "Not authenticated" });
-    }
-    const userId = req.session.userId;
-    const user = await storage.getUser(userId);
-    if (!user) {
-      return res.status(404).json({ error: "User not found" });
-    }
-    
-    // Return user without password
-    const { password, ...userWithoutPassword } = user;
-    res.json(userWithoutPassword);
-  });
-
-  app.put("/api/user/profile", async (req, res) => {
-    if (!req.session.userId) {
-      return res.status(401).json({ error: "Not authenticated" });
-    }
-
-    try {
-      const userId = req.session.userId;
-      const { email, company } = req.body;
-      
-      const updates = { email, company };
-      const user = await storage.updateUser(userId, updates);
-      
-      if (!user) {
-        return res.status(404).json({ error: "User not found" });
-      }
-      
-      const { password, ...userWithoutPassword } = user;
-      res.json(userWithoutPassword);
-    } catch (error) {
-      res.status(400).json({ error: "Invalid profile data" });
-    }
-  });
-
-  app.put("/api/user/subscription", async (req, res) => {
-    try {
-      const userId = 1; // Mock user ID for demo
-      const { plan, status } = req.body;
-      
-      const updates = { 
-        subscriptionPlan: plan, 
-        subscriptionStatus: status,
-        subscriptionStartDate: new Date(),
-        subscriptionEndDate: plan === 'unlimited' ? null : new Date(Date.now() + 365 * 24 * 60 * 60 * 1000)
-      };
-      const user = await storage.updateUser(userId, updates);
-      
-      if (!user) {
-        return res.status(404).json({ error: "User not found" });
-      }
-      
-      res.json({ success: true, message: "Subscription updated successfully" });
-    } catch (error) {
-      res.status(400).json({ error: "Invalid subscription data" });
-    }
-  });
-
-  app.put("/api/user/password", async (req, res) => {
-    try {
-      const userId = 1; // Mock user ID
-      const { currentPassword, newPassword } = req.body;
-      
-      const user = await storage.getUser(userId);
-      if (!user) {
-        return res.status(404).json({ error: "User not found" });
-      }
-      
-      // In a real app, you'd verify the current password
-      // For now, we'll just update to the new password
-      const updated = await storage.updateUserPassword(userId, newPassword);
-      
-      if (!updated) {
-        return res.status(400).json({ error: "Failed to update password" });
-      }
-      
-      res.json({ success: true });
-    } catch (error) {
-      res.status(400).json({ error: "Invalid password data" });
-    }
-  });
-
-  // PayPal routes
-  app.get("/setup", loadPaypalDefault);
-  app.post("/order", createPaypalOrder);
-  app.post("/order/:orderID/capture", capturePaypalOrder);
-
-  // Shopify subscription redirect (replaces PayPal integration)
-  app.post("/api/subscribe", async (req, res) => {
-    try {
-      const { planId } = req.body;
-      
-      // Return Shopify store URLs for each plan
-      const shopifyUrls: Record<string, string> = {
-        professional: process.env.SHOPIFY_PROFESSIONAL_URL || 'https://your-store.myshopify.com/products/pipps-professional'
-      };
-      
-      const redirectUrl = shopifyUrls[planId as string];
-      if (!redirectUrl) {
-        return res.status(400).json({ error: "Invalid plan ID" });
-      }
-      
-      res.json({ 
-        success: true, 
-        message: "Redirecting to Shopify for secure payment",
-        redirectUrl: redirectUrl,
-        planId: planId
-      });
-    } catch (error) {
-      console.error("Failed to create subscription redirect:", error);
-      res.status(500).json({ error: "Failed to process subscription request" });
-    }
-  });
-
-  app.post("/api/subscription/activate", async (req, res) => {
-    if (!req.session.userId) {
-      return res.status(401).json({ error: "Not authenticated" });
-    }
-    const userId = req.session.userId;
-
-    try {
-      const { orderId, planId } = req.body;
-      
-      // Handle free tier activation
-      if (orderId === "free") {
-        await storage.updateUser(userId, {
-          subscriptionStatus: 'active',
-          subscriptionPlan: planId,
-          subscriptionStartDate: new Date(),
-          subscriptionEndDate: null // Free tier doesn't expire
-        } as any);
-
-        res.json({ success: true, subscription: { status: 'active', plan: planId } });
-        return;
-      }
-      
-      // Capture the payment for paid plans
-      const captureResponse = await fetch(`${req.protocol}://${req.get('host')}/order/${orderId}/capture`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' }
-      });
-
-      const captureData = await captureResponse.json();
-      
-      if (captureData.status === 'COMPLETED') {
-        // Activate subscription
-        await storage.updateUser(userId, {
-          subscriptionStatus: 'active',
-          subscriptionPlan: planId,
-          subscriptionStartDate: new Date(),
-          subscriptionEndDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000) // 30 days
-        } as any);
-
-        res.json({ success: true, subscription: { status: 'active', plan: planId } });
-      } else {
-        res.status(400).json({ error: "Payment not completed" });
-      }
-    } catch (error) {
-      console.error("Subscription activation failed:", error);
-      res.status(500).json({ error: "Failed to activate subscription" });
-    }
-  });
-
-  app.get("/api/subscription/status", async (req, res) => {
-    if (!req.session.userId) {
-      return res.status(401).json({ error: "Not authenticated" });
-    }
-
-    try {
-      const user = await storage.getUser(req.session.userId);
-      if (!user) {
-        return res.status(404).json({ error: "User not found" });
-      }
-
-      res.json({
-        status: (user as any).subscriptionStatus || 'free',
-        plan: (user as any).subscriptionPlan || 'free',
-        startDate: (user as any).subscriptionStartDate,
-        endDate: (user as any).subscriptionEndDate
-      });
-    } catch (error) {
-      console.error("Failed to get subscription status:", error);
-      res.status(500).json({ error: "Failed to get subscription status" });
-    }
-  });
-
-  app.get("/api/subscription/info", async (req, res) => {
-    if (!req.session.userId) {
-      return res.status(401).json({ error: "Not authenticated" });
-    }
-    const userId = req.session.userId;
-
-    try {
-      const subscriptionInfo = await getUserSubscriptionInfo(userId);
-      if (!subscriptionInfo) {
-        return res.status(404).json({ error: "User not found" });
-      }
-
-      res.json(subscriptionInfo);
-    } catch (error) {
-      console.error("Failed to get subscription info:", error);
-      res.status(500).json({ error: "Failed to get subscription info" });
-    }
-  });
-
-  // Shopify webhook endpoints for subscription management
-  app.post("/webhooks/shopify/subscription/created", async (req, res) => {
-    try {
-      const { customer_email, line_items, id: order_id } = req.body;
-      
-      // Find user by email or create new user
-      let user = await storage.getUserByEmail(customer_email);
-      if (!user) {
-        // Create new user account
-        user = await storage.createUser({
-          email: customer_email,
-          password: 'temp_password', // User will need to set password on first login
-          company: '',
-          role: 'user'
-        });
-      }
-
-      // Determine subscription plan based on Shopify product
-      let planId = 'free';
-      const productTitle = line_items[0]?.title?.toLowerCase() || '';
-      
-      if (productTitle.includes('starter')) {
-        planId = 'starter';
-      } else if (productTitle.includes('professional')) {
-        planId = 'professional';
-      }
-
-      // Activate subscription
-      await storage.updateUser(user.id, {
-        subscriptionStatus: 'active',
-        subscriptionPlan: planId,
-        subscriptionStartDate: new Date(),
-        subscriptionEndDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days
-        paypalSubscriptionId: order_id.toString()
-      } as any);
-
-      // Create audit log
-      await storage.createAuditLog({
-        userId: user.id,
-        action: "create",
-        entityType: "vendor",
-        entityId: 0,
-        changes: JSON.stringify({
-          description: `Subscription activated via Shopify: ${planId} plan for ${customer_email}`,
-          shopifyOrderId: order_id,
-          plan: planId
-        }),
-      });
-
-      res.json({ success: true, message: `${planId} subscription activated for ${customer_email}` });
-    } catch (error) {
-      console.error("Shopify webhook error:", error);
-      res.status(500).json({ error: "Failed to process subscription" });
-    }
-  });
-
-  app.post("/webhooks/shopify/subscription/cancelled", async (req, res) => {
-    try {
-      const { customer_email } = req.body;
-      
-      const user = await storage.getUserByEmail(customer_email);
-      if (!user) {
-        return res.status(404).json({ error: "User not found" });
-      }
-
-      // Downgrade to free plan
-      await storage.updateUser(user.id, {
-        subscriptionStatus: 'active',
-        subscriptionPlan: 'free',
-        subscriptionEndDate: null
-      } as any);
-
-      res.json({ success: true, message: `Subscription cancelled for ${customer_email}, downgraded to free plan` });
-    } catch (error) {
-      console.error("Shopify webhook error:", error);
-      res.status(500).json({ error: "Failed to cancel subscription" });
-    }
-  });
-
-  // Duplicate support endpoint removed (moved above auth middleware)
-
-  // Instant trial account creation
-  app.post("/api/users/create-trial", async (req, res) => {
-    try {
-      const { email } = req.body;
-      const trialEmail = email || `trial_${Date.now()}@trial.local`;
-      
-      // Check if user already exists
-      const existingUser = await storage.getUserByEmail(trialEmail);
-      if (existingUser) {
-        return res.json({ 
-          success: true, 
-          message: "Account exists, logging in",
-          userId: existingUser.id
-        });
-      }
-
-      // Create new trial user
-      const user = await storage.createUser({
-        email: trialEmail,
-        password: 'trial_password', // Simple password for trials
-        company: '',
-        role: 'user'
-      });
-
-      // Set free plan
-      await storage.updateUser(user.id, {
-        subscriptionStatus: 'active',
-        subscriptionPlan: 'free',
-        subscriptionStartDate: new Date(),
-        subscriptionEndDate: null
-      } as any);
-
-      // Create audit log
-      await storage.createAuditLog({
-        userId: user.id,
-        action: "create",
-        entityType: "vendor",
-        entityId: 0,
-        changes: JSON.stringify({
-          description: `Trial account created: ${trialEmail}`,
-          plan: 'free'
-        }),
-      });
-
-      res.json({ 
-        success: true, 
-        message: "Trial account created",
-        userId: user.id
-      });
-    } catch (error) {
-      console.error("Trial creation error:", error);
-      res.status(500).json({ error: "Failed to create trial account" });
-    }
-  });
-
-  // User account creation endpoint for Shopify integration
-  app.post("/api/users/create-from-shopify", async (req, res) => {
-    try {
-      const { email, planId = 'free' } = req.body;
-      
-      // Check if user already exists
-      const existingUser = await storage.getUserByEmail(email);
-      if (existingUser) {
-        return res.json({ 
-          success: true, 
-          message: "User already exists",
-          userId: existingUser.id,
-          loginUrl: `${req.protocol}://${req.get('host')}/login?email=${email}`
-        });
-      }
-
-      // Create new user
-      const user = await storage.createUser({
-        email: email,
-        password: 'temp_password', // User will set password on first login
-        company: '',
-        role: 'user'
-      });
-
-      // Set subscription plan
-      await storage.updateUser(user.id, {
-        subscriptionStatus: 'active',
-        subscriptionPlan: planId,
-        subscriptionStartDate: new Date(),
-        subscriptionEndDate: planId === 'free' ? null : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
-      } as any);
-
-      res.json({ 
-        success: true, 
-        message: "User account created",
-        userId: user.id,
-        loginUrl: `${req.protocol}://${req.get('host')}/login?email=${email}`
-      });
-    } catch (error) {
-      console.error("User creation error:", error);
-      res.status(500).json({ error: "Failed to create user account" });
-    }
-  });
-
-  // Export routes
-  app.get("/api/export/materials", async (req, res) => {
-    try {
-      const format = req.query.format as string || 'json';
-      const materials = await storage.getRawMaterials(1);
-      const categories = await storage.getMaterialCategories(1);
-      const vendors = await storage.getVendors(1);
-
-      // Create comprehensive export data
-      const exportData = materials.map(material => ({
-        ...material,
-        categoryName: categories.find(c => c.id === material.categoryId)?.name || '',
-        vendorName: vendors.find(v => v.id === material.vendorId)?.name || ''
-      }));
-
-      if (format === 'csv') {
-        // Convert to CSV format
-        const headers = ['Name', 'SKU', 'Category', 'Vendor', 'Total Cost', 'Quantity', 'Unit', 'Unit Cost', 'Notes', 'Active'];
-        const csvData = [
-          headers.join(','),
-          ...exportData.map(material => [
-            `"${material.name}"`,
-            `"${material.sku || ''}"`,
-            `"${material.categoryName}"`,
-            `"${material.vendorName}"`,
-            material.totalCost,
-            material.quantity,
-            `"${material.unit}"`,
-            material.unitCost,
-            `"${material.notes || ''}"`,
-            material.isActive
-          ].join(','))
-        ].join('\n');
-
-        res.setHeader('Content-Type', 'text/csv');
-        res.setHeader('Content-Disposition', 'attachment; filename="materials.csv"');
-        res.send(csvData);
-      } else {
-        res.setHeader('Content-Type', 'application/json');
-        res.setHeader('Content-Disposition', 'attachment; filename="materials.json"');
-        res.json(exportData);
-      }
-    } catch (error) {
-      console.error("Export materials error:", error);
-      res.status(500).json({ error: "Failed to export materials" });
-    }
-  });
-
-  app.get("/api/export/formulations", async (req, res) => {
-    try {
-      const formulations = await storage.getFormulations(1);
-      
-      // Get detailed formulation data with ingredients
-      const exportData = await Promise.all(
-        formulations.map(async (formulation) => {
-          const ingredients = await storage.getFormulationIngredients(formulation.id);
-          return {
-            ...formulation,
-            ingredients
-          };
-        })
-      );
-
-      res.setHeader('Content-Type', 'application/json');
-      res.setHeader('Content-Disposition', 'attachment; filename="formulations.json"');
-      res.json(exportData);
-    } catch (error) {
-      console.error("Export formulations error:", error);
-      res.status(500).json({ error: "Failed to export formulations" });
-    }
-  });
-
-  app.get("/api/export/backup", async (req, res) => {
-    try {
-      const materials = await storage.getRawMaterials(1);
-      const formulations = await storage.getFormulations(1);
-      const vendors = await storage.getVendors(1);
-      const categories = await storage.getMaterialCategories(1);
-
-      // Get detailed formulation data with ingredients
-      const formulationsWithIngredients = await Promise.all(
-        formulations.map(async (formulation) => {
-          const ingredients = await storage.getFormulationIngredients(formulation.id);
-          return {
-            ...formulation,
-            ingredients
-          };
-        })
-      );
-
-      const backupData = {
-        exportDate: new Date().toISOString(),
-        materials,
-        formulations: formulationsWithIngredients,
-        vendors,
-        categories
-      };
-
-      res.setHeader('Content-Type', 'application/json');
-      res.setHeader('Content-Disposition', 'attachment; filename="pipps-backup.json"');
-      res.json(backupData);
-    } catch (error) {
-      console.error("Export backup error:", error);
-      res.status(500).json({ error: "Failed to create backup" });
-    }
-  });
-
-  // Template download routes
-  app.get("/api/templates/materials", async (req, res) => {
-    try {
-      const categories = await storage.getMaterialCategories(1);
-      const vendors = await storage.getVendors(1);
-
-      const template = {
-        materials: [
-          {
-            name: "Example Material",
-            sku: "EX001",
-            categoryId: categories[0]?.id || 1,
-            vendorId: vendors[0]?.id || null,
-            totalCost: "100.00",
-            quantity: "50.000",
-            unit: "kg",
-            notes: "Example material for import template",
-            isActive: true
-          }
-        ],
-        instructions: {
-          name: "Material name (required)",
-          sku: "Stock keeping unit (optional)",
-          categoryId: `Category ID - Available options: ${categories.map(c => `${c.id}="${c.name}"`).join(', ')}`,
-          vendorId: `Vendor ID - Available options: ${vendors.map(v => `${v.id}="${v.name}"`).join(', ')} or null`,
-          totalCost: "Total cost as decimal string",
-          quantity: "Quantity as decimal string",
-          unit: "Unit of measurement (kg, g, L, ml, pcs, etc.)",
-          notes: "Optional notes",
-          isActive: "Boolean - true or false"
-        }
-      };
-
-      res.setHeader('Content-Type', 'application/json');
-      res.setHeader('Content-Disposition', 'attachment; filename="materials-template.json"');
-      res.json(template);
-    } catch (error) {
-      console.error("Template download error:", error);
-      res.status(500).json({ error: "Failed to generate template" });
-    }
-  });
-
-  app.get("/api/templates/formulations", async (req, res) => {
-    try {
-      const materials = await storage.getRawMaterials(1);
-
-      const template = {
-        formulations: [
-          {
-            name: "Example Formulation",
-            description: "Sample product formulation",
-            batchSize: "1.000",
-            batchUnit: "unit",
-            targetPrice: "100.00",
-            markupPercentage: "30.00",
-            ingredients: [
-              {
-                materialId: materials[0]?.id || 1,
-                quantity: "10.000",
-                unit: "g",
-                includeInMarkup: true,
-                notes: "Main ingredient"
-              }
-            ]
-          }
-        ],
-        instructions: {
-          name: "Formulation name (required)",
-          description: "Product description (optional)",
-          batchSize: "Batch size as decimal string",
-          batchUnit: "Batch unit (unit, kg, L, etc.)",
-          targetPrice: "Target selling price",
-          markupPercentage: "Markup percentage for profit calculation",
-          ingredients: "Array of ingredients",
-          materialId: `Material ID - Available options: ${materials.slice(0, 5).map(m => `${m.id}="${m.name}"`).join(', ')}`,
-          quantity: "Ingredient quantity as decimal string",
-          unit: "Ingredient unit of measurement",
-          includeInMarkup: "Boolean - whether to include in markup calculation",
-          notes: "Optional ingredient notes"
-        }
-      };
-
-      res.setHeader('Content-Type', 'application/json');
-      res.setHeader('Content-Disposition', 'attachment; filename="formulations-template.json"');
-      res.json(template);
-    } catch (error) {
-      console.error("Template download error:", error);
-      res.status(500).json({ error: "Failed to generate template" });
-    }
-  });
-
-  // Import routes
-  app.post("/api/import/materials", async (req, res) => {
-    try {
-      const { materials } = req.body;
-      
-      if (!Array.isArray(materials)) {
-        return res.status(400).json({ error: "Invalid materials data format" });
-      }
-
-      const importResults = {
-        success: 0,
-        errors: [] as string[]
-      };
-
-      for (const materialData of materials) {
-        try {
-          const materialToCreate = insertRawMaterialSchema.parse({
-            ...materialData,
-            userId: 1
-          });
-          
-          await storage.createRawMaterial(materialToCreate);
-          importResults.success++;
-        } catch (error) {
-          importResults.errors.push(`Failed to import material "${materialData.name}": ${error}`);
-        }
-      }
-
-      res.json({
-        message: `Import completed: ${importResults.success} materials imported successfully`,
-        ...importResults
-      });
-    } catch (error) {
-      console.error("Import materials error:", error);
-      res.status(500).json({ error: "Failed to import materials" });
-    }
   });
 
   // Database reset endpoint for production deployment
@@ -2349,6 +1663,80 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ error: "Failed to update subscription" });
     }
   });
+
+  // Test email route for debugging Gmail SMTP issues
+  app.get("/api/test-email", async (req, res) => {
+    try {
+      console.log('🧪 Testing email configuration...');
+      
+      // Import email service
+      const { emailService } = await import('./email');
+      
+      // Check if email service is configured
+      if (!emailService.isConfigured()) {
+        return res.status(500).json({ 
+          error: "Email service not configured",
+          message: "Check your .env file for GMAIL_FORGOT_EMAIL and GMAIL_FORGOT_PASS"
+        });
+      }
+      
+      // Send test email
+      const testEmail = process.env.GMAIL_FORGOT_EMAIL || "test@example.com";
+      const success = await emailService.sendEmail({
+        to: testEmail,
+        subject: 'Test Email - PIPPS Maker Calc',
+        html: `
+          <h2>Email Test Successful!</h2>
+          <p>This is a test email from PIPPS Maker Calc.</p>
+          <p><strong>Timestamp:</strong> ${new Date().toISOString()}</p>
+          <p><strong>Server:</strong> Local development</p>
+          <p>If you receive this email, your Gmail SMTP configuration is working correctly.</p>
+        `,
+        text: `Email Test Successful! This is a test email from PIPPS Maker Calc. Timestamp: ${new Date().toISOString()}`
+      });
+
+      if (success) {
+        res.json({ 
+          success: true, 
+          message: `Test email sent successfully to ${testEmail}`,
+          timestamp: new Date().toISOString()
+        });
+      } else {
+        res.status(500).json({ 
+          error: "Failed to send test email",
+          message: "Check console logs for detailed error information"
+        });
+      }
+    } catch (error) {
+      console.error("Test email error:", error);
+      res.status(500).json({ 
+        error: "Test email failed", 
+        message: error.message || "Unknown error occurred"
+      });
+    }
+  });
+
+  // Get current user info (for frontend auth)
+  app.get("/api/user", async (req, res) => {
+    if (!req.session?.userId) {
+      return res.status(401).json({ error: "Not authenticated" });
+    }
+    const user = await storage.getUser(req.session.userId);
+    if (!user) {
+      return res.status(401).json({ error: "User not found" });
+    }
+    // Only return safe fields
+    res.json({
+      id: user.id,
+      email: user.email,
+      name: user.company || null, // Use company as display name if available
+      role: user.role || "user",
+      subscriptionPlan: user.subscriptionPlan || "free"
+    });
+  });
+
+  // Serve template files for download
+  app.use("/templates", express.static(path.join(__dirname, "..")));
 
   const httpServer = createServer(app);
   return httpServer;

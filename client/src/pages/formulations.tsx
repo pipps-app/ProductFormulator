@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -7,10 +7,12 @@ import FormulationList from "@/components/formulations/formulation-list";
 import FormulationForm from "@/components/formulations/formulation-form";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useFormulations } from "@/hooks/use-formulations";
+import { useMaterials } from "@/hooks/use-materials";
 import { useQueryClient } from "@tanstack/react-query";
 import { LandscapeNotice } from "@/components/common/mobile-notice";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
+import { useLocation } from "wouter";
 
 type FormulationSortField = 'name' | 'totalCost' | 'profitMargin';
 type SortDirection = 'asc' | 'desc';
@@ -24,8 +26,10 @@ export default function Formulations() {
   const [sortDirection, setSortDirection] = useState<SortDirection>('asc');
   
   const { data: formulations, isLoading, refetch } = useFormulations();
+  const { data: rawMaterials } = useMaterials();
   const queryClient = useQueryClient();
   const { toast } = useToast();
+  const [, setLocation] = useLocation();
 
   const filteredAndSortedFormulations = useMemo(() => {
     const filtered = formulations?.filter(formulation =>
@@ -134,6 +138,29 @@ export default function Formulations() {
       setTimeout(() => setIsRefreshing(false), 500);
     }
   };
+
+  // Auto-refresh on mount and when window/tab regains focus
+  useEffect(() => {
+    // Refetch on mount
+    refetch();
+    // Refetch on window focus
+    const handleFocus = () => refetch();
+    window.addEventListener("focus", handleFocus);
+    return () => window.removeEventListener("focus", handleFocus);
+  }, [refetch]);
+
+  // Refetch formulations whenever raw material prices change
+  useEffect(() => {
+    if (rawMaterials) {
+      refetch();
+    }
+  }, [rawMaterials]);
+
+  useEffect(() => {
+    // Always fetch latest data on mount and on route change
+    refetch();
+    queryClient.invalidateQueries({ queryKey: ["/api/raw-materials"] });
+  }, []); // Only on mount
 
   return (
     <div className="space-y-6">

@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { insertRawMaterialSchema, type RawMaterial, type Vendor, type MaterialCategory } from "@shared/schema";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
-import { useEffect } from "react";
+import { useEffect, useState, useRef } from "react";
 import FileAttachments from "@/components/files/file-attachments";
 
 interface MaterialFormProps {
@@ -49,20 +49,22 @@ export default function MaterialForm({ material, onSuccess }: MaterialFormProps)
       vendorId: null,
       totalCost: "",
       quantity: "",
-      unit: "kg",
+      unit: "", // Set initial value to empty string
       notes: "",
       isActive: true,
     },
   });
 
+  const [unitCost, setUnitCost] = useState<string>("0.0000");
   // Calculate unit cost when total cost or quantity changes
   const totalCost = form.watch("totalCost");
   const quantity = form.watch("quantity");
 
   useEffect(() => {
     if (totalCost && quantity && Number(totalCost) > 0 && Number(quantity) > 0) {
-      const unitCost = Number(totalCost) / Number(quantity);
-      // Display unit cost (not part of form since it's calculated)
+      setUnitCost((Number(totalCost) / Number(quantity)).toFixed(4));
+    } else {
+      setUnitCost("0.0000");
     }
   }, [totalCost, quantity]);
 
@@ -76,7 +78,7 @@ export default function MaterialForm({ material, onSuccess }: MaterialFormProps)
         vendorId: material.vendorId ?? null,
         totalCost: material.totalCost,
         quantity: material.quantity,
-        unit: material.unit,
+        unit: material.unit || "", // Set to empty string if missing
         notes: material.notes || "",
         isActive: material.isActive ?? true,
       });
@@ -141,7 +143,15 @@ export default function MaterialForm({ material, onSuccess }: MaterialFormProps)
     },
   });
 
+  const [unitError, setUnitError] = useState<string>("");
+
   const onSubmit = (data: any) => {
+    if (!data.unit || data.unit === "") {
+      setUnitError("Please select a unit before saving.");
+      return;
+    } else {
+      setUnitError("");
+    }
     if (material) {
       updateMutation.mutate({ id: material.id, data });
     } else {
@@ -149,9 +159,31 @@ export default function MaterialForm({ material, onSuccess }: MaterialFormProps)
     }
   };
 
-  const unitCost = totalCost && quantity && Number(totalCost) > 0 && Number(quantity) > 0 
-    ? (Number(totalCost) / Number(quantity)).toFixed(4)
-    : "0.0000";
+  // Refs for keyboard navigation
+  const nameRef = useRef<HTMLInputElement>(null);
+  const skuRef = useRef<HTMLInputElement>(null);
+  const categoryRef = useRef<HTMLButtonElement>(null);
+  const vendorRef = useRef<HTMLButtonElement>(null);
+  const totalCostRef = useRef<HTMLInputElement>(null);
+  const quantityRef = useRef<HTMLInputElement>(null);
+  const unitRef = useRef<HTMLButtonElement>(null);
+  const notesRef = useRef<HTMLTextAreaElement>(null);
+  const submitRef = useRef<HTMLButtonElement>(null);
+
+  // Keyboard navigation handler
+  const handleKeyDown = (e: React.KeyboardEvent, nextRef?: React.RefObject<any>, isLast?: boolean) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      if (isLast) {
+        if (window.confirm("Do you want to save this material?")) {
+          submitRef.current?.click();
+        }
+        // else do nothing
+      } else if (nextRef && nextRef.current) {
+        nextRef.current.focus();
+      }
+    }
+  };
 
   return (
     <Form {...form}>
@@ -164,7 +196,7 @@ export default function MaterialForm({ material, onSuccess }: MaterialFormProps)
               <FormItem>
                 <FormLabel>Material Name</FormLabel>
                 <FormControl>
-                  <Input {...field} placeholder="Enter material name" />
+                  <Input {...field} placeholder="Enter material name" ref={nameRef} onKeyDown={e => handleKeyDown(e, skuRef)} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -178,7 +210,7 @@ export default function MaterialForm({ material, onSuccess }: MaterialFormProps)
               <FormItem>
                 <FormLabel>SKU (Optional)</FormLabel>
                 <FormControl>
-                  <Input {...field} placeholder="Enter SKU" />
+                  <Input {...field} placeholder="Enter SKU" ref={skuRef} onKeyDown={e => handleKeyDown(e, categoryRef)} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -195,7 +227,7 @@ export default function MaterialForm({ material, onSuccess }: MaterialFormProps)
                 <FormLabel>Category</FormLabel>
                 <Select onValueChange={(value) => field.onChange(value ? Number(value) : null)} value={field.value?.toString() || ""}>
                   <FormControl>
-                    <SelectTrigger>
+                    <SelectTrigger ref={categoryRef} onKeyDown={e => handleKeyDown(e, vendorRef)}>
                       <SelectValue placeholder="Select category" />
                     </SelectTrigger>
                   </FormControl>
@@ -220,7 +252,7 @@ export default function MaterialForm({ material, onSuccess }: MaterialFormProps)
                 <FormLabel>Vendor</FormLabel>
                 <Select onValueChange={(value) => field.onChange(value ? Number(value) : null)} value={field.value?.toString() || ""}>
                   <FormControl>
-                    <SelectTrigger>
+                    <SelectTrigger ref={vendorRef} onKeyDown={e => handleKeyDown(e, totalCostRef)}>
                       <SelectValue placeholder="Select vendor" />
                     </SelectTrigger>
                   </FormControl>
@@ -246,7 +278,7 @@ export default function MaterialForm({ material, onSuccess }: MaterialFormProps)
               <FormItem>
                 <FormLabel>Total Cost ($)</FormLabel>
                 <FormControl>
-                  <Input {...field} type="number" step="0.01" placeholder="0.00" />
+                  <Input {...field} type="number" step="0.01" placeholder="0.00" ref={totalCostRef} onKeyDown={e => handleKeyDown(e, quantityRef)} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -260,7 +292,7 @@ export default function MaterialForm({ material, onSuccess }: MaterialFormProps)
               <FormItem>
                 <FormLabel>Quantity</FormLabel>
                 <FormControl>
-                  <Input {...field} type="number" step="0.001" placeholder="0.000" />
+                  <Input {...field} type="number" step="0.001" placeholder="0.000" ref={quantityRef} onKeyDown={e => handleKeyDown(e, unitRef)} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -275,7 +307,7 @@ export default function MaterialForm({ material, onSuccess }: MaterialFormProps)
                 <FormLabel>Unit</FormLabel>
                 <Select onValueChange={field.onChange} value={field.value}>
                   <FormControl>
-                    <SelectTrigger>
+                    <SelectTrigger ref={unitRef} onKeyDown={e => handleKeyDown(e, notesRef)}>
                       <SelectValue />
                     </SelectTrigger>
                   </FormControl>
@@ -289,6 +321,9 @@ export default function MaterialForm({ material, onSuccess }: MaterialFormProps)
                     <SelectItem value="pcs">pcs</SelectItem>
                   </SelectContent>
                 </Select>
+                {unitError && (
+                  <p className="text-sm text-red-600 mt-1">{unitError}</p>
+                )}
                 <FormMessage />
               </FormItem>
             )}
@@ -310,7 +345,7 @@ export default function MaterialForm({ material, onSuccess }: MaterialFormProps)
             <FormItem>
               <FormLabel>Notes (Optional)</FormLabel>
               <FormControl>
-                <Textarea {...field} placeholder="Additional notes about this material" />
+                <Textarea {...field} placeholder="Additional notes about this material" ref={notesRef} onKeyDown={e => handleKeyDown(e, submitRef, true)} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -341,6 +376,7 @@ export default function MaterialForm({ material, onSuccess }: MaterialFormProps)
           </Button>
           <Button 
             type="submit" 
+            ref={submitRef}
             disabled={createMutation.isPending || updateMutation.isPending}
           >
             {material ? 'Update' : 'Create'} Material

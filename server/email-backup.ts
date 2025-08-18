@@ -1,6 +1,3 @@
-import dotenv from 'dotenv';
-dotenv.config();
-
 import nodemailer from 'nodemailer';
 
 interface EmailConfig {
@@ -55,23 +52,21 @@ class EmailService {
     };
 
     // Enhanced transporter configuration with explicit settings
-    try {
-      this.transporter = nodemailer.createTransport({
-        service: 'gmail',
-        host: 'smtp.gmail.com',
-        port: 587,
-        secure: false, // Use STARTTLS
-        auth: {
-          user: this.config.user,
-          pass: this.config.pass
-        },
-        debug: process.env.NODE_ENV === 'development',
-        logger: process.env.NODE_ENV === 'development'
-      });
-      console.log(`✅ Email service initialized with Gmail SMTP for ${user}`);
-    } catch (error) {
-      console.error('❌ Error initializing Nodemailer transporter:', error);
-    }
+    this.transporter = nodemailer.createTransport({
+      service: 'gmail',
+      host: 'smtp.gmail.com',
+      port: 587,
+      secure: false, // Use STARTTLS
+      auth: {
+        user: this.config.user,
+        pass: this.config.pass
+      },
+      // Add debugging and timeout settings
+      debug: process.env.NODE_ENV === 'development',
+      logger: process.env.NODE_ENV === 'development'
+    });
+
+    console.log(`✅ Email service initialized with Gmail SMTP for ${user}`);
   }
 
   async sendEmail(params: EmailParams): Promise<boolean> {

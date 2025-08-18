@@ -171,6 +171,7 @@ export default function MaterialList({ materials, isLoading, onEdit, sortField, 
           <thead className="bg-slate-50 border-b border-slate-200">
             <tr>
               <SortableHeader field="name" className="text-left">Material</SortableHeader>
+              <th className="text-left p-4 text-sm font-medium text-slate-600">SKU</th>
               <SortableHeader field="category" className="text-left">Category</SortableHeader>
               <SortableHeader field="vendor" className="text-left">Vendor</SortableHeader>
               <SortableHeader field="unitCost" className="text-right">Unit Cost</SortableHeader>
@@ -208,6 +209,9 @@ export default function MaterialList({ materials, isLoading, onEdit, sortField, 
                         </p>
                       </div>
                     </div>
+                  </td>
+                  <td className="p-4 text-sm text-slate-900">
+                    {material.sku ? material.sku : "—"}
                   </td>
                   <td className="p-4">
                     <Badge className={categoryInfo.color}>
