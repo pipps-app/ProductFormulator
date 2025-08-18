@@ -59,7 +59,7 @@ export default function AdminSubscriptionsPage() {
   // Update subscription mutation
   const updateSubscriptionMutation = useMutation({
     mutationFn: (subscriptionData: any) => 
-      apiRequest("/api/admin/update-subscription", "POST", subscriptionData),
+      apiRequest("POST", "/api/admin/update-subscription", subscriptionData),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/users"] });
       setSubscriptionUpdate({

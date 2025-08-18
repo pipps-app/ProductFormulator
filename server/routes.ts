@@ -94,10 +94,12 @@ import "./types";
 export async function registerRoutes(app: Express): Promise<Server> {
   // Authentication middleware
   function requireAuth(req: any, res: any, next: any) {
+    console.log("[requireAuth] Session data:", req.session);
     if (!req.session?.userId) {
       return res.status(401).json({ error: "Authentication required" });
     }
     req.userId = req.session.userId;
+    console.log("[requireAuth] Authenticated userId:", req.userId);
     next();
   }
 
@@ -143,7 +145,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/auth/login", async (req, res) => {
     try {
       const { email, password } = req.body;
-      
       const user = await storage.getUserByEmail(email);
       if (!user || !user.password) {
         return res.status(401).json({ error: "Invalid credentials" });
@@ -156,15 +157,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Set up session
       req.session.userId = user.id;
+      console.log("[Login] Session initialized with userId:", req.session.userId);
       req.session.save((err) => {
         if (err) {
-          console.error("Session save error:", err);
+          console.error("[Login] Session save error:", err);
           return res.status(500).json({ error: "Session error" });
         }
         res.json({ success: true, user: { id: user.id, email: user.email } });
       });
     } catch (error) {
-      console.error("Login error:", error);
+      console.error("[Login] Login error:", error);
       res.status(500).json({ error: "Login failed" });
     }
   });

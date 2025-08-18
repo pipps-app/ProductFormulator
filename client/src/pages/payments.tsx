@@ -58,7 +58,7 @@ export default function PaymentsPage() {
 
   // Create payment mutation
   const createPaymentMutation = useMutation({
-    mutationFn: (paymentData: any) => apiRequest("/api/payments", "POST", paymentData),
+    mutationFn: (paymentData: any) => apiRequest("POST", "/api/payments", paymentData),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/payments"] });
       setNewPayment({
@@ -88,7 +88,7 @@ export default function PaymentsPage() {
   // Process refund mutation
   const refundMutation = useMutation({
     mutationFn: ({ paymentId, refundAmount }: { paymentId: number; refundAmount: string }) =>
-      apiRequest(`/api/payments/${paymentId}/refund`, "POST", { refundAmount }),
+      apiRequest("POST", `/api/payments/${paymentId}/refund`, { refundAmount }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/payments"] });
       toast({

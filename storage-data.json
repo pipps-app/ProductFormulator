@@ -21,7 +21,7 @@
       "id": 26,
       "username": "JulietD",
       "email": "jcepiphany@yahoo.com",
-      "password": "$2b$10$GROovCj36jAjLidmadcFp.j/AxTOPrbsbt3j6zD1kCOd2zAu1hDki",
+      "password": "$2b$10$B.FX54t69eyjRml0o3pjReW5euDSxI8GV7BuT5V23AXvcjiSEz0y6",
       "company": "",
       "createdAt": "2025-06-20T20:39:38.237Z"
     },
@@ -75,14 +75,40 @@
     {
       "id": 2158,
       "email": "growjamaica@yahoo.com",
-      "password": "$2b$10$qIiTl1hemJzXlVEyJHUSxO5cUwIJ1m0Tv4Fqm9mbLTeAJPugD2dIS",
+      "password": "$2b$10$nE/DfpVIdQFG9KtRwkqsGeYcuRs14HxmqP1.l6MIm52ZV80s0vdF2",
       "company": "",
       "subscriptionStatus": "active",
-      "subscriptionPlan": "free",
-      "subscriptionStartDate": "2025-07-09T22:07:40.495Z",
+      "subscriptionPlan": "business",
+      "subscriptionStartDate": "2025-08-18T23:10:21.044Z",
       "role": "user",
       "createdAt": "2025-07-09T22:07:40.495Z",
+      "authProvider": "local",
+      "subscriptionEndDate": "2025-09-18T23:10:21.044Z"
+    },
+    {
+      "id": 2168,
+      "email": "admin@test.com",
+      "password": "$2b$10$fSoL3y.6UVlOzms1nKROEe2wC4y6QwKc6RFFaRKRIs09yPuha9pxy",
+      "company": "Test Admin",
+      "subscriptionStatus": "active",
+      "subscriptionPlan": "free",
+      "subscriptionStartDate": "2025-08-18T22:49:02.346Z",
+      "role": "user",
+      "createdAt": "2025-08-18T22:49:02.346Z",
       "authProvider": "local"
+    },
+    {
+      "id": 2169,
+      "email": "admin@example.com",
+      "password": "$2b$10$XuY2viPBLBvqQU2/3U17Peyd.tyogM4yvNkvNPRLUUCj3ZQTDG3uW",
+      "company": "Admin Company",
+      "subscriptionStatus": "active",
+      "subscriptionPlan": "business",
+      "subscriptionStartDate": "2025-08-18T23:10:05.921Z",
+      "role": "user",
+      "createdAt": "2025-08-18T22:51:40.321Z",
+      "authProvider": "local",
+      "subscriptionEndDate": "2025-09-18T23:10:05.921Z"
     }
   ],
   "vendors": [
@@ -572,6 +598,20 @@
       "color": "blue",
       "userId": 2053,
       "createdAt": "2025-06-27T16:49:14.097Z"
+    },
+    {
+      "id": 2163,
+      "name": "Additives",
+      "color": "blue",
+      "userId": 2158,
+      "createdAt": "2025-08-18T12:41:05.078Z"
+    },
+    {
+      "id": 2165,
+      "name": "Bottles",
+      "color": "blue",
+      "userId": 2158,
+      "createdAt": "2025-08-18T12:41:14.669Z"
     }
   ],
   "rawMaterials": [
@@ -12210,18 +12250,58 @@
       "changes": "{\"description\":\"Updated raw material \\\"test formular\\\" - total cost is now $2000 for 100 g\",\"before\":{\"id\":2159,\"name\":\"test formular\",\"sku\":\"\",\"categoryId\":null,\"vendorId\":null,\"totalCost\":\"1000\",\"quantity\":\"100\",\"unit\":\"g\",\"notes\":\"\",\"isActive\":true,\"userId\":2158,\"createdAt\":\"2025-07-09T22:08:23.814Z\"},\"after\":{\"id\":2159,\"name\":\"test formular\",\"sku\":\"\",\"categoryId\":null,\"vendorId\":null,\"totalCost\":\"2000\",\"quantity\":\"100\",\"unit\":\"g\",\"notes\":\"\",\"isActive\":true,\"userId\":2158,\"createdAt\":\"2025-07-09T22:08:23.814Z\"}}",
       "createdAt": "2025-07-10T21:25:05.268Z",
       "timestamp": "2025-07-10T21:25:05.268Z"
+    },
+    {
+      "id": 2164,
+      "userId": 2158,
+      "action": "create",
+      "entityType": "category",
+      "entityId": 2163,
+      "changes": "{\"description\":\"Created new category \\\"Additives\\\" with blue color\",\"data\":{\"id\":2163,\"name\":\"Additives\",\"color\":\"blue\",\"userId\":2158,\"createdAt\":\"2025-08-18T12:41:05.078Z\"}}",
+      "createdAt": "2025-08-18T12:41:05.464Z",
+      "timestamp": "2025-08-18T12:41:05.464Z"
+    },
+    {
+      "id": 2166,
+      "userId": 2158,
+      "action": "create",
+      "entityType": "category",
+      "entityId": 2165,
+      "changes": "{\"description\":\"Created new category \\\"Bottles\\\" with blue color\",\"data\":{\"id\":2165,\"name\":\"Bottles\",\"color\":\"blue\",\"userId\":2158,\"createdAt\":\"2025-08-18T12:41:14.669Z\"}}",
+      "createdAt": "2025-08-18T12:41:14.729Z",
+      "timestamp": "2025-08-18T12:41:14.729Z"
+    },
+    {
+      "id": 2170,
+      "userId": 1,
+      "action": "update",
+      "entityType": "user_subscription",
+      "entityId": 2169,
+      "changes": "{\"description\":\"Subscription updated for admin@example.com\",\"subscriptionTier\":\"business\",\"subscriptionStatus\":\"active\",\"duration\":\"1 months\",\"updatedBy\":\"admin\"}",
+      "createdAt": "2025-08-18T23:10:06.528Z",
+      "timestamp": "2025-08-18T23:10:06.528Z"
+    },
+    {
+      "id": 2171,
+      "userId": 1,
+      "action": "update",
+      "entityType": "user_subscription",
+      "entityId": 2158,
+      "changes": "{\"description\":\"Subscription updated for growjamaica@yahoo.com\",\"subscriptionTier\":\"business\",\"subscriptionStatus\":\"active\",\"duration\":\"1 months\",\"updatedBy\":\"admin\"}",
+      "createdAt": "2025-08-18T23:10:21.107Z",
+      "timestamp": "2025-08-18T23:10:21.107Z"
     }
   ],
   "passwordResetTokens": [
     {
-      "id": 1704,
-      "userId": 1703,
-      "token": "44d6b943984246a7628a9d1b259a25be0c617482f293633a2d90225c8607797d",
-      "expiresAt": "2025-06-27T13:03:13.359Z",
+      "id": 2167,
+      "userId": 26,
+      "token": "16ac75f8c71bbfdf274f82d79bacd21190152c5aebabc6991f00cb7e9c2e4343",
+      "expiresAt": "2025-08-18T22:28:05.081Z",
       "used": true,
-      "createdAt": "2025-06-27T12:48:13.368Z"
+      "createdAt": "2025-08-18T22:13:05.138Z"
     }
   ],
-  "nextId": 2162,
+  "nextId": 2172,
   "payments": []
 }
