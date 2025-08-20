@@ -13,6 +13,7 @@ let db: any;
 try {
   // Use DATABASE_URL from environment only
   const connectionString = process.env.DATABASE_URL!;
+  console.log("🔗 Creating PostgreSQL connection...");
   client = postgres(connectionString, {
     max: 5,
     idle_timeout: 10,
@@ -20,8 +21,11 @@ try {
     prepare: false
   });
   db = drizzle(client, { schema });
+  console.log("✅ PostgreSQL connection established successfully!");
 } catch (error) {
-  console.log('Database connection failed, using in-memory storage');
+  console.error('❌ Database connection failed:', error);
+  console.error('🚫 STOPPING SERVER - Database connection required for production compatibility');
+  process.exit(1); // Stop the server instead of falling back
 }
 
 export { db };

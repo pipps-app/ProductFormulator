@@ -118,6 +118,9 @@ export default function Profile() {
   // Logout mutation
   const logoutMutation = useMutation({
     mutationFn: async () => {
+      // Remove token from localStorage
+      localStorage.removeItem('auth_token');
+      
       const response = await fetch("/api/auth/logout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },

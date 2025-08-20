@@ -25,11 +25,27 @@ export async function apiRequest(
   const isAbsolute = url.startsWith('http://') || url.startsWith('https://');
   const baseUrl = import.meta.env.VITE_API_BASE_URL?.replace(/\/$/, '');
   const fullUrl = isAbsolute ? url : `${baseUrl || ''}${url.startsWith('/') ? url : `/${url}`}`;
+  
+  // Get JWT token from localStorage
+  const token = localStorage.getItem('auth_token');
+  
+  // Prepare headers
+  const headers: Record<string, string> = {};
+  
+  if (data) {
+    headers["Content-Type"] = "application/json";
+  }
+  
+  // Add authorization header if token exists
+  if (token) {
+    headers["Authorization"] = `Bearer ${token}`;
+  }
+  
   const res = await fetch(fullUrl, {
     method,
-    headers: data ? { "Content-Type": "application/json" } : {},
+    headers,
     body: data ? JSON.stringify(data) : undefined,
-    credentials: "include",
+    credentials: "include", // Keep for backward compatibility
   });
 
   await throwIfResNotOk(res);
@@ -42,8 +58,20 @@ export const getQueryFn: <T>(options: {
 }) => QueryFunction<T> =
   ({ on401: unauthorizedBehavior }) =>
   async ({ queryKey }) => {
+    // Get JWT token from localStorage
+    const token = localStorage.getItem('auth_token');
+    
+    // Prepare headers
+    const headers: Record<string, string> = {};
+    
+    // Add authorization header if token exists
+    if (token) {
+      headers["Authorization"] = `Bearer ${token}`;
+    }
+    
     const res = await fetch(queryKey[0] as string, {
-      credentials: "include",
+      headers,
+      credentials: "include", // Keep for backward compatibility
     });
 
     if (unauthorizedBehavior === "returnNull" && res.status === 401) {

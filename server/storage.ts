@@ -571,8 +571,8 @@ class MemoryStorage implements IStorage {
   }
 }
 
-// Import the persistent file-based storage implementation
-import { PersistentStorage } from "./persistent-storage";
+// Import the database storage implementation  
+import { DatabaseStorage } from "./database-storage";
 
-// Use persistent file-based storage to preserve data across restarts
-export const storage = new PersistentStorage();
+// Use PostgreSQL database storage to match production environment
+export const storage = new DatabaseStorage();

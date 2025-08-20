@@ -27,6 +27,19 @@ export default function FileAttachments({
   const [showLibraryDialog, setShowLibraryDialog] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   
+  // Early return if entityId is invalid
+  if (!entityId || entityId <= 0) {
+    return (
+      <Card className={className}>
+        <CardContent className="text-center py-8 text-muted-foreground">
+          <FileIcon className="w-12 h-12 mx-auto mb-4 opacity-50" />
+          <p className="font-medium mb-1">Files can be attached after saving</p>
+          <p className="text-sm">Save the {entityType} first, then you can attach files</p>
+        </CardContent>
+      </Card>
+    );
+  }
+  
   const { data: attachedFiles = [], isLoading } = useAttachedFiles(entityType, entityId);
   const { data: allFiles = [] } = useFiles();
   const attachFile = useAttachFile();
@@ -34,9 +47,9 @@ export default function FileAttachments({
   const { toast } = useToast();
 
   const handleFileUploaded = async (fileId: number) => {
-    if (!entityId) {
+    if (!entityId || entityId === 0) {
       toast({
-        variant: "destructive",
+        variant: "destructive", 
         title: "Save required",
         description: "Please save the item first before attaching files.",
       });
@@ -57,16 +70,29 @@ export default function FileAttachments({
       });
     } catch (error) {
       console.error("Error attaching file:", error);
+      let errorMessage = "Failed to attach file. Please try again.";
+      
+      // Handle specific error types
+      if (error instanceof Error) {
+        if (error.message.includes('404')) {
+          errorMessage = "The file or item could not be found. Please refresh and try again.";
+        } else if (error.message.includes('400')) {
+          errorMessage = "Invalid file attachment request. Please check the file and try again.";
+        } else if (error.message.includes('500')) {
+          errorMessage = "Server error occurred. Please try again later.";
+        }
+      }
+      
       toast({
         variant: "destructive",
         title: "Attachment failed",
-        description: "Failed to attach file. Please try again.",
+        description: errorMessage,
       });
     }
   };
 
   const handleAttachExistingFile = async (fileId: number) => {
-    if (!entityId) {
+    if (!entityId || entityId === 0) {
       toast({
         variant: "destructive",
         title: "Save required",
@@ -89,10 +115,23 @@ export default function FileAttachments({
       });
     } catch (error) {
       console.error("Error attaching file:", error);
+      let errorMessage = "Failed to attach file. Please try again.";
+      
+      // Handle specific error types
+      if (error instanceof Error) {
+        if (error.message.includes('404')) {
+          errorMessage = "The file or item could not be found. Please refresh and try again.";
+        } else if (error.message.includes('400')) {
+          errorMessage = "Invalid file attachment request. Please check the file and try again.";
+        } else if (error.message.includes('500')) {
+          errorMessage = "Server error occurred. Please try again later.";
+        }
+      }
+      
       toast({
         variant: "destructive",
         title: "Attachment failed",
-        description: "Failed to attach file. Please try again.",
+        description: errorMessage,
       });
     }
   };
@@ -260,7 +299,7 @@ export default function FileAttachments({
           </div>
         ) : (
           <div className="space-y-3">
-            {attachedFiles.map(file => (
+            {attachedFiles.map((file: File) => (
               <Card key={file.id} className="p-3">
                 <div className="flex items-center gap-3">
                   <div className="flex-shrink-0">

@@ -5,11 +5,25 @@ export function useUser() {
   return useQuery<User | null>({
     queryKey: ["/api/user"],
     queryFn: async () => {
+      // Get JWT token from localStorage
+      const token = localStorage.getItem('auth_token');
+      
+      // Prepare headers
+      const headers: Record<string, string> = {};
+      
+      // Add authorization header if token exists
+      if (token) {
+        headers["Authorization"] = `Bearer ${token}`;
+      }
+      
       const response = await fetch("/api/user", {
-        credentials: "include",
+        headers,
+        credentials: "include", // Keep for backward compatibility
       });
       
       if (response.status === 401) {
+        // Clear token if unauthorized
+        localStorage.removeItem('auth_token');
         return null;
       }
       

@@ -82,10 +82,17 @@ passport.serializeUser((user: any, done) => {
 });
 
 passport.deserializeUser(async (id: number, done) => {
+  console.log(`Deserializing user with ID: ${id}`);
   try {
     const user = await storage.getUser(id);
+    if (user) {
+      console.log(`User ${id} deserialized successfully.`);
+    } else {
+      console.log(`User ${id} not found in database during deserialization.`);
+    }
     done(null, user);
   } catch (error) {
+    console.error(`Error deserializing user ${id}:`, error);
     done(error);
   }
 });

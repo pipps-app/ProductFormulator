@@ -2,35 +2,16 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 import express, { type Request, Response, NextFunction } from "express";
-import session from "express-session";
-import MemoryStore from "memorystore";
+import cookieParser from "cookie-parser";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
-import passport from "./auth";
 
 const app = express();
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: false, limit: '50mb' }));
 
-// Session configuration - using memory store to avoid PostgreSQL connection issues
-const MemStore = MemoryStore(session);
-app.use(session({
-  store: new MemStore({
-    checkPeriod: 86400000 // prune expired entries every 24h
-  }),
-  secret: process.env.SESSION_SECRET || 'your-secret-key-change-this-in-production',
-  resave: false,
-  saveUninitialized: false,
-  cookie: {
-    secure: false, // Set to true in production with HTTPS
-    httpOnly: true,
-    maxAge: 24 * 60 * 60 * 1000, // 24 hours
-  },
-}));
-
-// Initialize Passport middleware
-app.use(passport.initialize());
-app.use(passport.session());
+// Setup cookie parser for JWT cookies
+app.use(cookieParser());
 
 // Disable ETag caching for dashboard stats to ensure real-time updates
 app.use('/api/dashboard/stats', (req, res, next) => {

@@ -23,6 +23,7 @@ import Payments from "@/pages/payments";
 import AdminSubscriptions from "@/pages/admin-subscriptions";
 import Onboarding from "@/pages/onboarding";
 import Login from "@/pages/login";
+import EmailVerification from "@/pages/EmailVerification";
 import AppLayout from "@/components/layout/app-layout";
 import ProtectedRoute from "@/components/protected-route";
 import { ImportNotifier } from "@/components/ImportNotifier";
@@ -43,6 +44,7 @@ function Router() {
   return (
     <Switch>
       <Route path="/login" component={Login} />
+      <Route path="/verify-email" component={EmailVerification} />
       <Route path="/onboarding" component={Onboarding} />
       <ProtectedAppRoute path="/dashboard" component={Dashboard} />
       <ProtectedAppRoute path="/materials/:id" component={MaterialDetail} />

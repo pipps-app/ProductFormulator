@@ -119,6 +119,36 @@ export default function Login() {
     },
   });
 
+  // Helper to fully clear all auth-related forms (prevents stale field persistence when returning)
+  const clearAllAuthForms = () => {
+    try {
+      loginForm.reset({ email: "", password: "" });
+      registerForm.reset({ email: "", password: "", company: "" });
+      passwordResetRequestForm.reset({ email: "" });
+      passwordResetForm.reset({ token: "", newPassword: "" });
+    } catch (_) {
+      // no-op safety
+    }
+  };
+
+  // Helper to clear just sensitive password fields while retaining email (useful on errors)
+  const clearPasswordFields = () => {
+    try {
+  // Clear both email and password now (no retention per user request)
+  loginForm.reset({ email: "", password: "" });
+  registerForm.reset({ email: "", password: "", company: "" });
+    } catch (_) {
+      // ignore
+    }
+  };
+
+  // Ensure forms are cleared if the component ever unmounts (navigation away, etc.)
+  useEffect(() => {
+    return () => {
+      clearAllAuthForms();
+    };
+  }, []);
+
   // Update form token when resetToken changes
   useEffect(() => {
     if (resetToken && passwordResetForm) {
@@ -129,19 +159,41 @@ export default function Login() {
   // Move mutations to top level to fix hooks rule violation
   const loginMutation = useMutation({
     mutationFn: async (data: LoginFormData) => {
+      // Client-side safeguard (should normally be handled by react-hook-form already)
+      if (!data.email || !data.password) {
+        throw Object.assign(new Error("Email and password are required"), { status: 400 });
+      }
       const response = await fetch("/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
         credentials: "include",
       });
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || "Login failed");
+      const raw = await response.text();
+      let parsed: any = null;
+      if (raw) {
+        try { parsed = JSON.parse(raw); } catch (e) {
+          throw Object.assign(new Error("Server returned invalid JSON"), { status: response.status });
+        }
       }
-      return response.json();
+      if (!response.ok) {
+        const message = parsed?.error || parsed?.message || parsed?.detail || (response.status === 400 ? "Email and password are required" : response.status === 401 ? "Invalid credentials" : `Login failed (${response.status})`);
+        throw Object.assign(new Error(message), { status: response.status });
+      }
+      if (!parsed) {
+        throw Object.assign(new Error("Empty response from server"), { status: response.status });
+      }
+      return parsed;
     },
     onSuccess: async (data) => {
+      // Store JWT token in localStorage
+      if (data.token) {
+        localStorage.setItem('auth_token', data.token);
+      }
+
+  // Clear the login form immediately so fields don't show if user returns
+  clearAllAuthForms();
+      
       // Clear all queries and refetch user to ensure fresh auth state
       queryClient.clear();
       await queryClient.invalidateQueries({ queryKey: ["/api/user"] });
@@ -159,58 +211,100 @@ export default function Login() {
     onError: (error: any) => {
       toast({
         title: "Login failed",
-        description: error.message || "Invalid email or password",
+  description: error.message || (error.status === 401 ? "Invalid credentials" : error.status === 400 ? "Email and password are required" : "Unexpected error during login"),
         variant: "destructive",
       });
+  // Clear only password field for security; keep email for convenience
+  clearPasswordFields();
     },
   });
 
   const registerMutation = useMutation({
     mutationFn: async (data: RegisterFormData) => {
+      // Client-side validation
+      if (!data.email || !data.password) {
+        throw Object.assign(new Error("Email and password are required"), { status: 400 });
+      }
+      
       const response = await fetch("/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
       });
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || "Registration failed");
+      
+      const raw = await response.text();
+      let parsed: any = null;
+      if (raw) {
+        try { parsed = JSON.parse(raw); } catch (e) {
+          throw Object.assign(new Error("Server returned invalid JSON"), { status: response.status });
+        }
       }
-      return response.json();
+      
+      if (!response.ok) {
+        const message = parsed?.error || parsed?.message || `Registration failed (${response.status})`;
+        throw Object.assign(new Error(message), { status: response.status });
+      }
+      
+      if (!parsed) {
+        throw Object.assign(new Error("Empty response from server"), { status: response.status });
+      }
+      
+      return parsed;
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
+      // With email verification, users won't get a token immediately
+      // Show email verification message
       toast({
-        title: "Account created!",
-        description: "Your account has been created successfully. You can now log in.",
+        title: "Registration successful!",
+        description: data.message || "Please check your email to verify your account before logging in.",
+        duration: 8000, // Show longer since it's important
       });
-      registerForm.reset({
-        email: "",
-        password: "",
-        company: "",
-      });
+      
+      // Switch to login view and clear forms
       setIsLogin(true);
+      clearAllAuthForms();
     },
     onError: (error: any) => {
       toast({
         title: "Registration failed",
-        description: error.message || "Failed to create account",
+        description: error.message || (error.status === 400 ? "Invalid registration data" : "Unexpected error during registration"),
         variant: "destructive",
       });
+      // Clear only password field
+      clearPasswordFields();
     },
   });
 
   const passwordResetRequestMutation = useMutation({
     mutationFn: async (data: PasswordResetRequestFormData) => {
+      if (!data.email) {
+        throw Object.assign(new Error("Email is required"), { status: 400 });
+      }
+      
       const response = await fetch("/api/auth/request-password-reset", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
       });
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || "Password reset request failed");
+      
+      const raw = await response.text();
+      let parsed: any = null;
+      if (raw) {
+        try { parsed = JSON.parse(raw); } catch (e) {
+          throw Object.assign(new Error("Server returned invalid JSON"), { status: response.status });
+        }
       }
-      return response.json();
+      
+      if (!response.ok) {
+        const message = parsed?.error || parsed?.message || `Password reset request failed (${response.status})`;
+        throw Object.assign(new Error(message), { status: response.status });
+      }
+      
+      if (!parsed) {
+        throw Object.assign(new Error("Empty response from server"), { status: response.status });
+      }
+      
+      return parsed;
     },
     // Prevent multiple requests by disabling retry and setting gcTime
     retry: false,
@@ -248,16 +342,34 @@ export default function Login() {
 
   const passwordResetMutation = useMutation({
     mutationFn: async (data: PasswordResetFormData) => {
+      if (!data.token || !data.newPassword) {
+        throw Object.assign(new Error("Token and new password are required"), { status: 400 });
+      }
+      
       const response = await fetch("/api/auth/reset-password", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
       });
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || "Password reset failed");
+      
+      const raw = await response.text();
+      let parsed: any = null;
+      if (raw) {
+        try { parsed = JSON.parse(raw); } catch (e) {
+          throw Object.assign(new Error("Server returned invalid JSON"), { status: response.status });
+        }
       }
-      return response.json();
+      
+      if (!response.ok) {
+        const message = parsed?.error || parsed?.message || `Password reset failed (${response.status})`;
+        throw Object.assign(new Error(message), { status: response.status });
+      }
+      
+      if (!parsed) {
+        throw Object.assign(new Error("Empty response from server"), { status: response.status });
+      }
+      
+      return parsed;
     },
     onSuccess: () => {
       toast({
@@ -312,6 +424,15 @@ export default function Login() {
   }
 
   const onLoginSubmit = (data: LoginFormData) => {
+    // Additional front-end validation to avoid empty submissions producing confusing server messages
+    if (!data.email) {
+      loginForm.setError("email", { type: "required", message: "Email is required" });
+      return;
+    }
+    if (!data.password) {
+      loginForm.setError("password", { type: "required", message: "Password is required" });
+      return;
+    }
     loginMutation.mutate(data);
   };
 
@@ -321,13 +442,19 @@ export default function Login() {
 
   // Reset forms when switching between modes
   const handleSwitchToLogin = () => {
-    setIsLogin(true);
-    registerForm.reset();
+  clearAllAuthForms();
+  setIsLogin(true);
+  setShowPasswordReset(false);
+  setShowPasswordResetForm(false);
+  setResetToken("");
   };
 
   const handleSwitchToRegister = () => {
-    setIsLogin(false);
-    loginForm.reset();
+  clearAllAuthForms();
+  setIsLogin(false);
+  setShowPasswordReset(false);
+  setShowPasswordResetForm(false);
+  setResetToken("");
   };
 
   const onPasswordResetRequestSubmit = (data: PasswordResetRequestFormData) => {
@@ -563,6 +690,8 @@ export default function Login() {
                       <button
                         type="button"
                         onClick={() => setShowPasswordReset(true)}
+                        // When entering password reset flow, wipe other form data
+                        onMouseDown={() => clearAllAuthForms()}
                         className="text-sm text-blue-600 hover:text-blue-800 underline focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded px-2 py-1"
                       >
                         Forgot your password?

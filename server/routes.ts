@@ -10,11 +10,56 @@ import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 import { withTransaction } from "./transaction-utils";
 import { db } from "./db";
-import { eq } from "drizzle-orm";
-import { formulations, rawMaterials, formulationIngredients } from "@shared/schema";
+import { eq, inArray } from "drizzle-orm";
+import bcrypt from "bcryptjs";
+import crypto from "crypto";
+
+import { formulations, rawMaterials, formulationIngredients, users } from "@shared/schema";
+import * as schema from "@shared/schema";
+import jwt from "jsonwebtoken";
+import { requireJWTAuth, AuthenticatedRequest } from "./auth-middleware";
+import cookieParser from "cookie-parser";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
+
+// Email verification utilities
+function generateVerificationToken(): string {
+  return crypto.randomBytes(32).toString('hex');
+}
+
+function getVerificationTokenExpiry(): Date {
+  const expiry = new Date();
+  expiry.setHours(expiry.getHours() + 24); // 24 hours from now
+  return expiry;
+}
+
+async function sendVerificationEmail(email: string, token: string): Promise<void> {
+  const verificationUrl = `${process.env.FRONTEND_URL || 'http://localhost:5000'}/verify-email?token=${token}`;
+  
+  const subject = 'Verify Your PIPPS Maker Calc Account';
+  const html = `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+      <h2 style="color: #333;">Welcome to PIPPS Maker Calc!</h2>
+      <p>Thank you for registering. Please verify your email address to complete your account setup.</p>
+      <div style="text-align: center; margin: 30px 0;">
+        <a href="${verificationUrl}" 
+           style="background-color: #007bff; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; display: inline-block;">
+          Verify Email Address
+        </a>
+      </div>
+      <p style="color: #666; font-size: 14px;">
+        If the button above doesn't work, copy and paste this link into your browser:<br>
+        <a href="${verificationUrl}">${verificationUrl}</a>
+      </p>
+      <p style="color: #666; font-size: 14px;">
+        This verification link will expire in 24 hours. If you didn't create an account, please ignore this email.
+      </p>
+    </div>
+  `;
+
+  await emailService.sendEmail(email, subject, html);
+}
 
 function hasAccessToTier(userTier: string, requiredTier: string): boolean {
   const tierHierarchy = ['free', 'pro', 'business', 'enterprise'];
@@ -93,20 +138,21 @@ import "./types";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Authentication middleware
-  function requireAuth(req: any, res: any, next: any) {
-    console.log("[requireAuth] Session data:", req.session);
-    if (!req.session?.userId) {
-      return res.status(401).json({ error: "Authentication required" });
-    }
-    req.userId = req.session.userId;
-    console.log("[requireAuth] Authenticated userId:", req.userId);
-    next();
-  }
+  // Legacy requireAuth is now replaced with requireJWTAuth from auth-middleware.ts
 
   // Authentication routes
   app.post("/api/auth/register", async (req, res) => {
     try {
-      const userData = insertUserSchema.parse(req.body);
+      let userData;
+      try {
+        userData = insertUserSchema.parse(req.body);
+      } catch (zodErr) {
+        console.error("Zod validation error:", zodErr);
+        if (zodErr instanceof Error && 'errors' in zodErr) {
+          return res.status(400).json({ error: "Invalid registration data", detail: (zodErr as any).errors });
+        }
+        return res.status(400).json({ error: "Invalid registration data" });
+      }
       
       // Check if user already exists
       const existingUser = await storage.getUserByEmail(userData.email);
@@ -117,24 +163,37 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Hash password
       const hashedPassword = await bcrypt.hash(userData.password!, 10);
       
-      // Create user with default subscription
+      // Generate email verification token
+      const verificationToken = generateVerificationToken();
+      const verificationExpiry = getVerificationTokenExpiry();
+      
+      // Create user with email verification fields
       const user = await storage.createUser({
         ...userData,
         password: hashedPassword,
+        emailVerified: false,
+        emailVerificationToken: verificationToken,
+        emailVerificationExpires: verificationExpiry,
         subscriptionStatus: "active",
         subscriptionPlan: "free",
         subscriptionStartDate: new Date(),
         role: "user"
       });
 
-      // Set up session
-      req.session.userId = user.id;
-      req.session.save((err) => {
-        if (err) {
-          console.error("Session save error:", err);
-          return res.status(500).json({ error: "Session error" });
-        }
-        res.json({ success: true, user: { id: user.id, email: user.email } });
+      // Send verification email
+      try {
+        await sendVerificationEmail(userData.email, verificationToken);
+        console.log(`Verification email sent to: ${userData.email}`);
+      } catch (emailError) {
+        console.error('Failed to send verification email:', emailError);
+        // Continue with registration even if email fails
+      }
+
+      // Don't create JWT token yet - user must verify email first
+      res.json({ 
+        success: true, 
+        message: "Registration successful! Please check your email to verify your account before logging in.",
+        user: { id: user.id, email: user.email, company: user.company, emailVerified: false }
       });
     } catch (error) {
       console.error("Registration error:", error);
@@ -142,32 +201,200 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/auth/login", async (req, res) => {
+  // Resend verification email endpoint
+  app.post("/api/auth/resend-verification", async (req, res) => {
     try {
-      const { email, password } = req.body;
-      const user = await storage.getUserByEmail(email);
-      if (!user || !user.password) {
-        return res.status(401).json({ error: "Invalid credentials" });
+      const { email } = req.body;
+      
+      if (!email) {
+        return res.status(400).json({ error: "Email is required" });
       }
 
-      const validPassword = await bcrypt.compare(password, user.password);
+      // Find user
+      const user = await db.select()
+        .from(users)
+        .where(eq(users.email, email))
+        .limit(1);
+
+      if (user.length === 0) {
+        // Don't reveal if email exists or not for security
+        return res.json({ 
+          success: true, 
+          message: "If an account with that email exists and is not verified, a new verification email has been sent." 
+        });
+      }
+
+      const foundUser = user[0];
+
+      // Check if already verified
+      if (foundUser.emailVerified) {
+        return res.json({ 
+          success: true, 
+          message: "Your email is already verified. You can log in now." 
+        });
+      }
+
+      // Generate new verification token
+      const verificationToken = generateVerificationToken();
+      const verificationExpiry = getVerificationTokenExpiry();
+
+      // Update user with new token
+      await db.update(users)
+        .set({ 
+          emailVerificationToken: verificationToken, 
+          emailVerificationExpires: verificationExpiry 
+        })
+        .where(eq(users.id, foundUser.id));
+
+      // Send verification email
+      try {
+        await sendVerificationEmail(email, verificationToken);
+        console.log(`Verification email resent to: ${email}`);
+      } catch (emailError) {
+        console.error('Failed to resend verification email:', emailError);
+        return res.status(500).json({ error: "Failed to send verification email" });
+      }
+
+      res.json({ 
+        success: true, 
+        message: "A new verification email has been sent. Please check your email." 
+      });
+    } catch (error) {
+      console.error("Resend verification error:", error);
+      res.status(500).json({ error: "Failed to resend verification email" });
+    }
+  });
+
+  // Email verification endpoint
+  app.get("/api/auth/verify-email", async (req, res) => {
+    try {
+      const { token } = req.query;
+      
+      if (!token || typeof token !== 'string') {
+        return res.status(400).json({ error: "Invalid verification token" });
+      }
+
+      // Find user with this verification token
+      const user = await db.select()
+        .from(users)
+        .where(eq(users.emailVerificationToken, token))
+        .limit(1);
+
+      if (user.length === 0) {
+        return res.status(400).json({ error: "Invalid or expired verification token" });
+      }
+
+      const foundUser = user[0];
+
+      // Check if token has expired
+      if (foundUser.emailVerificationExpires && new Date() > foundUser.emailVerificationExpires) {
+        return res.status(400).json({ error: "Verification token has expired. Please request a new one." });
+      }
+
+      // Check if already verified
+      if (foundUser.emailVerified) {
+        return res.status(200).json({ success: true, message: "Email already verified. You can now log in." });
+      }
+
+      // Update user as verified
+      await db.update(users)
+        .set({ 
+          emailVerified: true, 
+          emailVerificationToken: null, 
+          emailVerificationExpires: null 
+        })
+        .where(eq(users.id, foundUser.id));
+
+      console.log(`Email verified for user: ${foundUser.email}`);
+      
+      res.json({ 
+        success: true, 
+        message: "Email verified successfully! You can now log in to your account." 
+      });
+    } catch (error) {
+      console.error("Email verification error:", error);
+      res.status(500).json({ error: "Failed to verify email" });
+    }
+  });
+
+  app.use(cookieParser());
+
+  app.post("/api/auth/login", async (req, res) => {
+    try {
+      const { email, password } = req.body || {};
+      console.log(`[Login] Incoming login request`, { emailProvided: !!email });
+      if (!email || !password) {
+        console.log(`[Login] Missing email or password`);
+        return res.status(400).json({ error: "Email and password are required" });
+      }
+      const user = await storage.getUserByEmail(email);
+      console.log(`[Login] User lookup`, { found: !!user, email });
+      if (!user) {
+        return res.status(401).json({ error: "Invalid credentials" });
+      }
+      if (!user.password) {
+        console.log(`[Login] User has no password (maybe OAuth only)`);
+        return res.status(401).json({ error: "Password login not available for this user" });
+      }
+
+      let validPassword = false;
+      try {
+        validPassword = await bcrypt.compare(password, user.password);
+      } catch (cmpErr) {
+        console.error(`[Login] bcrypt.compare failed`, cmpErr);
+        return res.status(500).json({ error: "Password verification failed" });
+      }
+      console.log(`[Login] Password compare result`, { validPassword });
       if (!validPassword) {
         return res.status(401).json({ error: "Invalid credentials" });
       }
 
-      // Set up session
-      req.session.userId = user.id;
-      console.log("[Login] Session initialized with userId:", req.session.userId);
-      req.session.save((err) => {
-        if (err) {
-          console.error("[Login] Session save error:", err);
-          return res.status(500).json({ error: "Session error" });
-        }
-        res.json({ success: true, user: { id: user.id, email: user.email } });
+      // Check if email is verified
+      if (!user.emailVerified) {
+        console.log(`[Login] User email not verified`, { email });
+        return res.status(401).json({ 
+          error: "Please verify your email address before logging in. Check your email for a verification link." 
+        });
+      }
+
+      console.log(`[Login] Success`, { userId: user.id });
+
+      // Generate JWT
+      const JWT_SECRET = process.env.JWT_SECRET || "your-jwt-secret-change-this";
+      let token: string;
+      try {
+        token = jwt.sign({ id: user.id, role: user.role }, JWT_SECRET, { expiresIn: "30d" });
+      } catch (signErr: any) {
+        console.error(`[Login] JWT sign failed`, signErr);
+        return res.status(500).json({ error: "Token generation failed" });
+      }
+
+      // Set JWT as HTTP-only cookie
+      try {
+        res.cookie("token", token, {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === "production",
+          sameSite: "lax",
+          maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
+        });
+      } catch (cookieErr) {
+        console.error(`[Login] Failed to set cookie`, cookieErr);
+        return res.status(500).json({ error: "Failed to set auth cookie" });
+      }
+
+      console.log(`[Login] Success`, { userId: user.id });
+      res.json({
+        success: true,
+        user: { id: user.id, email: user.email, company: user.company },
+        token
       });
     } catch (error) {
       console.error("[Login] Login error:", error);
-      res.status(500).json({ error: "Login failed" });
+      const base = { error: "Login failed" } as any;
+      if (process.env.NODE_ENV !== 'production') {
+        base.detail = (error as any)?.message;
+      }
+      res.status(500).json(base);
     }
   });
 
@@ -198,29 +425,31 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   app.post("/api/auth/logout", (req, res) => {
-    console.log("Logout endpoint hit - new version");
+    console.log("Logout endpoint hit - JWT version");
     try {
-      // Clear session data
-      if (req.session) {
-        console.log("Session exists, clearing userId");
-        req.session.userId = undefined;
-        delete req.session.userId;
-      }
-      
-      // Clear the session cookie
-      res.clearCookie('connect.sid', {
+      // Clear the JWT cookie with all possible variations
+      res.clearCookie('token', {
         path: '/',
         httpOnly: true,
-        secure: false
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax"
       });
       
-      console.log("Logout successful");
-      res.json({ success: true });
+      // Also try clearing without options (fallback)
+      res.clearCookie('token');
+      
+      console.log("Logout successful - cookies cleared");
+      res.json({ success: true, message: "Logged out successfully" });
     } catch (error) {
       console.error("Logout error:", error);
-      // Even if there's an error, clear the cookie and return success
-      res.clearCookie('connect.sid');
-      res.json({ success: true });
+      // Even if there's an error, try to clear the cookie and return success
+      // because logout should always succeed from the client perspective
+      try {
+        res.clearCookie('token');
+      } catch (e) {
+        console.error("Error clearing cookie:", e);
+      }
+      res.json({ success: true, message: "Logged out (with warnings)" });
     }
   });
 
@@ -257,7 +486,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Clean up old requests (older than 5 minutes)
       setTimeout(() => {
-        for (const [key, timestamp] of recentResetRequests.entries()) {
+        const entries = Array.from(recentResetRequests.entries());
+        for (const [key, timestamp] of entries) {
           if (now - timestamp > 300000) {
             recentResetRequests.delete(key);
           }
@@ -340,9 +570,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const hashedPassword = await bcrypt.hash(newPassword, 10);
       
       // Update the password
+      console.log(`🔧 Updating password for user ID: ${resetToken.userId}`);
       const success = await storage.updateUserPassword(resetToken.userId, hashedPassword);
+      console.log(`🔧 Password update result: ${success}`);
       
       if (!success) {
+        console.error(`❌ Failed to update password for user ID: ${resetToken.userId}`);
         return res.status(500).json({ error: "Failed to update password" });
       }
 
@@ -461,15 +694,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
   }
 
   // Vendors
-  app.get("/api/vendors", requireAuth, async (req: any, res) => {
-    const userId = req.userId; // Mock user ID for now
+  app.get("/api/vendors", requireJWTAuth, async (req: AuthenticatedRequest, res) => {
+    const userId = req.user?.id; // User ID from JWT
     const vendors = await storage.getVendors(userId);
     res.json(vendors);
   });
 
-  app.post("/api/vendors", requireAuth, checkVendorsLimit, async (req: any, res) => {
+  app.post("/api/vendors", requireJWTAuth, checkVendorsLimit, async (req: AuthenticatedRequest, res) => {
     try {
-      const vendorData = insertVendorSchema.parse({ ...req.body, userId: req.userId });
+      const vendorData = insertVendorSchema.parse({ ...req.body, userId: req.user?.id });
       const vendor = await storage.createVendor(vendorData);
       
       // Create audit log
@@ -490,7 +723,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.put("/api/vendors/:id", async (req, res) => {
+  app.put("/api/vendors/:id", requireJWTAuth, async (req: AuthenticatedRequest, res) => {
     try {
       const id = parseInt(req.params.id);
       const originalVendor = await storage.getVendor(id);
@@ -525,7 +758,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.delete("/api/vendors/:id", async (req, res) => {
+  app.delete("/api/vendors/:id", requireJWTAuth, async (req: AuthenticatedRequest, res) => {
     const id = parseInt(req.params.id);
     const vendor = await storage.getVendor(id);
     if (!vendor) {
@@ -550,13 +783,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Material Categories
-  app.get("/api/material-categories", requireAuth, async (req: any, res) => {
-    const userId = req.userId;
+  app.get("/api/material-categories", requireJWTAuth, async (req: AuthenticatedRequest, res) => {
+    const userId = req.user?.id;
     const categories = await storage.getMaterialCategories(userId);
     res.json(categories);
   });
 
-  app.post("/api/material-categories", requireAuth, async (req: any, res) => {
+  app.post("/api/material-categories", requireJWTAuth, async (req: AuthenticatedRequest, res) => {
     try {
       const userId = req.userId;
       
@@ -613,7 +846,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.put("/api/material-categories/:id", requireAuth, async (req: any, res) => {
+  app.put("/api/material-categories/:id", requireJWTAuth, async (req: AuthenticatedRequest, res) => {
     try {
       const id = parseInt(req.params.id);
       const userId = req.userId;
@@ -649,7 +882,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.delete("/api/material-categories/:id", requireAuth, async (req: any, res) => {
+  app.delete("/api/material-categories/:id", requireJWTAuth, async (req: AuthenticatedRequest, res) => {
     const id = parseInt(req.params.id);
     const userId = req.userId;
     const category = await storage.getMaterialCategory(id);
@@ -675,7 +908,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Raw Materials
-  app.get("/api/raw-materials", requireAuth, async (req: any, res) => {
+  app.get("/api/raw-materials", requireJWTAuth, async (req: AuthenticatedRequest, res) => {
     const userId = req.userId;
     const materials = await storage.getRawMaterials(userId);
     const { enhanceMaterialsWithCalculatedCosts } = await import('./utils/calculations.js');
@@ -689,7 +922,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json(enhanceMaterialsWithCalculatedCosts(materials));
   });
 
-  app.get("/api/raw-materials/:id", async (req, res) => {
+  app.get("/api/raw-materials/:id", requireJWTAuth, async (req: AuthenticatedRequest, res) => {
     const id = parseInt(req.params.id);
     const material = await storage.getRawMaterial(id);
     if (!material) {
@@ -699,7 +932,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json(enhanceMaterialWithCalculatedCosts(material));
   });
 
-  app.post("/api/raw-materials", requireAuth, checkMaterialsLimit, async (req: any, res) => {
+  app.post("/api/raw-materials", requireJWTAuth, checkMaterialsLimit, async (req: AuthenticatedRequest, res) => {
     try {
       // Calculate unitCost if not provided
       const requestData = { ...req.body, userId: 1 };
@@ -713,7 +946,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
       }
       
-      const materialData = insertRawMaterialSchema.parse({ ...requestData, userId: req.userId });
+      const materialData = insertRawMaterialSchema.parse({ ...requestData, userId: req.user?.id });
       const material = await storage.createRawMaterial(materialData);
       
       // Create audit log
@@ -840,7 +1073,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Formulations
-  app.get("/api/formulations", requireAuth, async (req: any, res) => {
+  app.get("/api/formulations", requireJWTAuth, async (req: AuthenticatedRequest, res) => {
     const userId = req.userId;
     const formulations = await storage.getFormulations(userId);
     
@@ -854,7 +1087,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Fix material unit costs endpoint
-  app.post("/api/materials/fix-unit-costs", requireAuth, async (req: any, res) => {
+  app.post("/api/materials/fix-unit-costs", requireJWTAuth, async (req: AuthenticatedRequest, res) => {
     try {
       const userId = req.userId;
       const materials = await storage.getRawMaterials(userId);
@@ -891,7 +1124,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Refresh formulation costs endpoint
-  app.post("/api/formulations/refresh-costs", requireAuth, async (req: any, res) => {
+  app.post("/api/formulations/refresh-costs", requireJWTAuth, async (req: AuthenticatedRequest, res) => {
     try {
       const userId = req.userId;
       const formulations = await storage.getFormulations(userId);
@@ -989,28 +1222,202 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json(formulation);
   });
 
-  app.post("/api/formulations", requireAuth, checkFormulationsLimit, async (req: any, res) => {
+  app.post("/api/formulations", requireJWTAuth, checkFormulationsLimit, async (req: AuthenticatedRequest, res) => {
     try {
       const { ingredients, ...formulationData } = req.body;
+      
+      console.log("=== FORMULATION CREATION DEBUG ===");
+      console.log("Raw request body:", JSON.stringify(req.body, null, 2));
+      console.log("Formulation data:", JSON.stringify(formulationData, null, 2));
+      console.log("Ingredients:", JSON.stringify(ingredients, null, 2));
+      console.log("User ID from JWT:", req.user?.id);
+      
+      // === ROBUST VALIDATION CHAIN ===
+      
+      // 1. Validate user session and ID
+      if (!req.user?.id || typeof req.user.id !== 'number') {
+        console.error("Invalid or missing user ID in JWT:", req.user?.id);
+        return res.status(401).json({ error: "Invalid user session. Please log in again." });
+      }
+      
+      // 2. Verify user exists in database
+      console.log("Validating user ID:", req.user.id, "Type:", typeof req.user.id);
+      const user = await storage.getUser(req.user.id);
+      if (!user) {
+        console.error("User not found in database:", req.user.id);
+        // Try to debug further - let's check what users exist
+        try {
+          const allUsers = await db.select({ id: schema.users.id, email: schema.users.email }).from(schema.users).limit(10);
+          console.error("Sample users in database:", allUsers);
+        } catch (debugError) {
+          console.error("Failed to fetch sample users:", debugError);
+        }
+        return res.status(401).json({ error: "User authentication error. Please try logging out and back in." });
+      }
+      console.log("✓ User validated:", user.email);
+      
+      // 3. Validate basic formulation data
+      if (!formulationData.name || typeof formulationData.name !== 'string' || formulationData.name.trim().length === 0) {
+        return res.status(400).json({ error: "Formulation name is required and cannot be empty." });
+      }
+      
+      if (!formulationData.batchSize || isNaN(parseFloat(formulationData.batchSize)) || parseFloat(formulationData.batchSize) <= 0) {
+        return res.status(400).json({ error: "Batch size must be a positive number." });
+      }
+      
+      if (!formulationData.batchUnit || typeof formulationData.batchUnit !== 'string') {
+        return res.status(400).json({ error: "Batch unit is required." });
+      }
+      
+      // 4. Validate ingredients array
       if (!ingredients || !Array.isArray(ingredients) || ingredients.length === 0) {
         return res.status(400).json({ error: "A formulation must have at least one ingredient." });
       }
-      // Ensure userId is included from the authenticated session
-      const parsedFormulationData = insertFormulationSchema.parse({ ...formulationData, userId: req.userId });
+
+      // 5. Pre-validate all materials exist and are accessible
+      const materialValidationPromises = ingredients.map(async (ingredient, index) => {
+        if (!ingredient.materialId || typeof ingredient.materialId !== 'number' || ingredient.materialId <= 0) {
+          throw new Error(`Ingredient ${index + 1}: Invalid material ID`);
+        }
+        
+        const material = await storage.getRawMaterial(ingredient.materialId);
+        if (!material) {
+          throw new Error(`Ingredient ${index + 1}: Material with ID ${ingredient.materialId} not found`);
+        }
+        
+        // Verify material belongs to the same user
+        if (material.userId !== req.user?.id) {
+          throw new Error(`Ingredient ${index + 1}: Material "${material.name}" is not accessible`);
+        }
+        
+        if (!ingredient.quantity || isNaN(parseFloat(ingredient.quantity)) || parseFloat(ingredient.quantity) <= 0) {
+          throw new Error(`Ingredient ${index + 1}: Invalid quantity for material "${material.name}"`);
+        }
+        
+        return { material, ingredient };
+      });
+      
+      const validatedMaterials = await Promise.all(materialValidationPromises);
+      console.log("✓ All materials validated");
+      
+      // 6. Schema validation with detailed error handling
+      let parsedFormulationData;
+      try {
+        parsedFormulationData = insertFormulationSchema.parse({ 
+          ...formulationData, 
+          userId: req.user.id,
+          // Ensure proper type conversion
+          batchSize: parseFloat(formulationData.batchSize),
+          markupPercentage: formulationData.markupPercentage ? parseFloat(formulationData.markupPercentage) : 30.0,
+          targetPrice: formulationData.targetPrice ? parseFloat(formulationData.targetPrice) : undefined,
+        });
+        console.log("✓ Schema validation passed");
+      } catch (error: any) {
+        console.error("Schema validation error:", error);
+        if (error.errors && Array.isArray(error.errors)) {
+          const errorMessages = error.errors.map((err: any) => `${err.path.join('.')}: ${err.message}`);
+          return res.status(400).json({ 
+            error: "Invalid formulation data", 
+            details: errorMessages,
+            received: { ...formulationData, userId: req.user.id }
+          });
+        }
+        return res.status(400).json({ error: "Invalid formulation data: " + error.message });
+      }
+      
+      // Comprehensive validation checks
+      console.log("Starting comprehensive validation...");
+      
+      // 1. Verify user exists and is properly authenticated
+      console.log("Validating user ID:", req.user.id);
+      const userExists = await db.select({ id: users.id }).from(users).where(eq(users.id, req.user.id)).limit(1);
+      if (!userExists || userExists.length === 0) {
+        console.error("User not found in database:", req.user.id);
+        // Debug: let's see what users exist
+        try {
+          const allUsers = await db.select({ id: schema.users.id, email: schema.users.email }).from(schema.users).limit(10);
+          console.error("Sample users in database:", allUsers);
+          
+          // Let's also check the specific query
+          console.error("Direct query for user ID:", req.user.id);
+          const directQuery = await db.select().from(schema.users).where(eq(schema.users.id, req.user.id));
+          console.error("Direct query result:", directQuery);
+        } catch (debugError) {
+          console.error("Failed to fetch sample users:", debugError);
+        }
+        return res.status(401).json({ 
+          error: "User authentication error. Please log out and log back in.",
+          code: "USER_NOT_FOUND"
+        });
+      }
+      console.log("User validation passed");
+      
+      // 2. Validate all materials exist and belong to user
+      console.log("Validating materials...");
+      const materialIds = ingredients.map(ing => ing.materialId);
+      const existingMaterials = await db.select({ 
+        id: rawMaterials.id, 
+        name: rawMaterials.name,
+        userId: rawMaterials.userId 
+      }).from(rawMaterials).where(inArray(rawMaterials.id, materialIds));
+      
+      if (existingMaterials.length !== materialIds.length) {
+        const foundIds = existingMaterials.map(m => m.id);
+        const missingIds = materialIds.filter(id => !foundIds.includes(id));
+        console.error("Missing materials:", missingIds);
+        return res.status(400).json({ 
+          error: `Materials not found: ${missingIds.join(', ')}`,
+          code: "MATERIALS_NOT_FOUND"
+        });
+      }
+      
+      // Check material ownership
+      const unauthorizedMaterials = existingMaterials.filter(m => m.userId !== req.userId);
+      if (unauthorizedMaterials.length > 0) {
+        console.error("Unauthorized materials:", unauthorizedMaterials.map(m => m.name));
+        return res.status(403).json({ 
+          error: `You don't have access to materials: ${unauthorizedMaterials.map(m => m.name).join(', ')}`,
+          code: "MATERIALS_UNAUTHORIZED"
+        });
+      }
+      console.log("Material validation passed");
+      
+      // 3. Validate parsed data structure
+      console.log("Final data validation...");
+      if (!parsedFormulationData.userId || parsedFormulationData.userId !== req.userId) {
+        console.error("User ID mismatch in parsed data");
+        return res.status(400).json({ 
+          error: "Data validation error. Please refresh and try again.",
+          code: "DATA_VALIDATION_ERROR"
+        });
+      }
+      
+      console.log("All validations passed, proceeding with transaction...");
+      
       let formulation;
       await withTransaction(async (trx) => {
+        console.log("Creating formulation with data:", JSON.stringify(parsedFormulationData, null, 2));
+        
         // Create formulation
         const results = await trx.insert(formulations).values(parsedFormulationData).returning();
         formulation = results[0];
+        console.log("Created formulation with ID:", formulation.id);
+        
         // Insert ingredients robustly
         for (const ingredient of ingredients) {
+          console.log("Processing ingredient:", JSON.stringify(ingredient, null, 2));
+          
           // Fetch material details
           const [material] = await trx.select().from(rawMaterials).where(eq(rawMaterials.id, ingredient.materialId));
           if (!material) throw new Error(`Material with id ${ingredient.materialId} not found`);
+          
+          console.log("Found material:", material.name);
+          
           const unit = material.unit;
           const unitCost = parseFloat(material.unitCost);
           const quantity = parseFloat(ingredient.quantity);
           const costContribution = (unitCost * quantity).toFixed(4);
+          
           await trx.insert(formulationIngredients).values({
             formulationId: formulation.id,
             materialId: ingredient.materialId,
@@ -1019,6 +1426,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
             costContribution,
             includeInMarkup: ingredient.includeInMarkup !== false,
           });
+          
+          console.log("Added ingredient:", material.name, "qty:", quantity, "cost:", costContribution);
         }
       });
       // Fetch the full formulation with ingredients
@@ -1029,7 +1438,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(fullFormulation);
     } catch (error) {
       console.error("Error creating formulation:", error);
-      res.status(400).json({ error: "Invalid formulation data" });
+      
+      // More specific error handling
+      if (error instanceof Error) {
+        if (error.message.includes('Material with id')) {
+          res.status(400).json({ error: error.message });
+        } else if (error.message.includes('ingredient')) {
+          res.status(400).json({ error: "Invalid ingredient data: " + error.message });
+        } else {
+          res.status(400).json({ error: "Failed to create formulation: " + error.message });
+        }
+      } else {
+        res.status(500).json({ error: "An unexpected error occurred while creating the formulation" });
+      }
     }
   });
 
@@ -1154,49 +1575,91 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Dashboard stats
-  app.get("/api/dashboard/stats", requireAuth, async (req: any, res) => {
-    const userId = req.userId;
-    const materials = await storage.getRawMaterials(userId);
-    const formulations = await storage.getFormulations(userId);
-    const vendors = await storage.getVendors(userId);
-    
-    const totalMaterials = materials.length;
-    const activeFormulations = formulations.filter(f => f.isActive).length;
-    const totalInventoryValue = materials.reduce((sum, m) => sum + Number(m.totalCost), 0);
-    
-    // Calculate average profit margin based on selling price: (Selling Price - Cost) / Selling Price * 100
-    const activeFormulationsWithTarget = formulations.filter(f => f.isActive && f.targetPrice && Number(f.targetPrice) > 0);
-    const avgProfitMargin = activeFormulationsWithTarget.length > 0 
-      ? activeFormulationsWithTarget.reduce((sum, f) => {
-          const targetPrice = Number(f.targetPrice);
-          const cost = Number(f.totalCost);
-          return sum + ((targetPrice - cost) / targetPrice * 100);
-        }, 0) / activeFormulationsWithTarget.length
-      : 0;
+  app.get("/api/dashboard/stats", requireJWTAuth, async (req: AuthenticatedRequest, res) => {
+    console.log(`🔧 Dashboard stats request for user ${req.userId}`);
+    try {
+      const userId = req.userId;
+      
+      // Wrap each storage call in try-catch to prevent any single query from crashing
+      let materials: any[] = [];
+      let formulations: any[] = [];
+      let vendors: any[] = [];
+      
+      try {
+        materials = await storage.getRawMaterials(userId!);
+      } catch (error) {
+        console.error('Error fetching materials:', error);
+      }
+      
+      try {
+        formulations = await storage.getFormulations(userId!);
+      } catch (error) {
+        console.error('Error fetching formulations:', error);
+      }
+      
+      try {
+        vendors = await storage.getVendors(userId!);
+      } catch (error) {
+        console.error('Error fetching vendors:', error);
+      }
+      
+      const totalMaterials = materials.length;
+      const activeFormulations = formulations.filter(f => f.isActive).length;
+      const totalInventoryValue = materials.reduce((sum, m) => sum + Number(m.totalCost || 0), 0);
+      
+      // Calculate average profit margin based on selling price: (Selling Price - Cost) / Selling Price * 100
+      const activeFormulationsWithTarget = formulations.filter(f => f.isActive && f.targetPrice && Number(f.targetPrice) > 0);
+      const avgProfitMargin = activeFormulationsWithTarget.length > 0 
+        ? activeFormulationsWithTarget.reduce((sum, f) => {
+            const targetPrice = Number(f.targetPrice || 0);
+            const cost = Number(f.totalCost || 0);
+            return sum + ((targetPrice - cost) / targetPrice * 100);
+          }, 0) / activeFormulationsWithTarget.length
+        : 0;
 
-    // Add cache control headers
-    res.set('Cache-Control', 'no-cache, no-store, must-revalidate');
-    res.set('Pragma', 'no-cache');
-    res.set('Expires', '0');
+      // Add cache control headers
+      res.set('Cache-Control', 'no-cache, no-store, must-revalidate');
+      res.set('Pragma', 'no-cache');
+      res.set('Expires', '0');
 
-    res.json({
-      totalMaterials,
-      activeFormulations,
-      vendorsCount: vendors.length,
-      avgProfitMargin: avgProfitMargin.toFixed(1),
-      inventoryValue: totalInventoryValue.toFixed(2),
-    });
+      console.log(`🔧 Dashboard stats calculated successfully`);
+      res.json({
+        totalMaterials,
+        activeFormulations,
+        vendorsCount: vendors.length,
+        avgProfitMargin: avgProfitMargin.toFixed(1),
+        inventoryValue: totalInventoryValue.toFixed(2),
+      });
+    } catch (error) {
+      console.error(`❌ Error fetching dashboard stats:`, error);
+      // Return default stats to prevent dashboard crash
+      res.json({
+        totalMaterials: 0,
+        activeFormulations: 0,
+        vendorsCount: 0,
+        avgProfitMargin: "0.0",
+        inventoryValue: "0.00",
+      });
+    }
   });
 
   // Recent activity
-  app.get("/api/dashboard/recent-activity", requireAuth, async (req: any, res) => {
+  app.get("/api/dashboard/recent-activity", requireJWTAuth, async (req: AuthenticatedRequest, res) => {
     const userId = req.userId;
-    const auditLogs = await storage.getAuditLogs(userId, 10);
-    res.json(auditLogs);
+    console.log(`🔧 Recent activity request for user ${userId}`);
+    try {
+      const auditLogs = await storage.getAuditLogs(userId, 10);
+      console.log(`🔧 Successfully fetched ${auditLogs.length} audit logs`);
+      res.json(auditLogs);
+    } catch (error) {
+      console.error(`❌ Error fetching audit logs:`, error);
+      // Return empty array to prevent dashboard crash
+      res.json([]);
+    }
   });
 
   // Setup vendors and categories for CSV import
-  app.post("/api/setup-import-data", requireAuth, async (req: any, res) => {
+  app.post("/api/setup-import-data", requireJWTAuth, async (req: AuthenticatedRequest, res) => {
     const userId = req.userId;
     
     try {
@@ -1219,7 +1682,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Remove duplicate materials
-  app.post("/api/remove-duplicates", requireAuth, async (req: any, res) => {
+  app.post("/api/remove-duplicates", requireJWTAuth, async (req: AuthenticatedRequest, res) => {
     const userId = req.userId;
     
     try {
@@ -1263,8 +1726,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Import materials
-  app.post("/api/import/materials", requireAuth, async (req, res) => {
+  app.post("/api/import/materials", requireJWTAuth, async (req: AuthenticatedRequest, res) => {
+    console.log("Import materials request received");
+    console.log("Auth user:", req.user);
+    console.log("Auth userId:", req.userId);
+    
     const userId = req.userId;
+    if (!userId) {
+      console.error("No userId found in request");
+      return res.status(401).json({ error: "User ID not found in authenticated request" });
+    }
+    
     const { materials } = req.body;
     
     if (!Array.isArray(materials)) {
@@ -1527,10 +1999,36 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const { entityType, entityId } = req.params;
       const { fileId } = req.body;
       
+      // Validate parameters
+      if (!entityType || !entityId || !fileId) {
+        return res.status(400).json({ error: "Missing required parameters: entityType, entityId, or fileId" });
+      }
+      
+      const entityIdNum = parseInt(entityId);
+      const fileIdNum = parseInt(fileId);
+      
+      if (isNaN(entityIdNum) || isNaN(fileIdNum)) {
+        return res.status(400).json({ error: "Invalid entityId or fileId format" });
+      }
+      
+      // Check if the file exists
+      const file = await storage.getFile(fileIdNum);
+      if (!file) {
+        return res.status(404).json({ error: "File not found" });
+      }
+      
+      // Check if already attached
+      const existingAttachments = await storage.getFileAttachments(entityType, entityIdNum);
+      const alreadyAttached = existingAttachments.some(att => att.fileId === fileIdNum);
+      
+      if (alreadyAttached) {
+        return res.status(400).json({ error: "File is already attached to this item" });
+      }
+      
       const attachment = await storage.attachFile({
-        fileId,
+        fileId: fileIdNum,
         entityType,
-        entityId: parseInt(entityId)
+        entityId: entityIdNum
       });
       
       res.json(attachment);
@@ -1562,7 +2060,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Reports routes
-  app.get("/api/reports/:tier", requireAuth, async (req: any, res) => {
+  app.get("/api/reports/:tier", requireJWTAuth, async (req: AuthenticatedRequest, res) => {
     const userId = req.userId;
     const tier = req.params.tier;
     
@@ -1596,7 +2094,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   registerPaymentRoutes(app);
 
   // Admin routes
-  app.get("/api/admin/users", requireAuth, async (req: any, res) => {
+  app.get("/api/admin/users", requireJWTAuth, async (req: AuthenticatedRequest, res) => {
     // Check if user is admin
     const currentUser = await storage.getUser(req.userId);
     if (!currentUser || currentUser.role !== 'admin') {
@@ -1607,7 +2105,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json(users);
   });
 
-  app.post("/api/admin/update-subscription", requireAuth, async (req: any, res) => {
+  app.post("/api/admin/update-subscription", requireJWTAuth, async (req: AuthenticatedRequest, res) => {
     try {
       // Check if user is admin
       const currentUser = await storage.getUser(req.userId);
@@ -1646,7 +2144,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Create audit log
       await storage.createAuditLog({
-        userId: req.userId, // Admin who made the change
+        userId: req.user?.id, // Admin who made the change
         action: "update",
         entityType: "user_subscription",
         entityId: user.id,
@@ -1719,11 +2217,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Get current user info (for frontend auth)
-  app.get("/api/user", async (req, res) => {
-    if (!req.session?.userId) {
-      return res.status(401).json({ error: "Not authenticated" });
-    }
-    const user = await storage.getUser(req.session.userId);
+  app.get("/api/user", requireJWTAuth, async (req: AuthenticatedRequest, res) => {
+    // User is already authenticated through JWT middleware
+    const user = await storage.getUser(req.user?.id);
     if (!user) {
       return res.status(401).json({ error: "User not found" });
     }

@@ -11,6 +11,9 @@ export const users = pgTable("users", {
   profileImage: text("profile_image"), // For OAuth profile pictures
   googleId: text("google_id").unique(), // Google OAuth ID
   authProvider: text("auth_provider").notNull().default("local"), // "local", "google"
+  emailVerified: boolean("email_verified").notNull().default(false), // Email verification status
+  emailVerificationToken: text("email_verification_token"), // Token for email verification
+  emailVerificationExpires: timestamp("email_verification_expires"), // Token expiration
   subscriptionStatus: text("subscription_status").default("none"),
   subscriptionPlan: text("subscription_plan"),
   subscriptionStartDate: timestamp("subscription_start_date"),
@@ -150,6 +153,9 @@ export const auditLog = pgTable("audit_log", {
 export const insertUserSchema = createInsertSchema(users).omit({
   id: true,
   createdAt: true,
+  emailVerified: true,
+  emailVerificationToken: true,
+  emailVerificationExpires: true,
 }).extend({
   password: z.string().min(6, "Password must be at least 6 characters").optional(),
 });
@@ -177,6 +183,10 @@ export const insertFormulationSchema = createInsertSchema(formulations).omit({
   profitMargin: true,
   createdAt: true,
   updatedAt: true,
+}).extend({
+  batchSize: z.coerce.number().positive("Batch size must be a positive number"),
+  markupPercentage: z.coerce.number().min(0, "Markup percentage must be non-negative").optional(),
+  targetPrice: z.coerce.number().positive("Target price must be positive").optional(),
 });
 
 export const insertFormulationIngredientSchema = createInsertSchema(formulationIngredients).omit({

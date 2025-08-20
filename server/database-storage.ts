@@ -1,6 +1,6 @@
 import { drizzle } from 'drizzle-orm/postgres-js';
 import postgres from 'postgres';
-import { eq, and } from 'drizzle-orm';
+import { eq, and, inArray } from 'drizzle-orm';
 import * as schema from "@shared/schema";
 import type { 
   User, InsertUser, Vendor, InsertVendor, MaterialCategory, InsertMaterialCategory,
@@ -51,12 +51,27 @@ export class DatabaseStorage implements IStorage {
   }
 
   async updateUserPassword(id: number, newPassword: string): Promise<boolean> {
-    const results = await db.update(schema.users).set({ password: newPassword }).where(eq(schema.users.id, id));
-    return results.rowCount > 0;
+    try {
+      console.log(`🔧 DatabaseStorage: Updating password for user ID: ${id}`);
+      const results = await db.update(schema.users).set({ password: newPassword }).where(eq(schema.users.id, id)).returning();
+      console.log(`🔧 DatabaseStorage: Update results:`, results);
+      console.log(`🔧 DatabaseStorage: Results length:`, results.length);
+      const success = results.length > 0;
+      console.log(`🔧 DatabaseStorage: Success: ${success}`);
+      return success;
+    } catch (error) {
+      console.error(`❌ DatabaseStorage: Error updating password:`, error);
+      return false;
+    }
   }
 
   async getVendors(userId: number): Promise<Vendor[]> {
-    return await db.select().from(schema.vendors).where(eq(schema.vendors.userId, userId));
+    try {
+      return await db.select().from(schema.vendors).where(eq(schema.vendors.userId, userId));
+    } catch (error) {
+      console.error('[Drizzle] getVendors failed:', error);
+      return [];
+    }
   }
 
   async getVendor(id: number): Promise<Vendor | undefined> {
@@ -104,7 +119,12 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getRawMaterials(userId: number): Promise<RawMaterial[]> {
-    return await db.select().from(schema.rawMaterials).where(eq(schema.rawMaterials.userId, userId));
+    try {
+      return await db.select().from(schema.rawMaterials).where(eq(schema.rawMaterials.userId, userId));
+    } catch (error) {
+      console.error('[Drizzle] getRawMaterials failed:', error);
+      return [];
+    }
   }
 
   async getRawMaterial(id: number): Promise<RawMaterial | undefined> {
@@ -128,12 +148,17 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getFormulations(userId: number): Promise<Formulation[]> {
-    // Use Drizzle ORM relational query to fetch formulations with their ingredients
-    // @ts-ignore: Drizzle query typing may not reflect .with
-    return await db.query.formulations.findMany({
-      where: (formulations, { eq }) => eq(formulations.userId, userId),
-      with: { ingredients: true },
-    });
+    try {
+      // Use Drizzle ORM relational query to fetch formulations with their ingredients
+      // @ts-ignore: Drizzle query typing may not reflect .with
+      return await db.query.formulations.findMany({
+        where: (formulations, { eq }) => eq(formulations.userId, userId),
+        with: { ingredients: true },
+      });
+    } catch (error) {
+      console.error('[Drizzle] getFormulations failed:', error);
+      return [];
+    }
   }
 
   async getFormulation(id: number): Promise<Formulation | undefined> {
@@ -217,8 +242,9 @@ export class DatabaseStorage implements IStorage {
     const fileIds = attachments.map(a => a.fileId);
     if (fileIds.length === 0) return [];
     
+    // Use inArray operator to properly select all files
     const files = await db.select().from(schema.files).where(
-      eq(schema.files.id, fileIds[0]) // This is simplified - proper implementation would use IN operator
+      inArray(schema.files.id, fileIds)
     );
     return files;
   }

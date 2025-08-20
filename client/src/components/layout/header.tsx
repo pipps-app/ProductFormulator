@@ -17,14 +17,35 @@ export default function Header() {
 
   const logoutMutation = useMutation({
     mutationFn: async () => {
-      const response = await fetch("/api/auth/logout", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-      });
-      if (!response.ok) {
-        throw new Error("Logout failed");
+      // Remove token from localStorage immediately
+      localStorage.removeItem('auth_token');
+      
+      try {
+        const response = await fetch("/api/auth/logout", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include", // Include cookies
+        });
+        
+        const raw = await response.text();
+        let parsed: any = null;
+        if (raw) {
+          try { parsed = JSON.parse(raw); } catch (e) {
+            console.warn('Logout response not JSON:', raw);
+          }
+        }
+        
+        if (!response.ok) {
+          console.warn('Logout server error:', response.status, raw);
+          // Don't throw error - we still want to clear client state
+        }
+        
+        return parsed || { success: true };
+      } catch (error) {
+        console.warn('Logout network error:', error);
+        // Don't throw error - we still want to clear client state
+        return { success: true };
       }
-      return response.json();
     },
     onSuccess: () => {
       // Clear all cached data
@@ -38,12 +59,20 @@ export default function Header() {
       });
       setLocation("/login");
     },
-    onError: () => {
+    onError: (error) => {
+      // This should rarely happen now since we catch errors in mutationFn
+      console.error('Logout mutation error:', error);
+      
+      // Still try to clear state and redirect
+      queryClient.clear();
+      queryClient.invalidateQueries({ queryKey: ["/api/user"] });
+      
       toast({
-        title: "Logout failed",
-        description: "There was an error logging out. Please try again.",
+        title: "Logged out",
+        description: "You have been logged out (with warnings).",
         variant: "destructive",
       });
+      setLocation("/login");
     },
   });
 

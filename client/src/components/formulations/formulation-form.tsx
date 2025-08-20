@@ -125,10 +125,37 @@ export default function FormulationForm({ formulation, onSuccess }: FormulationF
   // Add or update ingredient
   const addIngredient = () => {
     if (!selectedMaterialId || !ingredientQuantity) return;
+    
     const material = materials?.find(m => m.id === parseInt(selectedMaterialId));
-    if (!material) return;
+    if (!material) {
+      toast({
+        title: "Material not found",
+        description: "The selected material could not be found. Please refresh and try again.",
+        variant: "destructive"
+      });
+      return;
+    }
+    
     const quantity = parseFloat(ingredientQuantity);
+    if (isNaN(quantity) || quantity <= 0) {
+      toast({
+        title: "Invalid quantity",
+        description: "Please enter a valid quantity greater than 0.",
+        variant: "destructive"
+      });
+      return;
+    }
+    
     const materialUnitCost = parseFloat(material.unitCost);
+    if (isNaN(materialUnitCost)) {
+      toast({
+        title: "Invalid material cost",
+        description: `The material "${material.name}" has an invalid unit cost. Please update the material first.`,
+        variant: "destructive"
+      });
+      return;
+    }
+    
     const totalCost = quantity * materialUnitCost;
     if (editingIngredientId) {
       setIngredients(ingredients.map(ing =>
@@ -182,25 +209,55 @@ export default function FormulationForm({ formulation, onSuccess }: FormulationF
 
   // --- Improved onSubmit handler ---
   const onSubmit = (data: Omit<Formulation, "id" | "ingredients">) => {
-    // Only manual validation: must have at least one ingredient
+    // Validation checks
     if (ingredients.length === 0) {
       toast({ title: "Please add at least one ingredient", variant: "destructive" });
+      return;
+    }
+
+    // Validate all ingredients have valid materials
+    const invalidIngredients = ingredients.filter(ing => !ing.materialId || ing.materialId <= 0);
+    if (invalidIngredients.length > 0) {
+      toast({ 
+        title: "Invalid ingredients detected", 
+        description: "Please check all ingredients have valid materials selected.",
+        variant: "destructive" 
+      });
+      return;
+    }
+
+    // Validate batch size is positive
+    const batchSize = parseFloat(data.batchSize);
+    if (isNaN(batchSize) || batchSize <= 0) {
+      toast({ 
+        title: "Invalid batch size", 
+        description: "Batch size must be a positive number.",
+        variant: "destructive" 
+      });
       return;
     }
 
     // Prepare payload
     const payload = {
       ...data,
-      targetPrice: sellingPrice || undefined,
+      batchSize: parseFloat(data.batchSize),
+      markupPercentage: parseFloat(data.markupPercentage),
+      targetPrice: sellingPrice ? parseFloat(sellingPrice) : undefined,
       ingredients: ingredients.map(ing => ({
         materialId: ing.materialId,
-        quantity: ing.quantity,
+        quantity: parseFloat(ing.quantity.toString()),
         includeInMarkup: ing.includeInMarkup,
       })),
     };
 
+    console.log("=== CLIENT FORMULATION SUBMIT DEBUG ===");
+    console.log("Form data:", JSON.stringify(data, null, 2));
+    console.log("Ingredients:", JSON.stringify(ingredients, null, 2));
+    console.log("Final payload:", JSON.stringify(payload, null, 2));
+
     // Mutations
     if (formulation) {
+      console.log("Updating formulation:", payload);
       updateMutation.mutate(
         { id: formulation.id, data: payload },
         {
@@ -210,29 +267,51 @@ export default function FormulationForm({ formulation, onSuccess }: FormulationF
             onSuccess();
           },
           onError: (error: any) => {
+            console.error("Update formulation error:", error);
             const errorMessage =
               error?.response?.data?.error ||
               error?.message ||
               "Failed to update formulation";
             toast({ title: "Error", description: errorMessage, variant: "destructive" });
-            console.error("Update formulation error:", error);
           },
         }
       );
     } else {
+      console.log("Creating formulation:", payload);
       createMutation.mutate(payload, {
         onSuccess: (newFormulation: Formulation) => {
           dispatch(addFormulation(newFormulation));
           toast({ title: "Formulation created successfully" });
-          onSuccess();
+          // Navigate to the detail page so user can see the file attachments
+          if (newFormulation?.id) {
+            setLocation(`/formulations/${newFormulation.id}`);
+          } else {
+            onSuccess();
+          }
         },
         onError: (error: any) => {
-          const errorMessage =
-            error?.response?.data?.error ||
-            error?.message ||
-            "Failed to create formulation";
-          toast({ title: "Error", description: errorMessage, variant: "destructive" });
           console.error("Create formulation error:", error);
+          let errorMessage = "Failed to create formulation";
+          
+          // Extract more specific error messages
+          if (error?.response?.data?.error) {
+            errorMessage = error.response.data.error;
+          } else if (error?.message) {
+            errorMessage = error.message;
+          }
+          
+          // Handle specific error types
+          if (errorMessage.includes("ingredient")) {
+            errorMessage = "There was an issue with one of your ingredients. Please check all ingredient data.";
+          } else if (errorMessage.includes("material")) {
+            errorMessage = "One or more materials in your formulation couldn't be found. Please refresh and try again.";
+          }
+          
+          toast({ 
+            title: "Error", 
+            description: errorMessage, 
+            variant: "destructive" 
+          });
         },
       });
     }
