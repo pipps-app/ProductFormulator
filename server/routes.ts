@@ -1909,6 +1909,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
           }, 0) / activeFormulationsWithTarget.length
         : 0;
 
+      // Ensure no NaN values are returned
+      const safeAvgProfitMargin = isNaN(avgProfitMargin) ? 0 : avgProfitMargin;
+
       // Add cache control headers
       res.set('Cache-Control', 'no-cache, no-store, must-revalidate');
       res.set('Pragma', 'no-cache');
@@ -1919,7 +1922,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         totalMaterials,
         activeFormulations,
         vendorsCount: vendors.length,
-        avgProfitMargin: avgProfitMargin.toFixed(1),
+        avgProfitMargin: safeAvgProfitMargin.toFixed(1),
         inventoryValue: totalInventoryValue.toFixed(2),
       });
     } catch (error) {

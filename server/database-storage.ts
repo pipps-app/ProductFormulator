@@ -147,12 +147,14 @@ export class DatabaseStorage implements IStorage {
     return results.rowCount > 0;
   }
 
-  async getFormulations(userId: number): Promise<Formulation[]> {
+  async getFormulations(userId: number, includeArchived = false): Promise<Formulation[]> {
     try {
       // Use Drizzle ORM relational query to fetch formulations with their ingredients
       // @ts-ignore: Drizzle query typing may not reflect .with
       return await db.query.formulations.findMany({
-        where: (formulations, { eq }) => eq(formulations.userId, userId),
+        where: (formulations, { eq, and }) => includeArchived 
+          ? eq(formulations.userId, userId)
+          : and(eq(formulations.userId, userId), eq(formulations.isActive, true)),
         with: { ingredients: true },
       });
     } catch (error) {

@@ -127,7 +127,11 @@ export default function Formulations() {
       await queryClient.invalidateQueries({ queryKey: ["/api/formulations"] });
       await refetch();
       
-      toast({ title: "Costs refreshed and updated" });
+      toast({ 
+        title: "Costs refreshed and updated", 
+        description: "All formulation costs have been recalculated",
+        duration: 3000
+      });
     } catch (error) {
       toast({ 
         title: "Refresh completed", 
@@ -151,10 +155,27 @@ export default function Formulations() {
 
   // Refetch formulations whenever raw material prices change
   useEffect(() => {
-    if (rawMaterials) {
-      refetch();
+    if (rawMaterials && rawMaterials.length > 0) {
+      console.log('Raw materials updated, refreshing formulation costs...');
+      // Add a small delay to ensure database updates are complete
+      const timeoutId = setTimeout(async () => {
+        try {
+          await apiRequest("POST", "/api/formulations/refresh-costs");
+          await refetch();
+          console.log('Formulation costs refreshed automatically');
+          toast({ 
+            title: "Costs Updated", 
+            description: "Formulation costs have been recalculated based on updated materials",
+            duration: 3000
+          });
+        } catch (error) {
+          console.error('Auto-refresh failed:', error);
+        }
+      }, 500);
+      
+      return () => clearTimeout(timeoutId);
     }
-  }, [rawMaterials]);
+  }, [rawMaterials, refetch]);
 
   useEffect(() => {
     // Always fetch latest data on mount and on route change

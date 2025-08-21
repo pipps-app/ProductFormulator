@@ -2,6 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { RefreshCw, Plus } from "lucide-react";
 import { useState } from "react";
+import { Link } from "wouter";
 import MetricsGrid from "@/components/dashboard/metrics-grid";
 import RecentFormulations from "@/components/dashboard/recent-formulations";
 import MaterialsPreview from "@/components/dashboard/materials-preview";
@@ -59,10 +60,12 @@ export default function Dashboard() {
             <RefreshCw className={`h-4 w-4 mr-2 ${isRefreshing || statsLoading ? 'animate-spin' : ''}`} />
             Refresh
           </Button>
-          <Button>
-            <Plus className="h-4 w-4 mr-2" />
-            New Formulation
-          </Button>
+          <Link href="/formulations">
+            <Button>
+              <Plus className="h-4 w-4 mr-2" />
+              New Formulation
+            </Button>
+          </Link>
         </div>
       </div>
 

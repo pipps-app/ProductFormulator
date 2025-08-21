@@ -15,57 +15,26 @@ type FormulationSortField = 'name' | 'totalCost' | 'profitMargin';
 type SortDirection = 'asc' | 'desc';
 
 interface FormulationListProps {
+  formulations: Formulation[];
+  isLoading: boolean;
   sortField: FormulationSortField;
   sortDirection: SortDirection;
   onEdit: (formulation: Formulation) => void;
   onSort: (field: FormulationSortField) => void;
 }
 
-export default function FormulationList({ sortField, sortDirection, onEdit, onSort }: FormulationListProps) {
+export default function FormulationList({ formulations, isLoading, sortField, sortDirection, onEdit, onSort }: FormulationListProps) {
   const [deletingFormulation, setDeletingFormulation] = useState<Formulation | null>(null);
   const [archivingFormulation, setArchivingFormulation] = useState<Formulation | null>(null);
   const [restoringFormulation, setRestoringFormulation] = useState<Formulation | null>(null);
   const dispatch = useAppDispatch();
-  const formulations: Formulation[] = useAppSelector(state => state.formulations);
   const rawMaterials = useAppSelector(selectRawMaterials);
 
-  useEffect(() => {
-    dispatch(fetchFormulations());
-  }, [dispatch]);
-
-  // Recalculate all costs and margins using latest Redux state
-  const recalculatedFormulations: Formulation[] = useMemo(() => {
-    return formulations.map((formulation: Formulation): Formulation => {
-      const ingredients = (formulation.ingredients || []).map((ing: any) => {
-        const material = rawMaterials.find((m: any) => m.id === ing.materialId);
-        const unitCost = material ? material.unitCost : 0;
-        const totalCost = unitCost * ing.quantity;
-        return { ...ing, unitCost, totalCost };
-      });
-      const totalMaterialCost = ingredients.reduce((sum: number, ing: any) => sum + ing.totalCost, 0);
-      const batchSize = formulation.batchSize || 1;
-      const unitCost = batchSize > 0 ? totalMaterialCost / batchSize : 0;
-      const markupEligibleCost = ingredients.reduce((sum: number, ing: any) => ing.includeInMarkup ? sum + ing.totalCost : sum, 0);
-      const markupPercentage = formulation.markupPercentage || 30;
-      const suggestedPrice = markupEligibleCost * (1 + markupPercentage / 100);
-      const targetPrice = formulation.targetPrice || suggestedPrice;
-      const profit = targetPrice - markupEligibleCost;
-      const profitMargin = targetPrice > 0 ? (profit / targetPrice) * 100 : 0;
-      return {
-        ...formulation,
-        ingredients,
-        totalMaterialCost,
-        totalCost: totalMaterialCost,
-        unitCost,
-        suggestedPrice,
-        profitMargin,
-      };
-    });
-  }, [formulations, rawMaterials]);
-
-  // Sorting and filtering logic (adapt as needed)
+  // Use the passed formulations data directly - costs should already be calculated by the API
   const sortedFormulations: Formulation[] = useMemo(() => {
-    return recalculatedFormulations.slice().sort((a: Formulation, b: Formulation) => {
+    if (!formulations) return [];
+    
+    return formulations.slice().sort((a: Formulation, b: Formulation) => {
       let aValue: string | number;
       let bValue: string | number;
       switch (sortField) {
@@ -74,12 +43,12 @@ export default function FormulationList({ sortField, sortDirection, onEdit, onSo
           bValue = b.name.toLowerCase();
           break;
         case 'totalCost':
-          aValue = (a as any).totalMaterialCost;
-          bValue = (b as any).totalMaterialCost;
+          aValue = Number(a.totalCost || 0);
+          bValue = Number(b.totalCost || 0);
           break;
         case 'profitMargin':
-          aValue = (a as any).profitMargin;
-          bValue = (b as any).profitMargin;
+          aValue = Number(a.profitMargin || 0);
+          bValue = Number(b.profitMargin || 0);
           break;
         default:
           aValue = a.name.toLowerCase();
@@ -89,7 +58,7 @@ export default function FormulationList({ sortField, sortDirection, onEdit, onSo
       if (aValue > bValue) return sortDirection === 'asc' ? 1 : -1;
       return 0;
     });
-  }, [recalculatedFormulations, sortField, sortDirection]);
+  }, [formulations, sortField, sortDirection]);
 
   const handleDelete = (formulation: Formulation) => {
     setDeletingFormulation(formulation);
@@ -195,7 +164,34 @@ export default function FormulationList({ sortField, sortDirection, onEdit, onSo
     </th>
   );
 
-  if (recalculatedFormulations.length === 0) {
+  if (isLoading) {
+    return (
+      <div className="space-y-4">
+        {Array.from({ length: 3 }).map((_, i) => (
+          <div key={i} className="border rounded-lg p-6">
+            <div className="flex justify-between items-start mb-4">
+              <div className="space-y-2 flex-1">
+                <Skeleton className="h-6 w-1/3" />
+                <Skeleton className="h-4 w-1/2" />
+              </div>
+              <div className="flex space-x-2">
+                <Skeleton className="h-10 w-20" />
+                <Skeleton className="h-10 w-20" />
+              </div>
+            </div>
+            <div className="grid grid-cols-4 gap-4">
+              <Skeleton className="h-4 w-full" />
+              <Skeleton className="h-4 w-full" />
+              <Skeleton className="h-4 w-full" />
+              <Skeleton className="h-4 w-full" />
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  if (sortedFormulations.length === 0) {
     return (
       <div className="text-center py-12">
         <FlaskRound className="h-12 w-12 text-slate-400 mx-auto mb-4" />
@@ -224,16 +220,20 @@ export default function FormulationList({ sortField, sortDirection, onEdit, onSo
           </thead>
           <tbody className="divide-y divide-slate-200">
             {sortedFormulations.map((formulation: Formulation) => {
-              const c = (formulation as any)._calculated || formulation;
-              const profitMarginColor = getProfitMarginColor(c.profitMargin?.toString() ?? "0");
+              const profitMarginColor = getProfitMarginColor(formulation.profitMargin?.toString() ?? "0");
               let targetPriceDisplay;
-              if (c.hasTargetPrice) {
+              
+              if (formulation.targetPrice) {
                 targetPriceDisplay = (
-                  <span className="text-slate-900 font-medium">{formatCurrency(c.enteredTargetPrice)}</span>
+                  <span className="text-slate-900 font-medium">{formatCurrency(Number(formulation.targetPrice))}</span>
                 );
               } else {
+                // Calculate suggested target price (30% markup over total cost)
+                const totalCost = Number(formulation.totalCost || 0);
+                const markupPercentage = Number(formulation.markupPercentage || 30);
+                const suggestedPrice = totalCost * (1 + markupPercentage / 100);
                 targetPriceDisplay = (
-                  <span className="italic text-blue-600" title="Suggested price (30% markup)">{formatCurrency(c.suggestedTargetPrice)}</span>
+                  <span className="italic text-blue-600" title="Suggested price (30% markup)">{formatCurrency(suggestedPrice)}</span>
                 );
               }
               return (
@@ -260,19 +260,19 @@ export default function FormulationList({ sortField, sortDirection, onEdit, onSo
                   </td>
                   <td className="p-4 text-right">
                     <p className="text-sm font-medium text-slate-900">
-                      {formatCurrency(c.totalCost)}
+                      {formatCurrency(Number(formulation.totalCost) || 0)}
                     </p>
                   </td>
                   <td className="p-4 text-right">
                     <p className="text-sm font-medium text-slate-900">
-                      {formatCurrency(c.unitCost)}
+                      {formatCurrency(Number(formulation.unitCost) || 0)}
                     </p>
                   </td>
                   <td className="p-4 text-center">
-                    <span className="text-sm font-medium text-slate-900">{c.numIngredients}</span>
+                    <span className="text-sm font-medium text-slate-900">{formulation.ingredients?.length || 0}</span>
                   </td>
                   <td className="p-4 text-right">
-                    <p className={`text-sm font-medium ${profitMarginColor}`}>{c.profitMargin?.toFixed(1) ?? "0.0"}%</p>
+                    <p className={`text-sm font-medium ${profitMarginColor}`}>{Number(formulation.profitMargin || 0).toFixed(1)}%</p>
                   </td>
                   <td className="p-4 text-right">
                     {targetPriceDisplay}

@@ -122,20 +122,25 @@ export default function FormulationForm({ formulation, onSuccess }: FormulationF
     }
   }, [formulation, form.reset]);
 
-  // Enrich ingredients with material names when materials data is available
+  // Enrich ingredients with material names and costs when materials data is available
   useEffect(() => {
     if (materials && materials.length > 0 && ingredients.length > 0) {
       setIngredients(currentIngredients => 
         currentIngredients.map(ingredient => {
-          // Only update if materialName is missing
-          if (!ingredient.materialName) {
-            const material = materials.find(m => m.id === ingredient.materialId);
-            if (material) {
-              return {
-                ...ingredient,
-                materialName: material.name
-              };
-            }
+          const material = materials.find(m => m.id === ingredient.materialId);
+          if (material) {
+            const materialUnitCost = parseFloat(material.unitCost);
+            const quantity = parseFloat(ingredient.quantity?.toString() || '0');
+            const calculatedTotalCost = !isNaN(materialUnitCost) && !isNaN(quantity) 
+              ? quantity * materialUnitCost 
+              : 0;
+              
+            return {
+              ...ingredient,
+              materialName: ingredient.materialName || material.name,
+              unitCost: !isNaN(materialUnitCost) ? materialUnitCost : (ingredient.unitCost || 0),
+              totalCost: calculatedTotalCost || (ingredient.totalCost || 0)
+            };
           }
           return ingredient;
         })
@@ -521,7 +526,7 @@ export default function FormulationForm({ formulation, onSuccess }: FormulationF
                             <div className="flex-1">
                               <div className="font-medium text-slate-900">{ingredient.materialName}</div>
                               <div className="text-sm text-slate-600">
-                                {ingredient.quantity} {ingredient.unit} × ${ingredient.unitCost.toFixed(4)} = ${ingredient.totalCost.toFixed(2)}
+                                {ingredient.quantity} {ingredient.unit} × ${(ingredient.unitCost || 0).toFixed(4)} = ${(ingredient.totalCost || 0).toFixed(2)}
                                 {!ingredient.includeInMarkup && (
                                   <Badge variant="secondary" className="ml-2 text-xs">Excluded from markup</Badge>
                                 )}

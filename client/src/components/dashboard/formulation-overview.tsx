@@ -15,15 +15,13 @@ export default function FormulationOverview() {
   );
   
   // Calculate profit margin based on selling price: (Selling Price - Cost) / Selling Price * 100
-  const avgProfitMargin = activeFormulations.length > 0 
-    ? activeFormulations.reduce((sum, f) => {
-        const targetPrice = f.targetPrice ? Number(f.targetPrice) : 0;
-        const cost = Number(f.totalCost);
-        if (targetPrice > 0) {
-          return sum + ((targetPrice - cost) / targetPrice * 100);
-        }
-        return sum;
-      }, 0) / activeFormulations.filter(f => f.targetPrice && Number(f.targetPrice) > 0).length
+  const formulationsWithTargetPrice = activeFormulations.filter(f => f.targetPrice && Number(f.targetPrice) > 0);
+  const avgProfitMargin = formulationsWithTargetPrice.length > 0 
+    ? formulationsWithTargetPrice.reduce((sum, f) => {
+        const targetPrice = Number(f.targetPrice);
+        const cost = Number(f.totalCost || 0);
+        return sum + ((targetPrice - cost) / targetPrice * 100);
+      }, 0) / formulationsWithTargetPrice.length
     : 0;
 
   const totalCost = activeFormulations.reduce((sum, f) => sum + Number(f.totalCost), 0);
@@ -74,7 +72,7 @@ export default function FormulationOverview() {
               Average Profit Margin
             </div>
             <div className="text-2xl font-bold text-green-600">
-              {avgProfitMargin.toFixed(1)}%
+              {isNaN(avgProfitMargin) ? "0.0" : avgProfitMargin.toFixed(1)}%
             </div>
           </div>
 
