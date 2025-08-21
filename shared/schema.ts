@@ -1,4 +1,5 @@
 import { pgTable, text, serial, integer, boolean, decimal, timestamp } from "drizzle-orm/pg-core";
+import { relations } from "drizzle-orm";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -171,7 +172,6 @@ export const insertMaterialCategorySchema = createInsertSchema(materialCategorie
 
 export const insertRawMaterialSchema = createInsertSchema(rawMaterials).omit({
   id: true,
-  unitCost: true,
   createdAt: true,
   updatedAt: true,
 });
@@ -268,3 +268,39 @@ export type InsertPasswordResetToken = z.infer<typeof insertPasswordResetTokenSc
 
 export type Payment = typeof payments.$inferSelect;
 export type InsertPayment = z.infer<typeof insertPaymentSchema>;
+
+// Relations
+export const formulationRelations = relations(formulations, ({ many, one }) => ({
+  ingredients: many(formulationIngredients),
+  user: one(users, {
+    fields: [formulations.userId],
+    references: [users.id],
+  }),
+}));
+
+export const formulationIngredientRelations = relations(formulationIngredients, ({ one }) => ({
+  formulation: one(formulations, {
+    fields: [formulationIngredients.formulationId],
+    references: [formulations.id],
+  }),
+  material: one(rawMaterials, {
+    fields: [formulationIngredients.materialId],
+    references: [rawMaterials.id],
+  }),
+}));
+
+export const rawMaterialRelations = relations(rawMaterials, ({ many, one }) => ({
+  ingredients: many(formulationIngredients),
+  user: one(users, {
+    fields: [rawMaterials.userId],
+    references: [users.id],
+  }),
+  category: one(materialCategories, {
+    fields: [rawMaterials.categoryId],
+    references: [materialCategories.id],
+  }),
+  vendor: one(vendors, {
+    fields: [rawMaterials.vendorId],
+    references: [vendors.id],
+  }),
+}));

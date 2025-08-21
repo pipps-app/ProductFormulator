@@ -35,7 +35,8 @@ export interface IStorage {
   createRawMaterial(material: InsertRawMaterial): Promise<RawMaterial>;
   updateRawMaterial(id: number, material: Partial<InsertRawMaterial>): Promise<RawMaterial | undefined>;
   deleteRawMaterial(id: number): Promise<boolean>;
-  getFormulations(userId: number): Promise<Formulation[]>;
+  getFormulations(userId: number, includeArchived?: boolean): Promise<Formulation[]>;
+  getArchivedFormulations(userId: number): Promise<Formulation[]>;
   getFormulation(id: number): Promise<Formulation | undefined>;
   createFormulation(formulation: InsertFormulation): Promise<Formulation>;
   updateFormulation(id: number, formulation: Partial<InsertFormulation>): Promise<Formulation | undefined>;
@@ -369,10 +370,19 @@ class MemoryStorage implements IStorage {
     return true;
   }
 
-  async getFormulations(userId: number): Promise<Formulation[]> {
+  async getFormulations(userId: number, includeArchived = false): Promise<Formulation[]> {
     // For each formulation, attach an ingredients array (empty if none)
     return this.formulations
-      .filter(f => f.userId === userId)
+      .filter(f => f.userId === userId && (includeArchived || f.isActive !== false))
+      .map(f => ({
+        ...f,
+        ingredients: this.formulationIngredients.filter(i => i.formulationId === f.id)
+      }));
+  }
+
+  async getArchivedFormulations(userId: number): Promise<Formulation[]> {
+    return this.formulations
+      .filter(f => f.userId === userId && f.isActive === false)
       .map(f => ({
         ...f,
         ingredients: this.formulationIngredients.filter(i => i.formulationId === f.id)

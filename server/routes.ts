@@ -58,7 +58,11 @@ async function sendVerificationEmail(email: string, token: string): Promise<void
     </div>
   `;
 
-  await emailService.sendEmail(email, subject, html);
+  await emailService.sendEmail({
+    to: email,
+    subject: subject,
+    html: html
+  });
 }
 
 function hasAccessToTier(userTier: string, requiredTier: string): boolean {
@@ -980,6 +984,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Calculate unitCost if needed
       const requestData = { ...req.body };
+      console.log('🔧 UPDATE - Received raw data:', JSON.stringify(req.body, null, 2));
+      
       if (requestData.totalCost && requestData.quantity) {
         const totalCost = parseFloat(requestData.totalCost);
         const quantity = parseFloat(requestData.quantity);
@@ -988,6 +994,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
       }
       
+      console.log('🔧 UPDATE - Processed data before validation:', JSON.stringify(requestData, null, 2));
       const materialData = insertRawMaterialSchema.partial().parse(requestData);
       const material = await storage.updateRawMaterial(id, materialData);
       
@@ -1005,7 +1012,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           ? ` (unit cost changed from $${originalMaterial.unitCost} to $${material.unitCost})`
           : '';
         await storage.createAuditLog({
-          userId: 1,
+          userId: req.user?.id || 11, // Use actual user ID or fallback
           action: "update",
           entityType: "material",
           entityId: id,
@@ -1019,7 +1026,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       res.json(material);
     } catch (error) {
-      res.status(400).json({ error: "Invalid material data" });
+      console.log('🔧 UPDATE - Validation error:', error);
+      res.status(400).json({ 
+        error: "Invalid material data",
+        details: error instanceof Error ? error.message : "Unknown error"
+      });
     }
   });
 
@@ -1075,7 +1086,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Formulations
   app.get("/api/formulations", requireJWTAuth, async (req: AuthenticatedRequest, res) => {
     const userId = req.userId;
-    const formulations = await storage.getFormulations(userId);
+    const includeArchived = req.query.includeArchived === 'true';
+    const formulations = await storage.getFormulations(userId, includeArchived);
     
     // Add cache control headers to prevent stale data
     res.set('Cache-Control', 'no-cache, no-store, must-revalidate');
@@ -1084,6 +1096,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.set('ETag', Date.now().toString());
     
     res.json(formulations);
+  });
+
+  // Get archived formulations
+  app.get("/api/formulations/archived", requireJWTAuth, async (req: AuthenticatedRequest, res) => {
+    const userId = req.userId;
+    const archivedFormulations = await storage.getArchivedFormulations(userId);
+    
+    // Add cache control headers to prevent stale data
+    res.set('Cache-Control', 'no-cache, no-store, must-revalidate');
+    res.set('Pragma', 'no-cache');
+    res.set('Expires', '0');
+    res.set('ETag', Date.now().toString());
+    
+    res.json(archivedFormulations);
   });
 
   // Fix material unit costs endpoint
@@ -1403,7 +1429,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         formulation = results[0];
         console.log("Created formulation with ID:", formulation.id);
         
-        // Insert ingredients robustly
+        let totalMaterialCost = 0;
+        let markupEligibleCost = 0;
+        
+        // Insert ingredients robustly and calculate costs
         for (const ingredient of ingredients) {
           console.log("Processing ingredient:", JSON.stringify(ingredient, null, 2));
           
@@ -1416,19 +1445,52 @@ export async function registerRoutes(app: Express): Promise<Server> {
           const unit = material.unit;
           const unitCost = parseFloat(material.unitCost);
           const quantity = parseFloat(ingredient.quantity);
-          const costContribution = (unitCost * quantity).toFixed(4);
+          const costContribution = unitCost * quantity;
           
           await trx.insert(formulationIngredients).values({
             formulationId: formulation.id,
             materialId: ingredient.materialId,
             quantity: ingredient.quantity,
             unit,
-            costContribution,
+            costContribution: costContribution.toFixed(4),
             includeInMarkup: ingredient.includeInMarkup !== false,
           });
           
-          console.log("Added ingredient:", material.name, "qty:", quantity, "cost:", costContribution);
+          console.log("Added ingredient:", material.name, "qty:", quantity, "cost:", costContribution.toFixed(4));
+          
+          // Add to total costs
+          totalMaterialCost += costContribution;
+          if (ingredient.includeInMarkup !== false) {
+            markupEligibleCost += costContribution;
+          }
         }
+        
+        // Calculate formulation-level costs
+        const batchSize = parseFloat(parsedFormulationData.batchSize?.toString() || '1');
+        const markupPercentage = parseFloat(parsedFormulationData.markupPercentage?.toString() || '30');
+        
+        const unitCost = batchSize > 0 ? totalMaterialCost / batchSize : 0;
+        const profitMargin = markupEligibleCost * (markupPercentage / 100);
+        const finalTotalCost = totalMaterialCost + profitMargin;
+        
+        console.log("Calculated costs:", {
+          totalMaterialCost: totalMaterialCost.toFixed(4),
+          markupEligibleCost: markupEligibleCost.toFixed(4),
+          unitCost: unitCost.toFixed(4),
+          profitMargin: profitMargin.toFixed(2),
+          finalTotalCost: finalTotalCost.toFixed(2)
+        });
+        
+        // Update formulation with calculated costs
+        await trx.update(formulations)
+          .set({
+            totalCost: finalTotalCost.toFixed(2),
+            unitCost: unitCost.toFixed(4),
+            profitMargin: profitMargin.toFixed(2),
+          })
+          .where(eq(formulations.id, formulation.id));
+          
+        console.log("Updated formulation costs");
       });
       // Fetch the full formulation with ingredients
       const fullFormulation = await db.query.formulations.findFirst({
@@ -1470,29 +1532,59 @@ export async function registerRoutes(app: Express): Promise<Server> {
           .where(eq(formulations.id, id))
           .returning();
         formulation = results[0];
+        
         // Delete all existing ingredients
         await trx.delete(formulationIngredients)
           .where(eq(formulationIngredients.formulationId, id));
-        // Insert new ingredients robustly
+        
+        let totalMaterialCost = 0;
+        let markupEligibleCost = 0;
+        
+        // Insert new ingredients robustly and calculate costs
         if (ingredients && Array.isArray(ingredients)) {
           for (const ingredient of ingredients) {
             // Fetch material details
             const [material] = await trx.select().from(rawMaterials).where(eq(rawMaterials.id, ingredient.materialId));
             if (!material) throw new Error(`Material with id ${ingredient.materialId} not found`);
+            
             const unit = material.unit;
             const unitCost = parseFloat(material.unitCost);
             const quantity = parseFloat(ingredient.quantity);
-            const costContribution = (unitCost * quantity).toFixed(4);
+            const costContribution = unitCost * quantity;
+            
             await trx.insert(formulationIngredients).values({
               formulationId: id,
               materialId: ingredient.materialId,
               quantity: ingredient.quantity,
               unit,
-              costContribution,
+              costContribution: costContribution.toFixed(4),
               includeInMarkup: ingredient.includeInMarkup !== false,
             });
+            
+            // Add to total costs
+            totalMaterialCost += costContribution;
+            if (ingredient.includeInMarkup !== false) {
+              markupEligibleCost += costContribution;
+            }
           }
         }
+        
+        // Calculate formulation-level costs
+        const batchSize = parseFloat(formulationData.batchSize?.toString() || formulation.batchSize?.toString() || '1');
+        const markupPercentage = parseFloat(formulationData.markupPercentage?.toString() || formulation.markupPercentage?.toString() || '30');
+        
+        const unitCost = batchSize > 0 ? totalMaterialCost / batchSize : 0;
+        const profitMargin = markupEligibleCost * (markupPercentage / 100);
+        const finalTotalCost = totalMaterialCost + profitMargin;
+        
+        // Update formulation with calculated costs
+        await trx.update(formulations)
+          .set({
+            totalCost: finalTotalCost.toFixed(2),
+            unitCost: unitCost.toFixed(4),
+            profitMargin: profitMargin.toFixed(2),
+          })
+          .where(eq(formulations.id, id));
       });
       // Fetch the full formulation with ingredients
       const fullFormulation = await db.query.formulations.findFirst({
@@ -1506,29 +1598,229 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.delete("/api/formulations/:id", async (req, res) => {
-    const id = parseInt(req.params.id);
-    const formulation = await storage.getFormulation(id);
-    if (!formulation) {
-      return res.status(404).json({ error: "Formulation not found" });
-    }
+  app.delete("/api/formulations/:id", requireJWTAuth, async (req: AuthenticatedRequest, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const userId = req.user?.id;
+      
+      if (!userId) {
+        return res.status(401).json({ error: "User authentication required" });
+      }
 
-    const deleted = await storage.deleteFormulation(id);
-    
-    // Create audit log
-    await storage.createAuditLog({
-      userId: 1,
-      action: "delete",
-      entityType: "formulation",
-      entityId: id,
-      changes: JSON.stringify({
-        description: `Deleted formulation "${formulation.name}" (was ${formulation.batchSize} ${formulation.batchUnit} batch with $${formulation.totalCost} total cost)`,
-        data: formulation
-      }),
-    });
-    
-    res.json({ success: true });
+      const formulation = await storage.getFormulation(id);
+      if (!formulation) {
+        return res.status(404).json({ error: "Formulation not found" });
+      }
+
+      // Check if formulation belongs to the user
+      if (formulation.userId !== userId) {
+        return res.status(403).json({ error: "Access denied" });
+      }
+
+      // Check for history/usage before deciding to delete or archive
+      const hasHistory = await checkFormulationHistory(id, userId);
+      
+      if (hasHistory.hasHistory) {
+        // Archive instead of delete if there's history
+        const archivedFormulation = await storage.updateFormulation(id, { isActive: false });
+        
+        // Create audit log for archiving
+        await storage.createAuditLog({
+          userId,
+          action: "archive",
+          entityType: "formulation",
+          entityId: id,
+          changes: JSON.stringify({
+            description: `Archived formulation "${formulation.name}" instead of deleting due to existing history`,
+            reason: hasHistory.reason,
+            data: formulation,
+            archivedAt: new Date().toISOString()
+          }),
+        });
+
+        return res.json({ 
+          success: true, 
+          archived: true, 
+          message: `Formulation "${formulation.name}" has been archived instead of deleted due to existing history: ${hasHistory.reason}`,
+          formulation: archivedFormulation
+        });
+      } else {
+        // Proceed with actual deletion if no history
+        const deleted = await storage.deleteFormulation(id);
+        
+        // Create audit log for deletion
+        await storage.createAuditLog({
+          userId,
+          action: "delete",
+          entityType: "formulation",
+          entityId: id,
+          changes: JSON.stringify({
+            description: `Permanently deleted formulation "${formulation.name}" (was ${formulation.batchSize} ${formulation.batchUnit} batch with $${formulation.totalCost} total cost)`,
+            data: formulation
+          }),
+        });
+        
+        return res.json({ 
+          success: true, 
+          deleted: true,
+          message: `Formulation "${formulation.name}" has been permanently deleted`
+        });
+      }
+    } catch (error) {
+      console.error("Error deleting/archiving formulation:", error);
+      res.status(500).json({ error: "Failed to delete formulation" });
+    }
   });
+
+  // Archive formulation endpoint (manual archiving)
+  app.patch("/api/formulations/:id/archive", requireJWTAuth, async (req: AuthenticatedRequest, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const userId = req.user?.id;
+      
+      if (!userId) {
+        return res.status(401).json({ error: "User authentication required" });
+      }
+
+      const formulation = await storage.getFormulation(id);
+      if (!formulation) {
+        return res.status(404).json({ error: "Formulation not found" });
+      }
+
+      if (formulation.userId !== userId) {
+        return res.status(403).json({ error: "Access denied" });
+      }
+
+      if (!formulation.isActive) {
+        return res.status(400).json({ error: "Formulation is already archived" });
+      }
+
+      // Archive the formulation
+      const archivedFormulation = await storage.updateFormulation(id, { isActive: false });
+      
+      // Create audit log
+      await storage.createAuditLog({
+        userId,
+        action: "archive",
+        entityType: "formulation",
+        entityId: id,
+        changes: JSON.stringify({
+          description: `Manually archived formulation "${formulation.name}"`,
+          data: formulation,
+          archivedAt: new Date().toISOString()
+        }),
+      });
+
+      res.json({ 
+        success: true,
+        message: `Formulation "${formulation.name}" has been archived`,
+        formulation: archivedFormulation
+      });
+    } catch (error) {
+      console.error("Error archiving formulation:", error);
+      res.status(500).json({ error: "Failed to archive formulation" });
+    }
+  });
+
+  // Restore formulation from archive
+  app.patch("/api/formulations/:id/restore", requireJWTAuth, async (req: AuthenticatedRequest, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const userId = req.user?.id;
+      
+      if (!userId) {
+        return res.status(401).json({ error: "User authentication required" });
+      }
+
+      const formulation = await storage.getFormulation(id);
+      if (!formulation) {
+        return res.status(404).json({ error: "Formulation not found" });
+      }
+
+      if (formulation.userId !== userId) {
+        return res.status(403).json({ error: "Access denied" });
+      }
+
+      if (formulation.isActive) {
+        return res.status(400).json({ error: "Formulation is already active" });
+      }
+
+      // Restore the formulation
+      const restoredFormulation = await storage.updateFormulation(id, { isActive: true });
+      
+      // Create audit log
+      await storage.createAuditLog({
+        userId,
+        action: "restore",
+        entityType: "formulation",
+        entityId: id,
+        changes: JSON.stringify({
+          description: `Restored formulation "${formulation.name}" from archive`,
+          data: formulation,
+          restoredAt: new Date().toISOString()
+        }),
+      });
+
+      res.json({ 
+        success: true,
+        message: `Formulation "${formulation.name}" has been restored from archive`,
+        formulation: restoredFormulation
+      });
+    } catch (error) {
+      console.error("Error restoring formulation:", error);
+      res.status(500).json({ error: "Failed to restore formulation" });
+    }
+  });
+
+  // Helper function to check if formulation has history
+  async function checkFormulationHistory(formulationId: number, userId: number): Promise<{hasHistory: boolean, reason: string}> {
+    try {
+      // Check audit logs for this formulation
+      const auditLogs = await storage.getAuditLogs(userId);
+      const formulationAudits = auditLogs.filter(log => 
+        log.entityType === 'formulation' && 
+        log.entityId === formulationId && 
+        log.action !== 'create' // Don't count creation as history
+      );
+
+      if (formulationAudits.length > 0) {
+        return {
+          hasHistory: true,
+          reason: `Has ${formulationAudits.length} audit log entries`
+        };
+      }
+
+      // Check if formulation was created more than 24 hours ago (indicating potential usage)
+      const formulation = await storage.getFormulation(formulationId);
+      if (formulation && formulation.createdAt) {
+        const dayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
+        if (new Date(formulation.createdAt) < dayAgo) {
+          return {
+            hasHistory: true,
+            reason: "Formulation is older than 24 hours"
+          };
+        }
+      }
+
+      // Check if formulation has been updated (indicates usage)
+      if (formulation && formulation.updatedAt && formulation.createdAt) {
+        const created = new Date(formulation.createdAt).getTime();
+        const updated = new Date(formulation.updatedAt).getTime();
+        if (updated > created + 60000) { // More than 1 minute difference
+          return {
+            hasHistory: true,
+            reason: "Formulation has been modified since creation"
+          };
+        }
+      }
+
+      return { hasHistory: false, reason: "No significant history found" };
+    } catch (error) {
+      console.error("Error checking formulation history:", error);
+      // If we can't check history, err on the side of caution and archive
+      return { hasHistory: true, reason: "Unable to verify history - archived for safety" };
+    }
+  }
 
   // Formulation Ingredients
   app.get("/api/formulations/:id/ingredients", async (req, res) => {
@@ -2231,6 +2523,61 @@ export async function registerRoutes(app: Express): Promise<Server> {
       role: user.role || "user",
       subscriptionPlan: user.subscriptionPlan || "free"
     });
+  });
+
+  // Cleanup formulations endpoint
+  app.delete("/api/formulations/cleanup", requireJWTAuth, async (req: AuthenticatedRequest, res) => {
+    try {
+      const userId = req.user?.id;
+      if (!userId) {
+        return res.status(401).json({ error: "User ID not found" });
+      }
+
+      console.log(`Cleaning up formulations for user ${userId}`);
+      
+      // Get all formulations for this user
+      const formulations = await storage.getFormulations(userId);
+      let deletedCount = 0;
+
+      for (const formulation of formulations) {
+        try {
+          console.log(`Deleting formulation ${formulation.id}: ${formulation.name}`);
+          
+          // Delete ingredients first (foreign key constraint)
+          await db.delete(formulationIngredients)
+            .where(eq(formulationIngredients.formulationId, formulation.id));
+          
+          // Delete the formulation
+          await db.delete(formulations)
+            .where(eq(formulations.id, formulation.id));
+          
+          deletedCount++;
+        } catch (error) {
+          console.error(`Error deleting formulation ${formulation.id}:`, error);
+        }
+      }
+
+      // Create audit log
+      await storage.createAuditLog({
+        userId,
+        action: "delete",
+        entityType: "formulation_cleanup",
+        entityId: 0,
+        changes: JSON.stringify({
+          description: `Cleaned up ${deletedCount} formulations`,
+          deletedCount
+        }),
+      });
+
+      res.json({ 
+        success: true, 
+        message: `Successfully deleted ${deletedCount} formulations`,
+        deletedCount 
+      });
+    } catch (error) {
+      console.error("Cleanup formulations error:", error);
+      res.status(500).json({ error: "Failed to cleanup formulations" });
+    }
   });
 
   // Serve template files for download

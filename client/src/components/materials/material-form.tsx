@@ -86,7 +86,10 @@ export default function MaterialForm({ material, onSuccess }: MaterialFormProps)
   }, [material, form]);
 
   const createMutation = useMutation({
-    mutationFn: (data: any) => apiRequest("POST", "/api/raw-materials", data),
+    mutationFn: (data: any) => {
+      console.log('Material data being sent:', data);
+      return apiRequest("POST", "/api/raw-materials", data);
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/raw-materials"] });
       queryClient.invalidateQueries({ queryKey: ["/api/dashboard/stats"] });

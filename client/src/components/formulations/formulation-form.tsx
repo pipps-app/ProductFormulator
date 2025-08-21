@@ -122,6 +122,27 @@ export default function FormulationForm({ formulation, onSuccess }: FormulationF
     }
   }, [formulation, form.reset]);
 
+  // Enrich ingredients with material names when materials data is available
+  useEffect(() => {
+    if (materials && materials.length > 0 && ingredients.length > 0) {
+      setIngredients(currentIngredients => 
+        currentIngredients.map(ingredient => {
+          // Only update if materialName is missing
+          if (!ingredient.materialName) {
+            const material = materials.find(m => m.id === ingredient.materialId);
+            if (material) {
+              return {
+                ...ingredient,
+                materialName: material.name
+              };
+            }
+          }
+          return ingredient;
+        })
+      );
+    }
+  }, [materials, ingredients.length]); // Only run when materials change or ingredients are first loaded
+
   // Add or update ingredient
   const addIngredient = () => {
     if (!selectedMaterialId || !ingredientQuantity) return;
@@ -477,7 +498,7 @@ export default function FormulationForm({ formulation, onSuccess }: FormulationF
                   {ingredients.length > 0 && (
                     <div className="space-y-2 max-h-80 overflow-y-auto pr-2">
                       <div className="text-sm font-medium text-slate-700">Added Ingredients</div>
-                      {(ingredients.slice().sort((a, b) => a.materialName.localeCompare(b.materialName))).map((ingredient, idx) => (
+                      {(ingredients.slice().sort((a, b) => (a.materialName || '').localeCompare(b.materialName || ''))).map((ingredient, idx) => (
                         <div
                           key={ingredient.id}
                           className={`flex items-center justify-between p-3 bg-slate-50 rounded-lg cursor-pointer hover:bg-slate-100 ${editingIngredientId === ingredient.id ? 'ring-2 ring-blue-400' : ''}`}

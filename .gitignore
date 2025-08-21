@@ -4,3 +4,22 @@ dist
 server/public
 vite.config.ts.*
 *.tar.gz
+
+# Temporary and test files
+*.sql
+test-*.js
+test-*.cjs
+debug-*.js
+cleanup-*.js
+cleanup-*.ts
+fix-*.js
+verify-*.js
+simple-fix.js
+get-formulations.js
+direct-cleanup.js
+create-test-formulation.js
+check-*.mjs
+manual-fix.sql
+
+# Temporary files
+0

@@ -2,11 +2,11 @@ import { useState, useMemo, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Edit, Trash2, FlaskRound, Calculator, ChevronUp, ChevronDown, Eye } from "lucide-react";
+import { Edit, Trash2, FlaskRound, Calculator, ChevronUp, ChevronDown, Eye, Archive, ArchiveRestore } from "lucide-react";
 import { Link } from "wouter";
 import ConfirmationModal from "@/components/common/confirmation-modal";
 import { useAppSelector, useAppDispatch } from "@/store/hooks";
-import { fetchFormulations, Formulation } from "@/store/formulationsSlice";
+import { fetchFormulations, deleteFormulation, archiveFormulation, restoreFormulation, Formulation } from "@/store/formulationsSlice";
 import { selectRawMaterials } from "@/store/selectors";
 import { updateRawMaterialPrice } from "@/store/rawMaterialsSlice";
 import { updateFormulation } from "@/store/formulationsSlice";
@@ -23,6 +23,8 @@ interface FormulationListProps {
 
 export default function FormulationList({ sortField, sortDirection, onEdit, onSort }: FormulationListProps) {
   const [deletingFormulation, setDeletingFormulation] = useState<Formulation | null>(null);
+  const [archivingFormulation, setArchivingFormulation] = useState<Formulation | null>(null);
+  const [restoringFormulation, setRestoringFormulation] = useState<Formulation | null>(null);
   const dispatch = useAppDispatch();
   const formulations: Formulation[] = useAppSelector(state => state.formulations);
   const rawMaterials = useAppSelector(selectRawMaterials);
@@ -93,10 +95,58 @@ export default function FormulationList({ sortField, sortDirection, onEdit, onSo
     setDeletingFormulation(formulation);
   };
 
-  const confirmDelete = () => {
+  const handleArchive = (formulation: Formulation) => {
+    setArchivingFormulation(formulation);
+  };
+
+  const handleRestore = (formulation: Formulation) => {
+    setRestoringFormulation(formulation);
+  };
+
+  const confirmDelete = async () => {
     if (deletingFormulation) {
-      // dispatch(deleteFormulation(deletingFormulation.id));
-      setDeletingFormulation(null);
+      try {
+        const result = await dispatch(deleteFormulation(deletingFormulation.id)).unwrap();
+        console.log('Delete result:', result);
+        
+        // Show user-friendly message based on result
+        if (result.result.archived) {
+          // Show toast or alert that it was archived instead
+          alert(`Formulation "${deletingFormulation.name}" has been archived instead of deleted due to existing history.`);
+        } else if (result.result.deleted) {
+          alert(`Formulation "${deletingFormulation.name}" has been permanently deleted.`);
+        }
+      } catch (error) {
+        alert(`Error: ${error}`);
+      } finally {
+        setDeletingFormulation(null);
+      }
+    }
+  };
+
+  const confirmArchive = async () => {
+    if (archivingFormulation) {
+      try {
+        await dispatch(archiveFormulation(archivingFormulation.id)).unwrap();
+        alert(`Formulation "${archivingFormulation.name}" has been archived.`);
+      } catch (error) {
+        alert(`Error: ${error}`);
+      } finally {
+        setArchivingFormulation(null);
+      }
+    }
+  };
+
+  const confirmRestore = async () => {
+    if (restoringFormulation) {
+      try {
+        await dispatch(restoreFormulation(restoringFormulation.id)).unwrap();
+        alert(`Formulation "${restoringFormulation.name}" has been restored from archive.`);
+      } catch (error) {
+        alert(`Error: ${error}`);
+      } finally {
+        setRestoringFormulation(null);
+      }
     }
   };
 
@@ -240,14 +290,39 @@ export default function FormulationList({ sortField, sortDirection, onEdit, onSo
                       >
                         <Edit className="h-4 w-4" />
                       </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleDelete(formulation)}
-                        title="Delete formulation"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
+                      
+                      {formulation.isActive ? (
+                        <>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleArchive(formulation)}
+                            title="Archive formulation"
+                            className="text-orange-600 hover:text-orange-800"
+                          >
+                            <Archive className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleDelete(formulation)}
+                            title="Delete formulation"
+                            className="text-red-600 hover:text-red-800"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </>
+                      ) : (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleRestore(formulation)}
+                          title="Restore from archive"
+                          className="text-green-600 hover:text-green-800"
+                        >
+                          <ArchiveRestore className="h-4 w-4" />
+                        </Button>
+                      )}
                     </div>
                   </td>
                 </tr>
@@ -262,9 +337,29 @@ export default function FormulationList({ sortField, sortDirection, onEdit, onSo
         onClose={() => setDeletingFormulation(null)}
         onConfirm={confirmDelete}
         title="Delete Formulation"
-        description={`Are you sure you want to delete "${deletingFormulation?.name}"? This action cannot be undone and will remove all associated ingredients.`}
+        description={`Are you sure you want to delete "${deletingFormulation?.name}"? If this formulation has history, it will be archived instead of permanently deleted.`}
         confirmText="Delete"
-        isLoading={false} // Set to true if you have a loading state for deletion
+        isLoading={false}
+      />
+
+      <ConfirmationModal
+        isOpen={!!archivingFormulation}
+        onClose={() => setArchivingFormulation(null)}
+        onConfirm={confirmArchive}
+        title="Archive Formulation"
+        description={`Are you sure you want to archive "${archivingFormulation?.name}"? Archived formulations can be restored later.`}
+        confirmText="Archive"
+        isLoading={false}
+      />
+
+      <ConfirmationModal
+        isOpen={!!restoringFormulation}
+        onClose={() => setRestoringFormulation(null)}
+        onConfirm={confirmRestore}
+        title="Restore Formulation"
+        description={`Are you sure you want to restore "${restoringFormulation?.name}" from the archive?`}
+        confirmText="Restore"
+        isLoading={false}
       />
     </>
   );

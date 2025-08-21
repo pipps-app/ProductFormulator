@@ -1,15 +1,16 @@
 import { useEffect, useState } from "react";
-import { useSearchParams, useNavigate } from "react-router-dom";
+import { useLocation } from "wouter";
 import { toast } from "sonner";
 
 export default function EmailVerification() {
-  const [searchParams] = useSearchParams();
-  const navigate = useNavigate();
+  const [location, setLocation] = useLocation();
   const [verificationStatus, setVerificationStatus] = useState<'loading' | 'success' | 'error'>('loading');
   const [message, setMessage] = useState('');
 
   useEffect(() => {
-    const token = searchParams.get('token');
+    // Parse token from URL search params
+    const urlParams = new URLSearchParams(window.location.search);
+    const token = urlParams.get('token');
     
     if (!token) {
       setVerificationStatus('error');
@@ -29,7 +30,7 @@ export default function EmailVerification() {
           
           // Redirect to login after 3 seconds
           setTimeout(() => {
-            navigate('/login');
+            setLocation('/login');
           }, 3000);
         } else {
           setVerificationStatus('error');
@@ -43,7 +44,7 @@ export default function EmailVerification() {
         setMessage('Network error occurred during verification');
         toast.error('Network error occurred during verification');
       });
-  }, [searchParams, navigate]);
+  }, [setLocation]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
@@ -72,7 +73,7 @@ export default function EmailVerification() {
             <p className="text-gray-600">{message}</p>
             <p className="text-sm text-gray-500">Redirecting to login page in 3 seconds...</p>
             <button
-              onClick={() => navigate('/login')}
+              onClick={() => setLocation('/login')}
               className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-colors"
             >
               Go to Login
@@ -91,13 +92,13 @@ export default function EmailVerification() {
             <p className="text-gray-600">{message}</p>
             <div className="space-y-2">
               <button
-                onClick={() => navigate('/login')}
+                onClick={() => setLocation('/login')}
                 className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-colors"
               >
                 Go to Login
               </button>
               <button
-                onClick={() => navigate('/register')}
+                onClick={() => setLocation('/register')}
                 className="w-full bg-gray-200 text-gray-700 py-2 px-4 rounded-md hover:bg-gray-300 transition-colors"
               >
                 Register Again
