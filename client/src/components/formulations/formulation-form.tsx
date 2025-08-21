@@ -15,6 +15,9 @@ import { useToast } from "@/hooks/use-toast";
 import { useMaterials } from "@/hooks/use-materials";
 import { useEffect, useState } from "react";
 import { Plus, X, Calculator } from "lucide-react";
+import jsPDF from 'jspdf';
+// @ts-ignore
+import autoTable from 'jspdf-autotable';
 import FileAttachments from "@/components/files/file-attachments";
 import { useLocation } from "wouter";
 import { useAppDispatch } from "@/store/hooks";
@@ -233,6 +236,104 @@ export default function FormulationForm({ formulation, onSuccess }: FormulationF
     }, 0);
   };
 
+  const generateIngredientsPDF = () => {
+    const doc = new jsPDF();
+    const formName = form.getValues("name") || "Untitled Formulation";
+    const formDescription = form.getValues("description") || "";
+    const batchSizeValue = form.getValues("batchSize") || "1";
+    const batchUnitValue = form.getValues("batchUnit") || "unit";
+
+    // Header
+    doc.setFontSize(20);
+    doc.setFont("helvetica", "bold");
+    doc.text("INGREDIENTS LIST", 105, 20, { align: "center" });
+    
+    // Formulation details
+    doc.setFontSize(14);
+    doc.setFont("helvetica", "bold");
+    doc.text(`${formName}`, 20, 40);
+    
+    doc.setFontSize(10);
+    doc.setFont("helvetica", "normal");
+    if (formDescription) {
+      doc.text(`Description: ${formDescription}`, 20, 50);
+    }
+    doc.text(`Batch Size: ${batchSizeValue} ${batchUnitValue}`, 20, formDescription ? 60 : 50);
+    doc.text(`Generated: ${new Date().toLocaleDateString()}`, 20, formDescription ? 70 : 60);
+    doc.text(`Total Material Cost: $${totalMaterialCost.toFixed(2)}`, 20, formDescription ? 80 : 70);
+
+    // Prepare table data
+    const tableData = ingredients.map((ingredient, index) => {
+      const percentage = totalMaterialCost > 0 ? ((ingredient.totalCost / totalMaterialCost) * 100) : 0;
+      return [
+        (index + 1).toString(),
+        ingredient.materialName || '',
+        `${ingredient.quantity}`,
+        ingredient.unit || '',
+        `$${(ingredient.unitCost || 0).toFixed(4)}`,
+        `$${(ingredient.totalCost || 0).toFixed(2)}`,
+        `${percentage.toFixed(1)}%`,
+        ingredient.includeInMarkup ? 'Yes' : 'No'
+      ];
+    });
+
+    // Table
+    autoTable(doc, {
+      startY: formDescription ? 90 : 80,
+      head: [['#', 'Ingredient Name', 'Quantity', 'Unit', 'Unit Cost', 'Total Cost', '% of Formula', 'In Markup']],
+      body: tableData,
+      styles: {
+        fontSize: 8,
+        cellPadding: 3,
+      },
+      headStyles: {
+        fillColor: [71, 85, 105], // slate-600
+        textColor: 255,
+        fontStyle: 'bold',
+      },
+      alternateRowStyles: {
+        fillColor: [248, 250, 252], // slate-50
+      },
+      columnStyles: {
+        0: { cellWidth: 10, halign: 'center' }, // #
+        1: { cellWidth: 45 }, // Ingredient Name
+        2: { cellWidth: 20, halign: 'right' }, // Quantity
+        3: { cellWidth: 15, halign: 'center' }, // Unit
+        4: { cellWidth: 25, halign: 'right' }, // Unit Cost
+        5: { cellWidth: 25, halign: 'right' }, // Total Cost
+        6: { cellWidth: 20, halign: 'right' }, // % of Formula
+        7: { cellWidth: 20, halign: 'center' }, // In Markup
+      },
+    });
+
+    // Summary section
+    const finalY = ((doc as any).lastAutoTable?.finalY || (formDescription ? 200 : 180)) + 20;
+    
+    doc.setFontSize(12);
+    doc.setFont("helvetica", "bold");
+    doc.text("SUMMARY", 20, finalY);
+    
+    doc.setFontSize(10);
+    doc.setFont("helvetica", "normal");
+    const markupIncluded = ingredients.filter(ing => ing.includeInMarkup).length;
+    const markupExcluded = ingredients.filter(ing => !ing.includeInMarkup).length;
+    
+    doc.text(`Total Ingredients: ${ingredients.length}`, 20, finalY + 15);
+    doc.text(`Materials in Markup: ${markupIncluded}`, 20, finalY + 25);
+    doc.text(`Materials Excluded: ${markupExcluded}`, 20, finalY + 35);
+    doc.text(`Markup Eligible Cost: $${markupEligibleCost.toFixed(2)}`, 20, finalY + 45);
+    doc.text(`Cost per Unit: $${unitCost.toFixed(4)}`, 20, finalY + 55);
+
+    // Save the PDF
+    const fileName = `${formName.replace(/[^a-z0-9]/gi, '_').toLowerCase()}_ingredients_${new Date().getTime()}.pdf`;
+    doc.save(fileName);
+    
+    toast({ 
+      title: "PDF Generated", 
+      description: `Ingredients list saved as ${fileName}`,
+    });
+  };
+
   // --- Improved onSubmit handler ---
   const onSubmit = (data: Omit<Formulation, "id" | "ingredients">) => {
     // Validation checks
@@ -443,13 +544,24 @@ export default function FormulationForm({ formulation, onSuccess }: FormulationF
               {/* Ingredients */}
               <Card>
                 <CardHeader>
-                  <CardTitle>
+                  <CardTitle className="flex items-center justify-between">
                     <span className="inline-flex items-center">
                       Ingredients
                       <span className="ml-2 inline-flex items-center text-xs font-semibold bg-slate-200 text-slate-700 rounded px-2 py-0.5">
                         {ingredients.length}
                       </span>
                     </span>
+                    {ingredients.length > 0 && (
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={generateIngredientsPDF}
+                        className="text-blue-600 hover:text-blue-800 border-blue-200 hover:bg-blue-50"
+                      >
+                        Export PDF
+                      </Button>
+                    )}
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
@@ -501,48 +613,65 @@ export default function FormulationForm({ formulation, onSuccess }: FormulationF
 
                   {/* Ingredients List */}
                   {ingredients.length > 0 && (
-                    <div className="space-y-2 max-h-80 overflow-y-auto pr-2">
-                      <div className="text-sm font-medium text-slate-700">Added Ingredients</div>
-                      {(ingredients.slice().sort((a, b) => (a.materialName || '').localeCompare(b.materialName || ''))).map((ingredient, idx) => (
-                        <div
-                          key={ingredient.id}
-                          className={`flex items-center justify-between p-3 bg-slate-50 rounded-lg cursor-pointer hover:bg-slate-100 ${editingIngredientId === ingredient.id ? 'ring-2 ring-blue-400' : ''}`}
-                          onClick={() => {
-                            setEditingIngredientId(ingredient.id);
-                            setSelectedMaterialId(ingredient.materialId.toString());
-                            setIngredientQuantity(ingredient.quantity.toString());
-                          }}
-                        >
-                          <div className="flex items-center space-x-3 flex-1">
-                            {/* Numbering */}
-                            <span className="w-6 text-right text-slate-500 font-semibold select-none">{idx + 1}.</span>
-                            <div className="flex items-center space-x-2">
+                    <div className="space-y-2 max-h-80 overflow-y-auto">
+                      <div className="text-sm font-medium text-slate-700 sticky top-0 bg-white py-2 border-b border-slate-200">
+                        Added Ingredients ({ingredients.length}) • Total: ${totalMaterialCost.toFixed(2)}
+                      </div>
+                      <div className="space-y-1">
+                        {ingredients.map((ingredient, index) => (
+                          <div
+                            key={ingredient.id}
+                            className={`flex items-center justify-between p-2 rounded border cursor-pointer hover:bg-slate-50 ${
+                              editingIngredientId === ingredient.id ? 'bg-blue-50 border-blue-300' : 'bg-white border-slate-200'
+                            }`}
+                            onClick={() => {
+                              setEditingIngredientId(ingredient.id);
+                              setSelectedMaterialId(ingredient.materialId.toString());
+                              setIngredientQuantity(ingredient.quantity.toString());
+                            }}
+                          >
+                            <div className="flex items-center space-x-3 flex-1 min-w-0">
+                              <span className="text-sm text-slate-500 font-medium w-6">{index + 1}.</span>
+                              <div className="flex-1 min-w-0">
+                                <div className="flex items-center space-x-2">
+                                  <span className="font-medium text-slate-900 truncate">{ingredient.materialName}</span>
+                                  {!ingredient.includeInMarkup && (
+                                    <Badge variant="outline" className="text-xs px-1.5 py-0 bg-orange-50 text-orange-700 border-orange-200">
+                                      Excluded
+                                    </Badge>
+                                  )}
+                                </div>
+                                <div className="text-sm text-slate-600">
+                                  {ingredient.quantity} {ingredient.unit} @ ${(ingredient.unitCost || 0).toFixed(4)}/{ingredient.unit}
+                                </div>
+                              </div>
+                            </div>
+                            <div className="flex items-center space-x-3">
+                              <div className="text-right">
+                                <div className="font-semibold text-green-600">${(ingredient.totalCost || 0).toFixed(2)}</div>
+                                <div className="text-xs text-slate-500">
+                                  {totalMaterialCost > 0 ? ((ingredient.totalCost / totalMaterialCost * 100).toFixed(1)) : '0'}%
+                                </div>
+                              </div>
                               <Checkbox
                                 checked={ingredient.includeInMarkup}
                                 onCheckedChange={() => toggleIncludeInMarkup(ingredient.id)}
+                                onClick={(e) => e.stopPropagation()}
+                                className="h-4 w-4"
                               />
-                              <span className="text-xs text-slate-600">Include in markup</span>
-                            </div>
-                            <div className="flex-1">
-                              <div className="font-medium text-slate-900">{ingredient.materialName}</div>
-                              <div className="text-sm text-slate-600">
-                                {ingredient.quantity} {ingredient.unit} × ${(ingredient.unitCost || 0).toFixed(4)} = ${(ingredient.totalCost || 0).toFixed(2)}
-                                {!ingredient.includeInMarkup && (
-                                  <Badge variant="secondary" className="ml-2 text-xs">Excluded from markup</Badge>
-                                )}
-                              </div>
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                size="sm"
+                                onClick={(e) => { e.stopPropagation(); removeIngredient(ingredient.id); }}
+                                className="h-8 w-8 p-0 text-slate-400 hover:text-red-600"
+                              >
+                                <X className="h-4 w-4" />
+                              </Button>
                             </div>
                           </div>
-                          <Button
-                            type="button"
-                            variant="ghost"
-                            size="sm"
-                            onClick={e => { e.stopPropagation(); removeIngredient(ingredient.id); }}
-                          >
-                            <X className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      ))}
+                        ))}
+                      </div>
                     </div>
                   )}
                 </CardContent>

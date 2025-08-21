@@ -655,13 +655,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
             const batchSize = Math.max(parseFloat(formulation.batchSize) || 1, 0.001);
             const unitCost = calculateFormulationUnitCost(totalMaterialCost, batchSize);
             const markupPercentage = parseFloat(formulation.markupPercentage) || 30;
-            const profitMargin = calculateProfitMargin(totalMaterialCost, markupPercentage);
+            const profitMarginPercentage = calculateProfitMargin(totalMaterialCost, markupPercentage);
             
             // Update formulation with new calculated costs
             await storage.updateFormulationCosts(formulation.id, {
-              totalCost: totalMaterialCost.toFixed(2),
+              totalCost: totalMaterialCost.toFixed(2), // Store material cost only
               unitCost: unitCost.toFixed(4),
-              profitMargin: profitMargin.toFixed(2),
+              profitMargin: profitMarginPercentage.toFixed(2), // Store percentage, not dollars
             });
             
             // Create comprehensive audit log for the automatic update
@@ -681,7 +681,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
                   batchSize: batchSize,
                   unitCost: unitCost.toFixed(4),
                   markupPercentage: markupPercentage,
-                  profitMargin: profitMargin.toFixed(2)
+                  profitMarginPercentage: profitMarginPercentage.toFixed(2)
                 }
               }),
             });
@@ -1198,15 +1198,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
           const batchSize = parseFloat(formulation.batchSize || '1');
           const unitCost = calculateFormulationUnitCost(totalMaterialCost, batchSize);
           const markupPercentage = parseFloat(formulation.markupPercentage || '30');
-          const profitMargin = calculateProfitMargin(markupEligibleCost, markupPercentage);
-          const finalCost = totalMaterialCost + profitMargin;
+          const profitMarginPercentage = calculateProfitMargin(markupEligibleCost, markupPercentage);
           
-          console.log(`Refresh: Formulation ${formulation.id} - Total Material Cost: ${totalMaterialCost}, Markup Eligible: ${markupEligibleCost}, Markup %: ${markupPercentage}, Profit Margin: ${profitMargin}, Final Cost: ${finalCost}`);
+          console.log(`Refresh: Formulation ${formulation.id} - Total Material Cost: ${totalMaterialCost}, Markup Eligible: ${markupEligibleCost}, Markup %: ${markupPercentage}, Profit Margin %: ${profitMarginPercentage}`);
           
           const updateResult = await storage.updateFormulationCosts(formulation.id, {
-            totalCost: finalCost.toFixed(2),
+            totalCost: totalMaterialCost.toFixed(2), // Store material cost only
             unitCost: unitCost.toFixed(4),
-            profitMargin: profitMargin.toFixed(2)
+            profitMargin: profitMarginPercentage.toFixed(2) // Store percentage, not dollars
           });
           
           if (updateResult) {
@@ -1239,12 +1238,40 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/formulations/:id", async (req, res) => {
+  app.get("/api/formulations/:id", requireJWTAuth, async (req: AuthenticatedRequest, res) => {
     const id = parseInt(req.params.id);
+    const userId = req.userId;
+    
+    console.log('=== INDIVIDUAL FORMULATION REQUEST DEBUG ===');
+    console.log('Requested formulation ID:', id);
+    console.log('User ID from JWT:', userId);
+    
     const formulation = await storage.getFormulation(id);
+    console.log('Raw formulation from storage:', formulation);
+    
     if (!formulation) {
+      console.log('Formulation not found in storage');
       return res.status(404).json({ error: "Formulation not found" });
     }
+    
+    console.log('Formulation data check:');
+    console.log('- totalCost:', formulation.totalCost, 'type:', typeof formulation.totalCost);
+    console.log('- unitCost:', formulation.unitCost, 'type:', typeof formulation.unitCost);
+    console.log('- targetPrice:', formulation.targetPrice, 'type:', typeof formulation.targetPrice);
+    
+    // Ensure user can only access their own formulations
+    if (formulation.userId !== userId) {
+      console.log(`Access denied: formulation belongs to user ${formulation.userId}, but requested by user ${userId}`);
+      return res.status(403).json({ error: "Access denied" });
+    }
+    
+    console.log('Sending formulation response');
+    
+    // Add cache control headers to prevent stale data
+    res.set('Cache-Control', 'no-cache, no-store, must-revalidate');
+    res.set('Pragma', 'no-cache');
+    res.set('Expires', '0');
+    
     res.json(formulation);
   });
 
@@ -1399,6 +1426,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Check material ownership
       const unauthorizedMaterials = existingMaterials.filter(m => m.userId !== req.userId);
+      console.log("Material ownership check:");
+      console.log("- User ID:", req.userId);
+      console.log("- Materials found:", existingMaterials.map(m => `${m.name} (ID: ${m.id}, Owner: ${m.userId})`));
+      console.log("- Unauthorized materials:", unauthorizedMaterials.map(m => m.name));
+      
       if (unauthorizedMaterials.length > 0) {
         console.error("Unauthorized materials:", unauthorizedMaterials.map(m => m.name));
         return res.status(403).json({ 
@@ -1470,23 +1502,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
         const markupPercentage = parseFloat(parsedFormulationData.markupPercentage?.toString() || '30');
         
         const unitCost = batchSize > 0 ? totalMaterialCost / batchSize : 0;
-        const profitMargin = markupEligibleCost * (markupPercentage / 100);
-        const finalTotalCost = totalMaterialCost + profitMargin;
+        // Store markup percentage as profit margin percentage (not dollar amount)
+        const profitMarginPercentage = Math.min(markupPercentage, 999.99); // Cap at database limit
         
         console.log("Calculated costs:", {
           totalMaterialCost: totalMaterialCost.toFixed(4),
           markupEligibleCost: markupEligibleCost.toFixed(4),
           unitCost: unitCost.toFixed(4),
-          profitMargin: profitMargin.toFixed(2),
-          finalTotalCost: finalTotalCost.toFixed(2)
+          profitMarginPercentage: profitMarginPercentage.toFixed(2),
+          totalCost: totalMaterialCost.toFixed(2)
         });
         
-        // Update formulation with calculated costs
+        // Update formulation with calculated costs (totalCost = material cost only)
         await trx.update(formulations)
           .set({
-            totalCost: finalTotalCost.toFixed(2),
+            totalCost: totalMaterialCost.toFixed(2),
             unitCost: unitCost.toFixed(4),
-            profitMargin: profitMargin.toFixed(2),
+            profitMargin: profitMarginPercentage.toFixed(2),
           })
           .where(eq(formulations.id, formulation.id));
           
@@ -1574,15 +1606,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
         const markupPercentage = parseFloat(formulationData.markupPercentage?.toString() || formulation.markupPercentage?.toString() || '30');
         
         const unitCost = batchSize > 0 ? totalMaterialCost / batchSize : 0;
-        const profitMargin = markupEligibleCost * (markupPercentage / 100);
-        const finalTotalCost = totalMaterialCost + profitMargin;
+        // Store markup percentage as profit margin percentage (not dollar amount)
+        const profitMarginPercentage = Math.min(markupPercentage, 999.99); // Cap at database limit
         
-        // Update formulation with calculated costs
+        // Update formulation with calculated costs (totalCost = material cost only)
         await trx.update(formulations)
           .set({
-            totalCost: finalTotalCost.toFixed(2),
+            totalCost: totalMaterialCost.toFixed(2),
             unitCost: unitCost.toFixed(4),
-            profitMargin: profitMargin.toFixed(2),
+            profitMargin: profitMarginPercentage.toFixed(2),
           })
           .where(eq(formulations.id, id));
       });
@@ -1823,9 +1855,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
   }
 
   // Formulation Ingredients
-  app.get("/api/formulations/:id/ingredients", async (req, res) => {
+  app.get("/api/formulations/:id/ingredients", requireJWTAuth, async (req: AuthenticatedRequest, res) => {
     const formulationId = parseInt(req.params.id);
+    const userId = req.userId;
+    
+    // First verify the user owns this formulation
+    const formulation = await storage.getFormulation(formulationId);
+    if (!formulation) {
+      return res.status(404).json({ error: "Formulation not found" });
+    }
+    
+    if (formulation.userId !== userId) {
+      return res.status(403).json({ error: "Access denied" });
+    }
+    
     const ingredients = await storage.getFormulationIngredients(formulationId);
+    
+    // Add cache control headers to prevent stale data
+    res.set('Cache-Control', 'no-cache, no-store, must-revalidate');
+    res.set('Pragma', 'no-cache');
+    res.set('Expires', '0');
+    
     res.json(ingredients);
   });
 
@@ -2201,10 +2251,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // File Management API Routes
-  app.get("/api/files", async (req, res) => {
+  app.get("/api/files", requireJWTAuth, async (req: AuthenticatedRequest, res) => {
     try {
-      const userId = 1; // Mock user ID for demo
-      const files = await storage.getFiles(userId);
+      const files = await storage.getFiles(req.userId);
       res.json(files);
     } catch (error) {
       console.error("Error getting files:", error);
@@ -2212,12 +2261,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/files/upload", async (req, res) => {
+  app.post("/api/files/upload", requireJWTAuth, async (req: AuthenticatedRequest, res) => {
     try {
-      const userId = 1; // Mock user ID for demo
       const fileData = insertFileSchema.parse({
         ...req.body,
-        userId
+        userId: req.userId
       });
       
       const file = await storage.createFile(fileData);
@@ -2289,7 +2337,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/:entityType/:entityId/files/attach", async (req, res) => {
+  app.post("/api/:entityType/:entityId/files/attach", requireJWTAuth, async (req: AuthenticatedRequest, res) => {
     try {
       const { entityType, entityId } = req.params;
       const { fileId } = req.body;
@@ -2306,10 +2354,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ error: "Invalid entityId or fileId format" });
       }
       
-      // Check if the file exists
+      // Check if the file exists and belongs to the authenticated user
       const file = await storage.getFile(fileIdNum);
       if (!file) {
         return res.status(404).json({ error: "File not found" });
+      }
+      
+      if (file.userId !== req.userId) {
+        return res.status(403).json({ error: "You don't have access to this file" });
       }
       
       // Check if already attached

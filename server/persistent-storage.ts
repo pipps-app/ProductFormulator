@@ -29,6 +29,10 @@ export class PersistentStorage implements IStorage {
   private data: StorageData;
   private dataFile = path.join(process.cwd(), 'storage-data.json');
 
+  async getAllUsers(): Promise<User[]> {
+    return this.data.users;
+  }
+
   constructor() {
     this.data = {
       users: [],

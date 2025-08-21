@@ -14,7 +14,7 @@ import {
 
 export interface IStorage {
   getUser(id: number): Promise<User | undefined>;
-
+  getAllUsers(): Promise<User[]>;
   getUserByEmail(email: string): Promise<User | undefined>;
   getUserByGoogleId(googleId: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
@@ -79,6 +79,10 @@ class MemoryStorage implements IStorage {
   private materialCategories: MaterialCategory[] = [];
   private rawMaterials: RawMaterial[] = [];
   private formulations: Formulation[] = [];
+
+  async getAllUsers(): Promise<User[]> {
+    return this.users;
+  }
   private formulationIngredients: FormulationIngredient[] = [];
   private files: File[] = [];
   private fileAttachments: FileAttachment[] = [];

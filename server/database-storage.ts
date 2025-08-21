@@ -20,6 +20,10 @@ const client = postgres(connectionString, {
 const db = drizzle(client, { schema });
 
 export class DatabaseStorage implements IStorage {
+  async getAllUsers(): Promise<User[]> {
+    return await db.select().from(schema.users);
+  }
+
   async getUser(id: number): Promise<User | undefined> {
     const results = await db.select().from(schema.users).where(eq(schema.users.id, id));
     return results[0];

@@ -113,21 +113,25 @@ export default function FormulationDetail() {
             </Button>
           </Link>
         </div>
-        <Card>
-          <CardContent className="text-center py-12">
-            <FlaskRound className="w-16 h-16 mx-auto mb-4 text-muted-foreground" />
-            <h3 className="text-lg font-semibold mb-2">Formulation not found</h3>
-            <p className="text-muted-foreground">
-              The formulation you're looking for doesn't exist or may have been deleted.
-            </p>
-          </CardContent>
-        </Card>
+        <div className="text-center py-12">
+          <p className="text-muted-foreground">Formulation not found</p>
+        </div>
       </div>
     );
   }
 
   return (
     <div className="container mx-auto p-6">
+      {/* Page Title */}
+      <div className="mb-6">
+        <h1 className="text-3xl font-bold text-slate-900 mb-2">
+          {formulation.name}
+        </h1>
+        <p className="text-slate-600">
+          View and manage your formulation details, costs, and attachments
+        </p>
+      </div>
+
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-4">

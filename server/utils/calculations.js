@@ -42,14 +42,16 @@ function calculateFormulationUnitCost(totalMaterialCost, batchSize) {
 }
 
 /**
- * Calculate profit margin
+ * Calculate profit margin percentage
  * @param {number} markupEligibleCost - Cost eligible for markup
  * @param {string|number} markupPercentage - Markup percentage
- * @returns {number} - Calculated profit margin
+ * @returns {number} - Markup percentage (to be stored as profit margin %)
  */
 function calculateProfitMargin(markupEligibleCost, markupPercentage) {
   const markup = parseFloat(markupPercentage || '0');
-  return (markupEligibleCost * markup) / 100;
+  // Return the markup percentage itself, not the dollar amount
+  // This ensures the profit_margin field stores a percentage value within database limits
+  return Math.min(markup, 999.99); // Cap at 999.99% to fit database precision constraints
 }
 
 /**

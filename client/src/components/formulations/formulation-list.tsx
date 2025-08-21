@@ -2,7 +2,7 @@ import { useState, useMemo, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Edit, Trash2, FlaskRound, Calculator, ChevronUp, ChevronDown, Eye, Archive, ArchiveRestore } from "lucide-react";
+import { Edit, Trash2, FlaskRound, Calculator, ChevronUp, ChevronDown, Archive, ArchiveRestore } from "lucide-react";
 import { Link } from "wouter";
 import ConfirmationModal from "@/components/common/confirmation-modal";
 import { useAppSelector, useAppDispatch } from "@/store/hooks";
@@ -10,8 +10,9 @@ import { fetchFormulations, deleteFormulation, archiveFormulation, restoreFormul
 import { selectRawMaterials } from "@/store/selectors";
 import { updateRawMaterialPrice } from "@/store/rawMaterialsSlice";
 import { updateFormulation } from "@/store/formulationsSlice";
+import { useQueryClient } from "@tanstack/react-query";
 
-type FormulationSortField = 'name' | 'totalCost' | 'profitMargin';
+type FormulationSortField = 'name' | 'totalCost' | 'profitMargin' | 'markupPercentage' | 'targetPrice';
 type SortDirection = 'asc' | 'desc';
 
 interface FormulationListProps {
@@ -28,6 +29,7 @@ export default function FormulationList({ formulations, isLoading, sortField, so
   const [archivingFormulation, setArchivingFormulation] = useState<Formulation | null>(null);
   const [restoringFormulation, setRestoringFormulation] = useState<Formulation | null>(null);
   const dispatch = useAppDispatch();
+  const queryClient = useQueryClient();
   const rawMaterials = useAppSelector(selectRawMaterials);
 
   // Use the passed formulations data directly - costs should already be calculated by the API
@@ -47,8 +49,21 @@ export default function FormulationList({ formulations, isLoading, sortField, so
           bValue = Number(b.totalCost || 0);
           break;
         case 'profitMargin':
-          aValue = Number(a.profitMargin || 0);
-          bValue = Number(b.profitMargin || 0);
+          // Calculate actual profit margin for sorting
+          const aTargetPrice = Number(a.targetPrice || 0);
+          const aCost = Number(a.totalCost || 0);
+          const bTargetPrice = Number(b.targetPrice || 0);
+          const bCost = Number(b.totalCost || 0);
+          aValue = aTargetPrice > 0 ? ((aTargetPrice - aCost) / aTargetPrice * 100) : 0;
+          bValue = bTargetPrice > 0 ? ((bTargetPrice - bCost) / bTargetPrice * 100) : 0;
+          break;
+        case 'markupPercentage':
+          aValue = Number(a.markupPercentage || 30);
+          bValue = Number(b.markupPercentage || 30);
+          break;
+        case 'targetPrice':
+          aValue = Number(a.targetPrice || 0);
+          bValue = Number(b.targetPrice || 0);
           break;
         default:
           aValue = a.name.toLowerCase();
@@ -97,6 +112,9 @@ export default function FormulationList({ formulations, isLoading, sortField, so
     if (archivingFormulation) {
       try {
         await dispatch(archiveFormulation(archivingFormulation.id)).unwrap();
+        // Invalidate dashboard cache
+        queryClient.invalidateQueries({ queryKey: ["/api/dashboard/stats"] });
+        queryClient.invalidateQueries({ queryKey: ["/api/dashboard/recent-activity"] });
         alert(`Formulation "${archivingFormulation.name}" has been archived.`);
       } catch (error) {
         alert(`Error: ${error}`);
@@ -110,6 +128,9 @@ export default function FormulationList({ formulations, isLoading, sortField, so
     if (restoringFormulation) {
       try {
         await dispatch(restoreFormulation(restoringFormulation.id)).unwrap();
+        // Invalidate dashboard cache
+        queryClient.invalidateQueries({ queryKey: ["/api/dashboard/stats"] });
+        queryClient.invalidateQueries({ queryKey: ["/api/dashboard/recent-activity"] });
         alert(`Formulation "${restoringFormulation.name}" has been restored from archive.`);
       } catch (error) {
         alert(`Error: ${error}`);
@@ -209,11 +230,12 @@ export default function FormulationList({ formulations, isLoading, sortField, so
             <tr>
               <SortableHeader field="name" className="text-left">Formulation</SortableHeader>
               <th className="text-left p-4 text-sm font-medium text-slate-600">Batch Size</th>
-              <SortableHeader field="totalCost" className="text-right">Total Cost</SortableHeader>
-              <th className="text-right p-4 text-sm font-medium text-slate-600">Unit Cost</th>
-              <th className="text-center p-4 text-sm font-medium text-slate-600"># Ingredients</th>
+              <SortableHeader field="totalCost" className="text-right">Material Cost</SortableHeader>
+              <th className="text-right p-4 text-sm font-medium text-slate-600">Cost/Unit</th>
+              <th className="text-center p-4 text-sm font-medium text-slate-600">Ingredients</th>
+              <SortableHeader field="targetPrice" className="text-right">Target Price</SortableHeader>
+              <SortableHeader field="markupPercentage" className="text-right">Markup %</SortableHeader>
               <SortableHeader field="profitMargin" className="text-right">Profit Margin</SortableHeader>
-              <th className="text-right p-4 text-sm font-medium text-slate-600">Target Price</th>
               <th className="text-center p-4 text-sm font-medium text-slate-600">Status</th>
               <th className="text-center p-4 text-sm font-medium text-slate-600">Actions</th>
             </tr>
@@ -272,10 +294,23 @@ export default function FormulationList({ formulations, isLoading, sortField, so
                     <span className="text-sm font-medium text-slate-900">{formulation.ingredients?.length || 0}</span>
                   </td>
                   <td className="p-4 text-right">
-                    <p className={`text-sm font-medium ${profitMarginColor}`}>{Number(formulation.profitMargin || 0).toFixed(1)}%</p>
+                    {targetPriceDisplay}
                   </td>
                   <td className="p-4 text-right">
-                    {targetPriceDisplay}
+                    <p className="text-sm font-medium text-orange-600">{Number(formulation.markupPercentage || 30).toFixed(1)}%</p>
+                  </td>
+                  <td className="p-4 text-right">
+                    {(() => {
+                      const targetPrice = Number(formulation.targetPrice || 0);
+                      const materialCost = Number(formulation.totalCost || 0);
+                      const actualProfitMargin = targetPrice > 0 ? ((targetPrice - materialCost) / targetPrice * 100) : 0;
+                      const profitColor = actualProfitMargin >= 30 ? 'text-green-600' : actualProfitMargin >= 15 ? 'text-yellow-600' : 'text-red-600';
+                      return (
+                        <p className={`text-sm font-medium ${profitColor}`}>
+                          {targetPrice > 0 ? `${actualProfitMargin.toFixed(1)}%` : '-'}
+                        </p>
+                      );
+                    })()}
                   </td>
                   <td className="p-4 text-center">
                     {getStatusBadge(formulation.isActive ?? true)}

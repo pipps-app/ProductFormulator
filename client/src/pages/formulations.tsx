@@ -2,7 +2,7 @@ import { useState, useMemo, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Plus, Search, Filter, RefreshCw } from "lucide-react";
+import { Plus, Search, Filter, RefreshCw, X } from "lucide-react";
 import FormulationList from "@/components/formulations/formulation-list";
 import FormulationForm from "@/components/formulations/formulation-form";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -14,7 +14,7 @@ import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { useLocation } from "wouter";
 
-type FormulationSortField = 'name' | 'totalCost' | 'profitMargin';
+type FormulationSortField = 'name' | 'totalCost' | 'profitMargin' | 'markupPercentage' | 'targetPrice';
 type SortDirection = 'asc' | 'desc';
 
 export default function Formulations() {
@@ -59,6 +59,14 @@ export default function Formulations() {
           
           aValue = aTargetPrice > 0 ? ((aTargetPrice - aTotalCost) / aTargetPrice * 100) : 0;
           bValue = bTargetPrice > 0 ? ((bTargetPrice - bTotalCost) / bTargetPrice * 100) : 0;
+          break;
+        case 'markupPercentage':
+          aValue = Number(a.markupPercentage || 30);
+          bValue = Number(b.markupPercentage || 30);
+          break;
+        case 'targetPrice':
+          aValue = Number(a.targetPrice || 0);
+          bValue = Number(b.targetPrice || 0);
           break;
         default:
           aValue = a.name.toLowerCase();
@@ -208,23 +216,47 @@ export default function Formulations() {
         </div>
       </div>
 
-      {/* Search and Filters */}
-      <Card>
+      {/* Enhanced Search Section */}
+      <Card className="bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200">
         <CardContent className="pt-6">
-          <div className="flex items-center space-x-4">
-            <div className="relative flex-1">
-              <Search className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
-              <Input
-                placeholder="Search formulations..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10"
-              />
+          <div className="space-y-4">
+            <div className="text-center">
+              <h3 className="text-lg font-semibold text-blue-900 mb-1">Find Your Formulations</h3>
+              <p className="text-sm text-blue-700">Search by name, description, or filter by status</p>
             </div>
-            <Button variant="outline">
-              <Filter className="h-4 w-4 mr-2" />
-              Filter
-            </Button>
+            <div className="flex items-center space-x-4 max-w-2xl mx-auto">
+              <div className="relative flex-1">
+                <Search className="absolute left-4 top-4 h-5 w-5 text-blue-500" />
+                <Input
+                  placeholder="Type to search formulations by name or description..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-12 h-12 text-base bg-white border-blue-300 focus:border-blue-500 focus:ring-blue-500"
+                />
+                {searchQuery && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="absolute right-2 top-2 h-8 w-8 p-0 text-slate-400 hover:text-slate-600"
+                    onClick={() => setSearchQuery("")}
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
+                )}
+              </div>
+              <Button variant="outline" className="h-12 px-6 border-blue-300 hover:bg-blue-50">
+                <Filter className="h-4 w-4 mr-2" />
+                Filter
+              </Button>
+            </div>
+            {searchQuery && (
+              <div className="text-center">
+                <span className="text-sm text-blue-700">
+                  Found {filteredAndSortedFormulations.length} formulation{filteredAndSortedFormulations.length !== 1 ? 's' : ''} 
+                  {searchQuery && ` matching "${searchQuery}"`}
+                </span>
+              </div>
+            )}
           </div>
         </CardContent>
       </Card>
@@ -272,6 +304,7 @@ export default function Formulations() {
           <FormulationForm 
             formulation={editingFormulation}
             onSuccess={handleCloseModal}
+            onCancel={handleCloseModal}
           />
         </DialogContent>
       </Dialog>
