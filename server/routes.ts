@@ -129,7 +129,10 @@ function getReportsPreview(userTier: string, requestedTier: string) {
 
   return reportPreviews[requestedTier] || { title: "Unknown Plan", description: "", reports: [] };
 }
-import { checkMaterialsLimit, checkFormulationsLimit, checkVendorsLimit, getUserSubscriptionInfo } from "./subscription-middleware";
+import { checkMaterialsLimit, checkFormulationsLimit, checkVendorsLimit, checkCategoriesLimit, 
+         checkMaterialEditLimit, checkFormulationEditLimit, checkVendorEditLimit, checkCategoryEditLimit, 
+         getUserSubscriptionInfo } from "./subscription-middleware";
+import { getUserSoftLockStatus, checkSoftLockUsage } from "./subscription-soft-lock";
 import { 
   insertVendorSchema, insertMaterialCategorySchema, insertRawMaterialSchema,
   insertFormulationSchema, insertFormulationIngredientSchema, insertUserSchema,
@@ -725,7 +728,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.put("/api/vendors/:id", requireJWTAuth, async (req: AuthenticatedRequest, res) => {
+  app.put("/api/vendors/:id", requireJWTAuth, checkVendorEditLimit, async (req: AuthenticatedRequest, res) => {
     try {
       const id = parseInt(req.params.id);
       const originalVendor = await storage.getVendor(id);
@@ -791,7 +794,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json(categories);
   });
 
-  app.post("/api/material-categories", requireJWTAuth, async (req: AuthenticatedRequest, res) => {
+  app.post("/api/material-categories", requireJWTAuth, checkCategoriesLimit, async (req: AuthenticatedRequest, res) => {
     try {
       const userId = req.userId;
       
@@ -848,7 +851,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.put("/api/material-categories/:id", requireJWTAuth, async (req: AuthenticatedRequest, res) => {
+  app.put("/api/material-categories/:id", requireJWTAuth, checkCategoryEditLimit, async (req: AuthenticatedRequest, res) => {
     try {
       const id = parseInt(req.params.id);
       const userId = req.userId;
@@ -972,7 +975,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.put("/api/raw-materials/:id", async (req, res) => {
+  app.put("/api/raw-materials/:id", requireJWTAuth, checkMaterialEditLimit, async (req: AuthenticatedRequest, res) => {
     try {
       const id = parseInt(req.params.id);
       const originalMaterial = await storage.getRawMaterial(id);
@@ -1546,7 +1549,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.put("/api/formulations/:id", async (req, res) => {
+  app.put("/api/formulations/:id", requireJWTAuth, checkFormulationEditLimit, checkSoftLockUsage('materials'), async (req: AuthenticatedRequest, res) => {
     try {
       const id = parseInt(req.params.id);
       const originalFormulation = await storage.getFormulation(id);
@@ -2788,6 +2791,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error getting subscription status:", error);
       res.status(500).json({ error: "Failed to get subscription status" });
+    }
+  });
+
+  // Get comprehensive subscription info with soft-lock status
+  app.get("/api/subscription/info", requireJWTAuth, async (req: AuthenticatedRequest, res) => {
+    try {
+      const userId = req.user?.id;
+      
+      if (!userId) {
+        return res.status(401).json({ error: "User not authenticated" });
+      }
+
+      const subscriptionInfo = await getUserSubscriptionInfo(userId);
+      if (!subscriptionInfo) {
+        return res.status(404).json({ error: "Subscription information not found" });
+      }
+
+      res.json(subscriptionInfo);
+    } catch (error) {
+      console.error("Error getting subscription info:", error);
+      res.status(500).json({ error: "Failed to get subscription information" });
     }
   });
 

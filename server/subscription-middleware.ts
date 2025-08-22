@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import { storage } from "./storage";
+import { getUserSoftLockStatus, checkSoftLockCreate, checkSoftLockEdit, planLimits as softLockPlanLimits } from "./subscription-soft-lock";
 
 interface SubscriptionLimits {
   maxMaterials: number;
@@ -134,6 +135,31 @@ export function checkVendorsLimit(req: Request, res: Response, next: NextFunctio
   return checkSubscriptionLimits(req, res, next, 'vendors');
 }
 
+export function checkCategoriesLimit(req: Request, res: Response, next: NextFunction) {
+  return checkSoftLockCreate('categories')(req, res, next);
+}
+
+export function checkFileAttachmentsLimit(req: Request, res: Response, next: NextFunction) {
+  return checkSoftLockCreate('fileAttachments')(req, res, next);
+}
+
+// Enhanced middleware for editing with soft-lock protection
+export function checkMaterialEditLimit(req: Request, res: Response, next: NextFunction) {
+  return checkSoftLockEdit('materials')(req, res, next);
+}
+
+export function checkFormulationEditLimit(req: Request, res: Response, next: NextFunction) {
+  return checkSoftLockEdit('formulations')(req, res, next);
+}
+
+export function checkVendorEditLimit(req: Request, res: Response, next: NextFunction) {
+  return checkSoftLockEdit('vendors')(req, res, next);
+}
+
+export function checkCategoryEditLimit(req: Request, res: Response, next: NextFunction) {
+  return checkSoftLockEdit('categories')(req, res, next);
+}
+
 export async function getUserSubscriptionInfo(userId: number) {
   try {
     const user = await storage.getUser(userId);
@@ -142,11 +168,19 @@ export async function getUserSubscriptionInfo(userId: number) {
     const userPlan = (user as any).subscriptionPlan || 'free';
     const limits = planLimits[userPlan] || planLimits.free;
 
-    const [materials, formulations, vendors] = await Promise.all([
+    const [materials, formulations, vendors, categories, files] = await Promise.all([
       storage.getRawMaterials(userId),
       storage.getFormulations(userId),
-      storage.getVendors(userId)
+      storage.getVendors(userId),
+      storage.getMaterialCategories(userId),
+      storage.getFiles(userId)
     ]);
+
+    // Calculate storage usage
+    const storageUsage = files.reduce((total, file) => total + file.fileSize, 0) / (1024 * 1024); // Convert to MB
+
+    // Get soft-lock status for enhanced information
+    const softLockStatus = await getUserSoftLockStatus(userId);
 
     return {
       plan: userPlan,
@@ -155,7 +189,24 @@ export async function getUserSubscriptionInfo(userId: number) {
       usage: {
         materials: materials.length,
         formulations: formulations.length,
-        vendors: vendors.length
+        vendors: vendors.length,
+        categories: categories.length,
+        fileAttachments: files.length,
+        storageSize: storageUsage
+      },
+      softLock: softLockStatus?.softLock || {
+        materials: false,
+        formulations: false,
+        vendors: false,
+        categories: false,
+        fileAttachments: false
+      },
+      overLimitItems: softLockStatus?.overLimitItems || {
+        materials: [],
+        formulations: [],
+        vendors: [],
+        categories: [],
+        files: []
       }
     };
   } catch (error) {

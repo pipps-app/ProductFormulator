@@ -9,6 +9,8 @@ import { type RawMaterial } from "@shared/schema";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { useMaterialCategories, useVendors } from "@/hooks/use-materials";
+import { ReadOnlyBadge } from "@/components/subscription/subscription-components";
+import { useItemReadOnlyStatus } from "@/hooks/use-subscription";
 import ConfirmationModal from "@/components/common/confirmation-modal";
 
 type SortField = 'name' | 'unitCost' | 'totalValue' | 'category' | 'vendor';
@@ -184,6 +186,7 @@ export default function MaterialList({ materials, isLoading, onEdit, sortField, 
             {materials.map((material) => {
               const categoryInfo = getCategoryInfo(material.categoryId);
               const vendorName = getVendorName(material.vendorId);
+              const isReadOnly = useItemReadOnlyStatus('materials', material.id);
               
               return (
                 <tr key={material.id} className="hover:bg-slate-50">
@@ -203,7 +206,10 @@ export default function MaterialList({ materials, isLoading, onEdit, sortField, 
                         )}
                       </div>
                       <div>
-                        <p className="font-medium text-slate-900">{material.name}</p>
+                        <div className="flex items-center gap-2">
+                          <p className="font-medium text-slate-900">{material.name}</p>
+                          <ReadOnlyBadge resourceType="materials" itemId={material.id} />
+                        </div>
                         <p className="text-sm text-slate-500">
                           {material.sku || `MAT-${material.id.toString().padStart(3, '0')}`}
                         </p>
@@ -244,7 +250,9 @@ export default function MaterialList({ materials, isLoading, onEdit, sortField, 
                         variant="ghost"
                         size="sm"
                         onClick={() => onEdit(material)}
-                        title="Edit material"
+                        disabled={isReadOnly}
+                        title={isReadOnly ? "This material is read-only due to plan limits" : "Edit material"}
+                        className={isReadOnly ? "opacity-50 cursor-not-allowed" : ""}
                       >
                         <Edit className="h-4 w-4" />
                       </Button>
@@ -252,7 +260,9 @@ export default function MaterialList({ materials, isLoading, onEdit, sortField, 
                         variant="ghost"
                         size="sm"
                         onClick={() => handleDelete(material)}
-                        title="Delete material"
+                        disabled={isReadOnly}
+                        title={isReadOnly ? "Cannot delete read-only materials" : "Delete material"}
+                        className={isReadOnly ? "opacity-50 cursor-not-allowed" : ""}
                       >
                         <Trash2 className="h-4 w-4" />
                       </Button>
