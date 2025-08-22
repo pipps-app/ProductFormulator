@@ -268,65 +268,64 @@ export default function Subscription() {
       </div>
 
       {/* Current Subscription Status */}
-      {subscriptionStatus && (
-        <Card className={`border-2 ${isActive ? 'border-green-200 bg-green-50' : 'border-orange-200 bg-orange-50'}`}>
-          <CardHeader>
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-3">
-                <div className={`p-2 rounded-lg ${isActive ? 'bg-green-100' : 'bg-orange-100'}`}>
-                  {isActive ? (
-                    <Check className="h-5 w-5 text-green-600" />
-                  ) : (
-                    <Calendar className="h-5 w-5 text-orange-600" />
-                  )}
-                </div>
-                <div>
-                  <CardTitle className={isActive ? 'text-green-900' : 'text-orange-900'}>
-                    {isActive ? 'Active Subscription' : 'Subscription Status'}
-                  </CardTitle>
-                  <p className={isActive ? 'text-green-700' : 'text-orange-700'}>
-                    {currentPlan ? 
-                      `You're currently on the ${currentPlan.name} plan${!isActive ? ' (inactive)' : ''}` :
-                      'Free plan'
-                    }
-                  </p>
-                </div>
-              </div>
-              <div className="flex gap-2">
-                <Badge className={isActive ? 'bg-green-100 text-green-800' : 'bg-orange-100 text-orange-800'}>
-                  {subscriptionStatus.status ? subscriptionStatus.status.toUpperCase() : 'FREE'}
-                </Badge>
-                {currentPlan && (
-                  <Badge variant="outline">
-                    ${currentPlan.price}/{currentPlan.interval}
-                  </Badge>
+      <Card className={`border-2 ${isActive ? 'border-green-200 bg-green-50' : 'border-gray-200 bg-gray-50'}`}>
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <div className={`p-2 rounded-lg ${isActive ? 'bg-green-100' : 'bg-gray-100'}`}>
+                {isActive ? (
+                  <Check className="h-5 w-5 text-green-600" />
+                ) : (
+                  <Calendar className="h-5 w-5 text-gray-600" />
                 )}
               </div>
+              <div>
+                <CardTitle className={isActive ? 'text-green-900' : 'text-gray-900'}>
+                  {isActive ? 'Active Subscription' : 'Current Plan'}
+                </CardTitle>
+                <p className={isActive ? 'text-green-700' : 'text-gray-700'}>
+                  {currentPlan ? 
+                    `You're currently on the ${currentPlan.name} plan${!isActive ? ' (inactive)' : ''}` :
+                    'You\'re on the Free plan'
+                  }
+                </p>
+              </div>
             </div>
-          </CardHeader>
-          <CardContent className="space-y-4">
+            <div className="flex gap-2">
+              <Badge className={isActive ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}>
+                {subscriptionStatus?.status ? subscriptionStatus.status.toUpperCase() : 'FREE'}
+              </Badge>
+              {currentPlan && currentPlan.price > 0 && (
+                <Badge variant="outline">
+                  ${currentPlan.price}/{currentPlan.interval}
+                </Badge>
+              )}
+            </div>
+          </div>
+        </CardHeader>
+        <CardContent className="space-y-4">
             {/* Current Plan Usage */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="flex items-center space-x-2">
-                <Building className="h-4 w-4 text-green-600" />
-                <span className="text-sm text-green-700">
+                <Building className={`h-4 w-4 ${isActive ? 'text-green-600' : 'text-gray-600'}`} />
+                <span className={`text-sm ${isActive ? 'text-green-700' : 'text-gray-700'}`}>
                   {currentPlan ? 
                     (currentPlan.maxMaterials === -1 ? 'Unlimited' : `${currentPlan.maxMaterials}`) : '5'
                   } materials
                 </span>
               </div>
               <div className="flex items-center space-x-2">
-                <Zap className="h-4 w-4 text-green-600" />
-                <span className="text-sm text-green-700">
+                <Zap className={`h-4 w-4 ${isActive ? 'text-green-600' : 'text-gray-600'}`} />
+                <span className={`text-sm ${isActive ? 'text-green-700' : 'text-gray-700'}`}>
                   {currentPlan ? 
                     (currentPlan.maxFormulations === -1 ? 'Unlimited' : `${currentPlan.maxFormulations}`) : '1'
                   } formulations
                 </span>
               </div>
               <div className="flex items-center space-x-2">
-                <Calendar className="h-4 w-4 text-green-600" />
-                <span className="text-sm text-green-700">
-                  {subscriptionStatus.endDate ? 
+                <Calendar className={`h-4 w-4 ${isActive ? 'text-green-600' : 'text-gray-600'}`} />
+                <span className={`text-sm ${isActive ? 'text-green-700' : 'text-gray-700'}`}>
+                  {subscriptionStatus?.endDate ? 
                     `Renews ${new Date(subscriptionStatus.endDate).toLocaleDateString()}` : 
                     'No expiration'
                   }
@@ -335,8 +334,18 @@ export default function Subscription() {
             </div>
 
             {/* Quick Actions for Plan Changes */}
-            <div className="pt-4 border-t border-green-200">
+            <div className={`pt-4 border-t ${isActive ? 'border-green-200' : 'border-gray-200'}`}>
               <div className="flex flex-wrap gap-2 justify-center">
+                {!currentPlan && (
+                  <Button
+                    variant="default"
+                    size="sm"
+                    onClick={() => document.getElementById('plans-section')?.scrollIntoView({ behavior: 'smooth' })}
+                    className="bg-blue-600 hover:bg-blue-700 text-white"
+                  >
+                    Choose Plan
+                  </Button>
+                )}
                 {currentPlan && currentPlan.id !== 'free' && (
                   <Button
                     variant="outline"
@@ -371,7 +380,6 @@ export default function Subscription() {
             </div>
           </CardContent>
         </Card>
-      )}
 
       {/* Shopify Purchase Instructions */}
       {selectedPlan && selectedPlan.price > 0 && (

@@ -2581,6 +2581,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Get current user info (for frontend auth)
+  // Get subscription status endpoint
+  app.get("/api/subscription/status", requireJWTAuth, async (req: AuthenticatedRequest, res) => {
+    try {
+      const user = await storage.getUser(req.user?.id);
+      if (!user) {
+        return res.status(401).json({ error: "User not found" });
+      }
+
+      res.json({
+        plan: user.subscriptionPlan || "free",
+        status: user.subscriptionStatus || "none",
+        startDate: user.subscriptionStartDate,
+        endDate: user.subscriptionEndDate,
+        paypalSubscriptionId: user.paypalSubscriptionId
+      });
+    } catch (error) {
+      console.error("Error getting subscription status:", error);
+      res.status(500).json({ error: "Failed to get subscription status" });
+    }
+  });
+
   app.get("/api/user", requireJWTAuth, async (req: AuthenticatedRequest, res) => {
     // User is already authenticated through JWT middleware
     const user = await storage.getUser(req.user?.id);
