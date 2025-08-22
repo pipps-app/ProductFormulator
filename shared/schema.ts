@@ -20,6 +20,8 @@ export const users = pgTable("users", {
   subscriptionStartDate: timestamp("subscription_start_date"),
   subscriptionEndDate: timestamp("subscription_end_date"),
   paypalSubscriptionId: text("paypal_subscription_id"),
+  // pendingPlanChange: text("pending_plan_change"), // For scheduled downgrades
+  // planChangeEffectiveDate: timestamp("plan_change_effective_date"), // When downgrade takes effect
   createdAt: timestamp("created_at").defaultNow(),
 });
 

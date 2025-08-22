@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Check, CreditCard, Calendar, Building, Users, Zap, ArrowUp, ArrowDown } from "lucide-react";
+import { Check, Calendar, Building, Zap, CreditCard, ArrowUp, ArrowDown, HelpCircle, AlertCircle } from "lucide-react";
 
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
@@ -166,6 +166,7 @@ const plans: SubscriptionPlan[] = [
 
 export default function Subscription() {
   const [selectedPlan, setSelectedPlan] = useState<SubscriptionPlan | null>(null);
+  const [pendingDowngradeRequests, setPendingDowngradeRequests] = useState<Set<string>>(new Set());
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -186,27 +187,55 @@ export default function Subscription() {
     },
   });
 
+  const getCurrentPlan = () => {
+    if (!subscriptionStatus?.plan) return null;
+    return plans.find(plan => plan.id === subscriptionStatus.plan);
+  };
+
   const subscribeMutation = useMutation({
     mutationFn: async (plan: SubscriptionPlan) => {
+      // For downgrades, mark as pending to prevent multiple submissions
+      const currentPlan = getCurrentPlan();
+      if (currentPlan && plan.price < currentPlan.price) {
+        setPendingDowngradeRequests(prev => new Set([...prev, plan.id]));
+      }
+      
       const response = await apiRequest("POST", "/api/subscribe", {
         planId: plan.id
       });
       return response.json();
     },
     onSuccess: (data, plan) => {
-      // Redirect to Shopify store for payment
-      if (data.redirectUrl) {
+      if (data.type === 'upgrade' && data.redirectUrl) {
+        // Upgrade - redirect to Shopify store
         window.open(data.redirectUrl, '_blank');
         toast({
           title: "Redirecting to Shopify",
-          description: "Complete your purchase in the new tab to activate your subscription"
+          description: "Complete your purchase in the new tab. We'll apply the upgrade once payment is confirmed."
         });
+      } else if (data.type === 'downgrade' && data.success) {
+        // Downgrade - show confirmation message and keep request marked as pending
+        toast({
+          title: "Downgrade Request Submitted",
+          description: data.message,
+          duration: 8000 // Show longer for important message
+        });
+        // Refresh subscription status to show pending change
+        queryClient.invalidateQueries({ queryKey: ["/api/subscription/status"] });
+        // Don't remove from pendingDowngradeRequests - keep button disabled
       }
     },
-    onError: () => {
+    onError: (error: any, plan) => {
+      // Remove from pending requests on error so user can try again
+      setPendingDowngradeRequests(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(plan.id);
+        return newSet;
+      });
+      
       toast({
-        title: "Subscription failed",
-        description: "Failed to redirect to payment page",
+        title: "Subscription change failed",
+        description: error.message || "Failed to process subscription change",
         variant: "destructive"
       });
     }
@@ -246,13 +275,17 @@ export default function Subscription() {
     }
   };
 
-  const getCurrentPlan = () => {
-    if (!subscriptionStatus?.plan) return null;
-    return plans.find(plan => plan.id === subscriptionStatus.plan);
-  };
-
   const currentPlan = getCurrentPlan();
   const isActive = subscriptionStatus?.status === 'active';
+
+  // Check if any subscription action is in progress
+  const isAnyActionInProgress = () => {
+    return (
+      subscribeMutation.isPending || 
+      activateSubscription.isPending || 
+      pendingDowngradeRequests.size > 0
+    );
+  };
 
   return (
     <div className="space-y-8">
@@ -304,6 +337,27 @@ export default function Subscription() {
           </div>
         </CardHeader>
         <CardContent className="space-y-4">
+          {/* Pending Plan Change Alert */}
+          {subscriptionStatus?.pendingPlanChange && (
+            <div className="p-3 bg-orange-50 border border-orange-200 rounded-lg">
+              <div className="flex items-start space-x-3">
+                <AlertCircle className="h-5 w-5 text-orange-600 mt-0.5" />
+                <div>
+                  <p className="text-sm font-medium text-orange-800">
+                    Scheduled Plan Change
+                  </p>
+                  <p className="text-sm text-orange-700 mt-1">
+                    Your plan will change to <strong>{subscriptionStatus.pendingPlanChange}</strong> on{' '}
+                    {subscriptionStatus.planChangeEffectiveDate ? 
+                      new Date(subscriptionStatus.planChangeEffectiveDate).toLocaleDateString() : 
+                      'your next billing date'
+                    }. You'll keep your current features until then.
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+
             {/* Current Plan Usage */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="flex items-center space-x-2">
@@ -458,22 +512,38 @@ export default function Subscription() {
                       className="w-full"
                       variant={plan.popular ? "default" : "outline"}
                       onClick={() => handleSubscribe(plan)}
-                      disabled={subscribeMutation.isPending || activateSubscription.isPending}
+                      disabled={isAnyActionInProgress()}
                     >
                       {plan.price === 0 ? (
                         <>
                           <Check className="h-4 w-4 mr-2" />
-                          {activateSubscription.isPending ? "Activating..." : "Start Free"}
+                          {(() => {
+                            if (activateSubscription.isPending) return "Activating...";
+                            if (isAnyActionInProgress()) return "Please wait...";
+                            return "Start Free";
+                          })()}
                         </>
                       ) : (
                         <>
                           {(() => {
                             const relationship = getPlanRelationship(plan, currentPlan || null);
+                            
+                            // Show processing state for the active action
                             if (subscribeMutation.isPending) {
                               return (
                                 <>
                                   <CreditCard className="h-4 w-4 mr-2" />
                                   Processing...
+                                </>
+                              );
+                            }
+                            
+                            // Show disabled state if other actions are in progress
+                            if (isAnyActionInProgress() && !pendingDowngradeRequests.has(plan.id)) {
+                              return (
+                                <>
+                                  <HelpCircle className="h-4 w-4 mr-2" />
+                                  Please wait...
                                 </>
                               );
                             }
@@ -487,6 +557,14 @@ export default function Subscription() {
                                   </>
                                 );
                               case 'downgrade':
+                                if (pendingDowngradeRequests.has(plan.id)) {
+                                  return (
+                                    <>
+                                      <Check className="h-4 w-4 mr-2" />
+                                      Downgrade Requested
+                                    </>
+                                  );
+                                }
                                 return (
                                   <>
                                     <ArrowDown className="h-4 w-4 mr-2" />
@@ -506,8 +584,20 @@ export default function Subscription() {
                       )}
                     </Button>
                     
+                    {/* Pending Downgrade Request Notice */}
+                    {pendingDowngradeRequests.has(plan.id) && (
+                      <div className="mt-2 p-2 bg-orange-50 border border-orange-200 rounded-lg">
+                        <div className="flex items-center justify-center space-x-2">
+                          <AlertCircle className="h-4 w-4 text-orange-600" />
+                          <span className="text-xs text-orange-800 font-medium">
+                            Downgrade request submitted - processing manually
+                          </span>
+                        </div>
+                      </div>
+                    )}
+                    
                     {/* Price Change Information */}
-                    {currentPlan && currentPlan.id !== plan.id && plan.price > 0 && (
+                    {currentPlan && currentPlan.id !== plan.id && plan.price > 0 && !pendingDowngradeRequests.has(plan.id) && (
                       <div className="mt-2 text-xs text-center text-slate-500">
                         {plan.price > currentPlan.price ? (
                           <span className="text-green-600">

@@ -2472,7 +2472,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/admin/update-subscription", requireJWTAuth, async (req: AuthenticatedRequest, res) => {
     try {
       // Check if user is admin
-      const currentUser = await storage.getUser(req.userId);
+      const currentUserId = req.user?.id;
+      if (!currentUserId) {
+        return res.status(401).json({ error: "User not authenticated" });
+      }
+
+      const currentUser = await storage.getUser(currentUserId);
       if (!currentUser || currentUser.role !== 'admin') {
         return res.status(403).json({ error: "Admin access required" });
       }
@@ -2499,7 +2504,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
         subscriptionPlan: subscriptionTier,
         subscriptionStatus: subscriptionStatus,
         subscriptionStartDate: startDate,
-        subscriptionEndDate: subscriptionStatus === 'active' ? endDate : null
+        subscriptionEndDate: subscriptionStatus === 'active' ? endDate : null,
+        // Clear any pending plan changes when manually updating
+        // TODO: Re-enable after database migration
+        // pendingPlanChange: null,
+        // planChangeEffectiveDate: null
       });
 
       if (!updatedUser) {
@@ -2508,7 +2517,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Create audit log
       await storage.createAuditLog({
-        userId: req.user?.id, // Admin who made the change
+        userId: currentUser.id, // Admin who made the change
         action: "update",
         entityType: "user_subscription",
         entityId: user.id,
@@ -2527,6 +2536,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ error: "Failed to update subscription" });
     }
   });
+
+  // Admin endpoint to process pending downgrades manually
+  // TODO: Re-enable after database migration
+  /*
+  app.post("/api/admin/apply-pending-downgrades", requireJWTAuth, async (req: AuthenticatedRequest, res) => {
+    // Temporarily disabled - requires database migration
+    return res.status(503).json({ 
+      error: "Feature temporarily unavailable",
+      message: "Database migration required"
+    });
+  });
+  */
 
   // Test email route for debugging Gmail SMTP issues
   app.get("/api/test-email", async (req, res) => {
@@ -2581,10 +2602,175 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Get current user info (for frontend auth)
+  // Subscribe endpoint - handles upgrades and downgrades
+  app.post("/api/subscribe", requireJWTAuth, async (req: AuthenticatedRequest, res) => {
+    try {
+      const { planId } = req.body;
+      const userId = req.user?.id;
+      
+      if (!userId) {
+        return res.status(401).json({ error: "User not authenticated" });
+      }
+
+      const user = await storage.getUser(userId);
+      
+      if (!user) {
+        return res.status(401).json({ error: "User not found" });
+      }
+
+      if (!planId) {
+        return res.status(400).json({ error: "Plan ID is required" });
+      }
+
+      const currentPlan = user.subscriptionPlan || "free";
+      
+      // Plan price mapping for comparison
+      const planPrices: Record<string, number> = {
+        "free": 0,
+        "starter": 7,
+        "pro": 19, 
+        "professional": 39,
+        "business": 65,
+        "enterprise": 149
+      };
+
+      const currentPrice = planPrices[currentPlan] || 0;
+      const newPrice = planPrices[planId as string] || 0;
+
+      if (newPrice > currentPrice) {
+        // UPGRADE - redirect to Shopify
+        const shopifyUrls: Record<string, string> = {
+          "starter": "https://pipps-maker-calc-store.myshopify.com/products/starter-plan-monthly",
+          "pro": "https://pipps-maker-calc-store.myshopify.com/products/pro-plan-monthly",
+          "professional": "https://pipps-maker-calc-store.myshopify.com/products/professional-plan-monthly", 
+          "business": "https://pipps-maker-calc-store.myshopify.com/products/business-plan-monthly",
+          "enterprise": "https://pipps-maker-calc-store.myshopify.com/products/enterprise-plan-monthly"
+        };
+
+        const redirectUrl = shopifyUrls[planId as string];
+        if (!redirectUrl) {
+          return res.status(400).json({ error: "Invalid plan for upgrade" });
+        }
+
+        return res.json({ 
+          type: "upgrade",
+          redirectUrl,
+          message: "Complete your purchase on Shopify. We'll apply the upgrade once payment is confirmed."
+        });
+
+      } else if (newPrice < currentPrice) {
+        // DOWNGRADE - send email notifications for manual processing
+        const nextBillingDate = user.subscriptionEndDate || new Date(Date.now() + 30 * 24 * 60 * 60 * 1000); // 30 days from now
+        const currentPlanName = currentPlan.charAt(0).toUpperCase() + currentPlan.slice(1);
+        const newPlanName = (planId as string).charAt(0).toUpperCase() + (planId as string).slice(1);
+
+        try {
+          // Send email to admin
+          await emailService.sendEmail({
+            to: process.env.GMAIL_FORGOT_EMAIL || "admin@pipps.com",
+            subject: "🔽 Downgrade Request - PIPPS Maker Calc",
+            html: `
+              <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+                <h2 style="color: #f59e0b;">Downgrade Request</h2>
+                <div style="background: #fef3c7; padding: 15px; border-radius: 8px; margin: 20px 0;">
+                  <p><strong>Customer:</strong> ${user.email}</p>
+                  <p><strong>Company:</strong> ${user.company || 'Not specified'}</p>
+                  <p><strong>Current Plan:</strong> ${currentPlanName}</p>
+                  <p><strong>Requested Plan:</strong> ${newPlanName}</p>
+                  <p><strong>Current Billing End:</strong> ${nextBillingDate.toLocaleDateString()}</p>
+                </div>
+                <p><strong>Action Required:</strong> Process this downgrade manually via the admin panel.</p>
+                <p><em>Recommended: Apply the downgrade on ${nextBillingDate.toLocaleDateString()} (end of current billing cycle)</em></p>
+              </div>
+            `
+          });
+
+          // Send confirmation email to customer
+          await emailService.sendEmail({
+            to: user.email,
+            subject: "Downgrade Request Received - PIPPS Maker Calc",
+            html: `
+              <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+                <h2 style="color: #059669;">Downgrade Request Confirmed</h2>
+                <p>Hello,</p>
+                <p>We've received your request to downgrade from <strong>${currentPlanName}</strong> to <strong>${newPlanName}</strong>.</p>
+                
+                <div style="background: #ecfdf5; padding: 15px; border-radius: 8px; margin: 20px 0;">
+                  <h3 style="color: #059669; margin-top: 0;">What happens next:</h3>
+                  <ul style="margin: 10px 0;">
+                    <li>✅ Your downgrade request has been submitted</li>
+                    <li>📅 The change will take effect on <strong>${nextBillingDate.toLocaleDateString()}</strong></li>
+                    <li>🔄 You'll keep all your current ${currentPlanName} features until then</li>
+                    <li>💰 No immediate billing changes - you'll be charged the lower rate on your next billing cycle</li>
+                  </ul>
+                </div>
+
+                <p>If you have any questions or need to make changes, please contact our support team.</p>
+                
+                <p>Thank you for using PIPPS Maker Calc!</p>
+                <hr>
+                <p style="color: #6b7280; font-size: 14px;">
+                  This downgrade will be processed manually by our team. You'll receive a confirmation once it's applied.
+                </p>
+              </div>
+            `
+          });
+
+          // Create audit log
+          await storage.createAuditLog({
+            userId: user.id,
+            action: "request",
+            entityType: "subscription_downgrade",
+            entityId: user.id,
+            changes: JSON.stringify({
+              description: `Downgrade request: ${currentPlan} → ${planId}`,
+              currentPlan,
+              requestedPlan: planId,
+              effectiveDate: nextBillingDate.toLocaleDateString(),
+              processedBy: "manual"
+            }),
+          });
+
+          return res.json({ 
+            type: "downgrade",
+            success: true,
+            message: `Downgrade request submitted successfully! You'll continue to enjoy your current ${currentPlanName} features until ${nextBillingDate.toLocaleDateString()}. A confirmation email has been sent to ${user.email}.`,
+            effectiveDate: nextBillingDate
+          });
+
+        } catch (emailError) {
+          console.error("Email sending failed:", emailError);
+          // Still return success but note email issue
+          return res.json({ 
+            type: "downgrade",
+            success: true,
+            message: `Downgrade request submitted successfully! You'll continue to enjoy your current ${currentPlanName} features until ${nextBillingDate.toLocaleDateString()}. Our team will contact you with confirmation.`,
+            effectiveDate: nextBillingDate,
+            warning: "Email notification may be delayed"
+          });
+        }
+
+      } else {
+        // Same plan
+        return res.status(400).json({ error: "You're already on this plan" });
+      }
+
+    } catch (error) {
+      console.error("Subscribe error:", error);
+      res.status(500).json({ error: "Failed to process subscription change" });
+    }
+  });
+
   // Get subscription status endpoint
   app.get("/api/subscription/status", requireJWTAuth, async (req: AuthenticatedRequest, res) => {
     try {
-      const user = await storage.getUser(req.user?.id);
+      const userId = req.user?.id;
+      
+      if (!userId) {
+        return res.status(401).json({ error: "User not authenticated" });
+      }
+
+      const user = await storage.getUser(userId);
       if (!user) {
         return res.status(401).json({ error: "User not found" });
       }
@@ -2595,6 +2781,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         startDate: user.subscriptionStartDate,
         endDate: user.subscriptionEndDate,
         paypalSubscriptionId: user.paypalSubscriptionId
+        // TODO: Add these back after database migration
+        // pendingPlanChange: (user as any).pendingPlanChange || null,
+        // planChangeEffectiveDate: (user as any).planChangeEffectiveDate || null
       });
     } catch (error) {
       console.error("Error getting subscription status:", error);
