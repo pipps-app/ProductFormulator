@@ -136,8 +136,6 @@ import {
   insertFileSchema, insertFileAttachmentSchema
 } from "@shared/schema";
 import passport from "./auth";
-import bcrypt from "bcryptjs";
-import * as crypto from "crypto";
 import "./types";
 
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -2575,9 +2573,103 @@ export async function registerRoutes(app: Express): Promise<Server> {
       id: user.id,
       email: user.email,
       name: user.company || null, // Use company as display name if available
+      company: user.company || null, // Add company field
       role: user.role || "user",
       subscriptionPlan: user.subscriptionPlan || "free"
     });
+  });
+
+  // Update user profile
+  app.put("/api/user/profile", requireJWTAuth, async (req: AuthenticatedRequest, res) => {
+    try {
+      const userId = req.user?.id;
+      if (!userId) {
+        return res.status(401).json({ error: "User ID not found" });
+      }
+
+      const { email, company } = req.body;
+
+      // Validate input
+      if (!email || typeof email !== 'string') {
+        return res.status(400).json({ error: "Valid email is required" });
+      }
+
+      // Check if email is already taken by another user
+      if (email) {
+        const existingUser = await storage.getUserByEmail(email);
+        if (existingUser && existingUser.id !== userId) {
+          return res.status(400).json({ error: "Email is already taken" });
+        }
+      }
+
+      // Update user profile
+      await storage.updateUser(userId, {
+        email,
+        company: company || null
+      });
+
+      // Return updated user data
+      const updatedUser = await storage.getUser(userId);
+      res.json({
+        id: updatedUser?.id,
+        email: updatedUser?.email,
+        name: updatedUser?.company || null,
+        company: updatedUser?.company || null,
+        role: updatedUser?.role || "user",
+        subscriptionPlan: updatedUser?.subscriptionPlan || "free"
+      });
+
+    } catch (error) {
+      console.error("Error updating user profile:", error);
+      res.status(500).json({ error: "Failed to update profile" });
+    }
+  });
+
+  // Update user password
+  app.put("/api/user/password", requireJWTAuth, async (req: AuthenticatedRequest, res) => {
+    try {
+      const userId = req.user?.id;
+      if (!userId) {
+        return res.status(401).json({ error: "User ID not found" });
+      }
+
+      const { currentPassword, newPassword } = req.body;
+
+      // Validate input
+      if (!currentPassword || !newPassword) {
+        return res.status(400).json({ error: "Current password and new password are required" });
+      }
+
+      if (newPassword.length < 6) {
+        return res.status(400).json({ error: "New password must be at least 6 characters" });
+      }
+
+      // Get user and verify current password
+      const user = await storage.getUser(userId);
+      if (!user || !user.password) {
+        return res.status(400).json({ error: "User not found or password not set" });
+      }
+
+      // Check current password
+      const isValidPassword = await bcrypt.compare(currentPassword, user.password);
+      if (!isValidPassword) {
+        return res.status(400).json({ error: "Current password is incorrect" });
+      }
+
+      // Hash new password and update
+      const hashedNewPassword = await bcrypt.hash(newPassword, 10);
+      const success = await storage.updateUserPassword(userId, hashedNewPassword);
+
+      if (success) {
+        res.json({ message: "Password updated successfully" });
+      } else {
+        res.status(500).json({ error: "Failed to update password" });
+      }
+
+    } catch (error) {
+      console.error("Error updating user password:", error);
+      res.status(500).json({ error: "Failed to update password" });
+    }
   });
 
   // Cleanup formulations endpoint
