@@ -1,6 +1,16 @@
+
 # PIPPS Maker Calc - Product Specification
 
-**Document Generated:** June 24, 2025
+**Last Updated:** August 22, 2025
+
+## Recent Changelog (August 2025)
+- Removed all PayPal and Shopify integration (manual payment/admin workflow only)
+- Added manual downgrade request system (user requests, admin processes, email notifications)
+- Improved admin subscription update workflow (instant user info update)
+- Added button locking to prevent duplicate requests/emails
+- Enhanced email notification system for downgrades
+- Improved audit logging and admin controls
+
 
 **Note**: This document is for informational purposes only and does not contain actual user data.
 
@@ -51,7 +61,8 @@ PIPPS Maker Calc is a comprehensive product formulation and cost management tool
 
 ## Subscription Tiers
 
-### Free Tier ($0/forever)
+
+### Free ($0/forever)
 - **Raw Materials**: Up to 5
 - **Formulations**: Up to 1
 - **Vendors**: 2 vendors & 2 categories
@@ -60,7 +71,16 @@ PIPPS Maker Calc is a comprehensive product formulation and cost management tool
 - **Storage**: 5MB storage
 - **Support**: Help documentation
 
-### Pro Tier ($19/month)
+### Starter ($7/month)
+- **Raw Materials**: Up to 20
+- **Formulations**: Up to 8
+- **Vendors**: 5 vendors & 5 categories
+- **Features**: Basic cost calculations
+- **File Attachments**: 5 file attachments
+- **Storage**: 30MB storage
+- **Support**: Email support
+
+### Pro ($19/month)
 - **Raw Materials**: Up to 100
 - **Formulations**: Up to 25
 - **Vendors**: 10 vendors & 10 categories
@@ -69,25 +89,42 @@ PIPPS Maker Calc is a comprehensive product formulation and cost management tool
 - **Storage**: 100MB storage
 - **Support**: Email support
 
-### Business Tier ($65/month)
+### Professional ($39/month)
+- **Raw Materials**: Up to 300
+- **Formulations**: Up to 60
+- **Vendors**: 20 vendors & 20 categories
+- **Features**: Advanced cost analytics, Batch optimization
+- **File Attachments**: 25 file attachments
+- **Storage**: 500MB storage
+- **Support**: Priority email support
+
+### Business ($65/month)
 - **Raw Materials**: Up to 500
 - **Formulations**: Up to 100
 - **Vendors**: 25 vendors & 25 categories
-- **Features**: Advanced reporting & analytics, Batch cost optimization
+- **Features**: Advanced reporting & analytics, Multi-user access
 - **File Attachments**: 50 file attachments
 - **Storage**: 1GB storage
 - **Support**: Priority email support
 
-### Enterprise Tier ($99/month)
+### Enterprise ($149/month)
 - **Raw Materials**: Up to 1,000
 - **Formulations**: Up to 250
 - **Vendors**: 50 vendors & 50 categories
-- **Features**: Premium reporting suite & custom analytics
+- **Features**: Premium reporting suite & custom analytics, Custom integrations
 - **File Attachments**: 100 file attachments
 - **Storage**: 10GB storage
 - **Support**: Dedicated support manager
 
-**Current Implementation**: The application enforces all subscription limits shown above. Free tier users are limited to 5 materials, 1 formulation, 2 vendors, and 2 categories. Higher tiers have their respective limits enforced, with Enterprise tier having unlimited access. Payment processing is handled through Shopify with manual subscription activation - administrators receive payment notifications and manually activate subscriptions via the admin interface or direct database updates.
+
+**Current Implementation**: The application enforces all subscription limits shown above. Free tier users are limited to 5 materials, 1 formulation, 2 vendors, and 2 categories. Higher tiers have their respective limits enforced, with Enterprise tier having unlimited access.
+
+**Manual Subscription Workflow (2025):**
+- All payments and upgrades/downgrades are handled manually by the admin (no PayPal/Shopify integration)
+- Users request upgrades/downgrades via the app (downgrade triggers email to admin and user)
+- Admin updates user subscription status and plan via the admin panel
+- User info is updated instantly after admin action
+- Button locking prevents duplicate requests/emails
 
 **Note**: This document is for informational purposes only and does not contain actual user data.
 
@@ -148,8 +185,7 @@ PIPPS Maker Calc is a comprehensive product formulation and cost management tool
 ### 8. Payments
 - **Transaction History**: Record of all payment transactions and billing
 - **Subscription Status**: Current plan information and billing cycle
-- **Payment Integration**: Shopify-based payment processing system
-- **Manual Management**: Admin-controlled subscription updates
+- **Manual Management**: Admin-controlled subscription updates (no PayPal/Shopify integration)
 - **Billing Records**: Complete payment audit trail
 
 ### 9. Help & Support
@@ -294,20 +330,24 @@ Markup = (Selling Price - Unit Cost) ÷ Unit Cost × 100
 ### Subscription
 - `GET /api/subscription/status` - Current plan status
 - `POST /api/subscription/activate` - Plan activation
+- `POST /api/subscribe` - Request plan change (upgrade/downgrade)
+- `POST /api/admin/update-subscription` - Admin updates user subscription
 - `POST /api/users/create-trial` - Trial account creation
 
 ---
 
 ## Integration Capabilities
 
-### Shopify Billing Integration
-- **Payment Notifications**: Payment confirmation through Shopify
-- **Manual User Provisioning**: Admin-controlled account creation and upgrades
-- **Plan Management**: Manual tier assignments via admin interface or SQL
-- **Payment Processing**: Secure transaction handling through Shopify
+
+### Manual Subscription Management (2025)
+- **No PayPal/Shopify**: All payments and plan changes are handled outside the app
+- **Admin Workflow**: Admin updates user plans/status via admin panel
+- **Email Notifications**: Downgrade requests trigger admin and user emails
+- **Audit Logging**: All admin changes are logged
+
 
 ### Trial-to-Paid Conversion
-- **Seamless Upgrade**: Direct upgrade paths from trial
+- **Seamless Upgrade**: Direct upgrade paths from trial (admin-activated)
 - **Data Preservation**: Complete data migration on upgrade
 - **Usage Notifications**: Limit warnings and upgrade prompts
 

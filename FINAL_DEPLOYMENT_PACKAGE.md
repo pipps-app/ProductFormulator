@@ -12,10 +12,18 @@ Your subscription-based SaaS application is complete and production-ready with S
 - Category-based organization and search functionality
 - Complete audit logging for all user activities
 
-### Subscription System
-- **Free Plan**: 5 materials, 2 formulations, 1 vendor
-- **Starter Plan**: $19/month - 50 materials, 25 formulations, 10 vendors  
-- **Professional Plan**: $49/month - Unlimited access
+- **Free**: $0/forever  
+	- 5 raw materials, 1 formulation, 2 vendors, 2 categories, 1 file, 5MB storage, help docs
+- **Starter**: $7/month  
+	- 20 raw materials, 8 formulations, 5 vendors, 5 categories, 5 files, 30MB storage, email support
+- **Pro**: $19/month  
+	- 100 raw materials, 25 formulations, 10 vendors, 10 categories, 10 files, 100MB storage, CSV import/export, cost optimization, email support
+- **Professional**: $39/month  
+	- 300 raw materials, 60 formulations, 20 vendors, 20 categories, 25 files, 500MB storage, advanced analytics, batch optimization, priority email support
+- **Business**: $65/month  
+	- 500 raw materials, 100 formulations, 25 vendors, 25 categories, 50 files, 1GB storage, advanced reporting, multi-user, priority email support
+- **Enterprise**: $149/month  
+	- 1,000 raw materials, 250 formulations, 50 vendors, 50 categories, 100 files, 10GB storage, premium analytics, custom integrations, dedicated support
 - Automatic limit enforcement preventing resource creation when exceeded
 - Real-time usage tracking and subscription status management
 
@@ -59,6 +67,7 @@ In Shopify Admin → Settings → Notifications:
 - Order creation: `https://your-domain.com/webhooks/shopify/subscription/created`
 - Order cancellation: `https://your-domain.com/webhooks/shopify/subscription/cancelled`
 
+
 ## Revenue Model Validation
 
 ### Pricing Strategy
@@ -78,15 +87,15 @@ In Shopify Admin → Settings → Notifications:
 1. User signs up for free account
 2. Explores features within free limits
 3. Hits usage limits, sees upgrade prompts
-4. Clicks upgrade, redirects to Shopify store
-5. Completes purchase with preferred payment method
-6. Account automatically upgraded via webhook
-7. Returns to app with full access
+4. Clicks upgrade or downgrade, submits request in-app
+5. Admin receives email notification and processes request manually
+6. User's account is updated by admin (plan/status)
+7. User receives confirmation and sees new access on next login
 
 ### Support Structure
-- Shopify handles all billing inquiries
-- You focus on app functionality and features
+- All billing and subscription changes are handled by the admin
 - Built-in audit logs assist with troubleshooting
+- Email notifications for downgrade requests
 
 ## Monitoring & Analytics
 
@@ -96,21 +105,7 @@ In Shopify Admin → Settings → Notifications:
 - Conversion tracking from free to paid
 - Complete audit trail of all activities
 
-### Shopify Analytics
-- Revenue tracking and forecasting
-- Customer lifetime value analysis
-- Geographic sales distribution
-- Payment method preferences
-
 ## Technical Advantages
-
-### Shopify Integration Benefits
-- Professional checkout experience
-- Multiple payment methods (cards, PayPal, Apple Pay)
-- International payment support
-- Automatic tax calculation
-- PCI compliance included
-- Mobile-optimized billing
 
 ### Application Architecture
 - Scalable subscription limit system
@@ -118,6 +113,8 @@ In Shopify Admin → Settings → Notifications:
 - Type-safe database operations
 - Efficient caching strategies
 - Production error handling
+- Database security, validation, and performance improvements (see IMPROVEMENTS_LOG.md)
+- Improved formulation table and financial logic (see FORMULATION_TABLE_IMPROVEMENTS.md)
 
 ## Competitive Differentiators
 
@@ -137,9 +134,8 @@ In Shopify Admin → Settings → Notifications:
 
 - [ ] Deploy application to production hosting
 - [ ] Configure database with connection pooling
-- [ ] Set up Shopify store with subscription products
-- [ ] Configure webhooks with production URLs
-- [ ] Test complete purchase and activation flow
+- [ ] Set up environment variables (no Shopify/PayPal required)
+- [ ] Test all subscription and admin workflows
 - [ ] Set up application monitoring
 - [ ] Launch marketing campaigns
 
@@ -147,7 +143,6 @@ In Shopify Admin → Settings → Notifications:
 
 ### Customer Acquisition
 - Free tier drives organic growth
-- Shopify store integration enables discovery
 - Industry-specific marketing to manufacturers
 - Content marketing around cost optimization
 
@@ -157,4 +152,4 @@ In Shopify Admin → Settings → Notifications:
 - Integration with popular inventory systems
 - Mobile application development
 
-Your SaaS platform is production-ready and positioned for immediate revenue generation through automated Shopify billing integration.
+Your SaaS platform is production-ready and positioned for immediate revenue generation through a manual, admin-driven subscription workflow.
