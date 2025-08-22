@@ -12,6 +12,23 @@ function requireAuth(req: any, res: any, next: any) {
 }
 
 export function registerPaymentRoutes(app: Express) {
+  // Get all payments (admin only)
+  app.get("/api/payments", requireAuth, async (req: any, res) => {
+    // Check if user is admin
+    const currentUser = await storage.getUser(req.userId);
+    if (!currentUser || currentUser.role !== 'admin') {
+      return res.status(403).json({ error: "Admin access required" });
+    }
+    
+    try {
+      const payments = await storage.getAllPayments();
+      res.json(payments);
+    } catch (error) {
+      console.error("Get all payments error:", error);
+      res.status(500).json({ error: "Failed to fetch payments" });
+    }
+  });
+
   // Record a new payment (admin only)
   app.post("/api/payments", requireAuth, async (req: any, res) => {
     // Check if user is admin

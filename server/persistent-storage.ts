@@ -584,6 +584,10 @@ export class PersistentStorage implements IStorage {
     return this.data.payments.filter(p => p.userId === userId);
   }
 
+  async getAllPayments(): Promise<Payment[]> {
+    return this.data.payments;
+  }
+
   async updatePaymentStatus(id: number, status: string, refundAmount?: string): Promise<boolean> {
     const payment = this.data.payments.find(p => p.id === id);
     if (!payment) return false;

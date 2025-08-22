@@ -49,9 +49,9 @@ export default function PaymentsPage() {
     notes: ""
   });
 
-  // Get all payments for current user
+  // Get all payments for current user (or all payments if admin)
   const { data: payments = [], isLoading } = useQuery({
-    queryKey: ["/api/payments/user", userInfo?.id],
+    queryKey: isAdmin ? ["/api/payments"] : ["/api/payments/user", userInfo?.id],
     enabled: !!userInfo?.id,
     select: (data: Payment[]) => data.sort((a, b) => new Date(b.paymentDate).getTime() - new Date(a.paymentDate).getTime())
   });
@@ -140,13 +140,152 @@ export default function PaymentsPage() {
       <div className="flex items-center gap-2">
         <CreditCard className="h-6 w-6" />
         <h1 className="text-2xl font-bold">Payment History</h1>
-        <Badge variant="outline" className="ml-2">Read Only</Badge>
+        {!isAdmin && <Badge variant="outline" className="ml-2">Read Only</Badge>}
       </div>
       <p className="text-muted-foreground">
         View payment records for activated subscriptions. Payments are processed through Shopify.
       </p>
 
-
+      {/* Admin Payment Entry Form */}
+      {isAdmin && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <DollarSign className="h-5 w-5" />
+              Record Payment (Admin Only)
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleCreatePayment} className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="userId">User ID</Label>
+                  <Input
+                    id="userId"
+                    type="number"
+                    value={newPayment.userId}
+                    onChange={(e) => setNewPayment({ ...newPayment, userId: e.target.value })}
+                    placeholder="Enter user ID"
+                    required
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="transactionId">Transaction ID</Label>
+                  <Input
+                    id="transactionId"
+                    value={newPayment.transactionId}
+                    onChange={(e) => setNewPayment({ ...newPayment, transactionId: e.target.value })}
+                    placeholder="e.g., TXN_123456_PAYPAL"
+                    required
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="amount">Amount</Label>
+                  <Input
+                    id="amount"
+                    type="number"
+                    step="0.01"
+                    value={newPayment.amount}
+                    onChange={(e) => setNewPayment({ ...newPayment, amount: e.target.value })}
+                    placeholder="29.99"
+                    required
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="currency">Currency</Label>
+                  <Select
+                    value={newPayment.currency}
+                    onValueChange={(value) => setNewPayment({ ...newPayment, currency: value })}
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="USD">USD</SelectItem>
+                      <SelectItem value="EUR">EUR</SelectItem>
+                      <SelectItem value="GBP">GBP</SelectItem>
+                      <SelectItem value="CAD">CAD</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="paymentProcessor">Payment Processor</Label>
+                  <Select
+                    value={newPayment.paymentProcessor}
+                    onValueChange={(value) => setNewPayment({ ...newPayment, paymentProcessor: value })}
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="paypal">PayPal</SelectItem>
+                      <SelectItem value="stripe">Stripe</SelectItem>
+                      <SelectItem value="shopify">Shopify</SelectItem>
+                      <SelectItem value="manual">Manual/Bank Transfer</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="subscriptionTier">Subscription Tier</Label>
+                  <Select
+                    value={newPayment.subscriptionTier}
+                    onValueChange={(value) => setNewPayment({ ...newPayment, subscriptionTier: value })}
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="pro">Pro ($29.99/month)</SelectItem>
+                      <SelectItem value="business">Business ($49.99/month)</SelectItem>
+                      <SelectItem value="enterprise">Enterprise ($99.99/month)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="paymentType">Payment Type</Label>
+                  <Select
+                    value={newPayment.paymentType}
+                    onValueChange={(value) => setNewPayment({ ...newPayment, paymentType: value })}
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="subscription">New Subscription</SelectItem>
+                      <SelectItem value="renewal">Renewal</SelectItem>
+                      <SelectItem value="upgrade">Upgrade</SelectItem>
+                      <SelectItem value="one-time">One-time Payment</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="notes">Notes (Optional)</Label>
+                <Input
+                  id="notes"
+                  value={newPayment.notes}
+                  onChange={(e) => setNewPayment({ ...newPayment, notes: e.target.value })}
+                  placeholder="Additional notes about this payment..."
+                />
+              </div>
+              <Button 
+                type="submit" 
+                disabled={createPaymentMutation.isPending}
+                className="w-full"
+              >
+                {createPaymentMutation.isPending ? (
+                  <>
+                    <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
+                    Recording Payment...
+                  </>
+                ) : (
+                  'Record Payment & Activate Subscription'
+                )}
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Payment History */}
       <Card>
@@ -181,6 +320,7 @@ export default function PaymentsPage() {
                       </div>
                       <div className="text-sm text-muted-foreground space-y-1">
                         <div>Amount: {payment.currency} {payment.amount}</div>
+                        {isAdmin && <div>User ID: {payment.userId}</div>}
                         <div>Processor: {payment.paymentProcessor}</div>
                         <div>Tier: {payment.subscriptionTier} ({payment.paymentType})</div>
                         <div>Date: {new Date(payment.paymentDate).toLocaleDateString()}</div>

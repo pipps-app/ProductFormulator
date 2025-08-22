@@ -1,13 +1,20 @@
 import { useQuery } from "@tanstack/react-query";
 import { type Formulation } from "@shared/schema";
 
-export function useFormulations() {
+export function useFormulations(includeArchived = false) {
   return useQuery<Formulation[]>({
-    queryKey: ["/api/formulations"],
+    queryKey: ["/api/formulations", { includeArchived }],
     staleTime: 0, // Always consider data stale
     gcTime: 0, // Don't cache responses
     refetchOnMount: 'always', // Always refetch when component mounts
     refetchOnWindowFocus: true, // Refetch when window gains focus
+    queryFn: async () => {
+      const response = await fetch(`/api/formulations?includeArchived=${includeArchived}`);
+      if (!response.ok) {
+        throw new Error('Failed to fetch formulations');
+      }
+      return response.json();
+    },
   });
 }
 

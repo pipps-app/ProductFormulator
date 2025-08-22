@@ -70,6 +70,7 @@ export interface IStorage {
   getPayment(id: number): Promise<Payment | undefined>;
   getPaymentByTransactionId(transactionId: string): Promise<Payment | undefined>;
   getUserPayments(userId: number): Promise<Payment[]>;
+  getAllPayments(): Promise<Payment[]>;
   updatePaymentStatus(id: number, status: string, refundAmount?: string): Promise<boolean>;
 }
 

@@ -12,7 +12,6 @@ import { useQueryClient } from "@tanstack/react-query";
 import { LandscapeNotice } from "@/components/common/mobile-notice";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
-import { useLocation } from "wouter";
 
 type FormulationSortField = 'name' | 'totalCost' | 'profitMargin' | 'markupPercentage' | 'targetPrice';
 type SortDirection = 'asc' | 'desc';
@@ -24,18 +23,24 @@ export default function Formulations() {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [sortField, setSortField] = useState<FormulationSortField>('name');
   const [sortDirection, setSortDirection] = useState<SortDirection>('asc');
+  const [showArchived, setShowArchived] = useState(false);
   
-  const { data: formulations, isLoading, refetch } = useFormulations();
+  const { data: formulations, isLoading, refetch } = useFormulations(true); // Always fetch all formulations
   const { data: rawMaterials } = useMaterials();
   const queryClient = useQueryClient();
   const { toast } = useToast();
-  const [, setLocation] = useLocation();
 
   const filteredAndSortedFormulations = useMemo(() => {
-    const filtered = formulations?.filter(formulation =>
-      formulation.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      formulation.description?.toLowerCase().includes(searchQuery.toLowerCase())
-    ) || [];
+    const filtered = formulations?.filter(formulation => {
+      // Filter by archive status
+      const matchesArchiveFilter = showArchived ? !formulation.isActive : formulation.isActive;
+      
+      // Filter by search query
+      const matchesSearch = formulation.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        formulation.description?.toLowerCase().includes(searchQuery.toLowerCase());
+      
+      return matchesArchiveFilter && matchesSearch;
+    }) || [];
 
     return filtered.sort((a, b) => {
       let aValue: string | number;
@@ -248,6 +253,13 @@ export default function Formulations() {
                 <Filter className="h-4 w-4 mr-2" />
                 Filter
               </Button>
+              <Button 
+                variant={showArchived ? "default" : "outline"} 
+                className="h-12 px-6 border-blue-300 hover:bg-blue-50"
+                onClick={() => setShowArchived(!showArchived)}
+              >
+                {showArchived ? "Show Active" : "Show Archived"}
+              </Button>
             </div>
             {searchQuery && (
               <div className="text-center">
@@ -279,11 +291,18 @@ export default function Formulations() {
       {/* Formulations List */}
       <Card>
         <CardHeader>
-          <CardTitle>Active Formulations</CardTitle>
+          <CardTitle>
+            {showArchived ? "Archived Formulations" : "Active Formulations"}
+            {filteredAndSortedFormulations.length > 0 && (
+              <span className="text-sm font-normal text-slate-500 ml-2">
+                ({filteredAndSortedFormulations.length} {showArchived ? "archived" : "active"})
+              </span>
+            )}
+          </CardTitle>
         </CardHeader>
         <CardContent>
           <FormulationList 
-            formulations={filteredAndSortedFormulations}
+            formulations={filteredAndSortedFormulations as any}
             isLoading={isLoading}
             onEdit={handleEdit}
             sortField={sortField}
@@ -304,7 +323,6 @@ export default function Formulations() {
           <FormulationForm 
             formulation={editingFormulation}
             onSuccess={handleCloseModal}
-            onCancel={handleCloseModal}
           />
         </DialogContent>
       </Dialog>

@@ -1778,6 +1778,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Restore the formulation
       const restoredFormulation = await storage.updateFormulation(id, { isActive: true });
       
+      // Clear all formulation ingredients when restoring from archive
+      // This prevents broken relationships with potentially deleted/archived materials
+      const existingIngredients = await storage.getFormulationIngredients(id);
+      let clearedIngredientsCount = 0;
+      
+      for (const ingredient of existingIngredients) {
+        await storage.deleteFormulationIngredient(ingredient.id);
+        clearedIngredientsCount++;
+      }
+      
+      // Reset formulation costs to zero since ingredients are cleared
+      await storage.updateFormulationCosts(id, {
+        totalCost: "0.00",
+        unitCost: "0.00", 
+        profitMargin: "0.00"
+      });
+      
       // Create audit log
       await storage.createAuditLog({
         userId,
@@ -1785,16 +1802,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
         entityType: "formulation",
         entityId: id,
         changes: JSON.stringify({
-          description: `Restored formulation "${formulation.name}" from archive`,
+          description: `Restored formulation "${formulation.name}" from archive. Cleared ${clearedIngredientsCount} ingredients to prevent broken relationships. Formulation is ready for new ingredients.`,
           data: formulation,
+          clearedIngredients: clearedIngredientsCount,
           restoredAt: new Date().toISOString()
         }),
       });
 
       res.json({ 
         success: true,
-        message: `Formulation "${formulation.name}" has been restored from archive`,
-        formulation: restoredFormulation
+        message: `Formulation "${formulation.name}" has been restored from archive. ${clearedIngredientsCount} ingredient relationships were cleared to prevent broken references.`,
+        formulation: restoredFormulation,
+        clearedIngredients: clearedIngredientsCount
       });
     } catch (error) {
       console.error("Error restoring formulation:", error);

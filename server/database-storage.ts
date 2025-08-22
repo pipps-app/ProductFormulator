@@ -316,4 +316,41 @@ export class DatabaseStorage implements IStorage {
     await db.delete(schema.passwordResetTokens)
       .where(eq(schema.passwordResetTokens.used, true));
   }
+
+  // Payment management methods
+  async createPayment(payment: InsertPayment): Promise<Payment> {
+    const results = await db.insert(schema.payments).values(payment).returning();
+    return results[0];
+  }
+
+  async getPayment(id: number): Promise<Payment | undefined> {
+    const results = await db.select().from(schema.payments).where(eq(schema.payments.id, id));
+    return results[0];
+  }
+
+  async getPaymentByTransactionId(transactionId: string): Promise<Payment | undefined> {
+    const results = await db.select().from(schema.payments).where(eq(schema.payments.transactionId, transactionId));
+    return results[0];
+  }
+
+  async getUserPayments(userId: number): Promise<Payment[]> {
+    return await db.select().from(schema.payments).where(eq(schema.payments.userId, userId));
+  }
+
+  async getAllPayments(): Promise<Payment[]> {
+    return await db.select().from(schema.payments);
+  }
+
+  async updatePaymentStatus(id: number, status: string, refundAmount?: string): Promise<boolean> {
+    const updateData: any = { paymentStatus: status };
+    if (status === 'refunded' && refundAmount) {
+      updateData.refundAmount = refundAmount;
+      updateData.refundDate = new Date();
+    }
+    
+    const results = await db.update(schema.payments)
+      .set(updateData)
+      .where(eq(schema.payments.id, id));
+    return results.rowCount > 0;
+  }
 }

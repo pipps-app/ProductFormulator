@@ -244,23 +244,19 @@ export default function FormulationForm({ formulation, onSuccess }: FormulationF
     const batchUnitValue = form.getValues("batchUnit") || "unit";
 
     // Header
-    doc.setFontSize(20);
+    doc.setFontSize(24);
     doc.setFont("helvetica", "bold");
     doc.text("INGREDIENTS LIST", 105, 20, { align: "center" });
     
     // Formulation details
-    doc.setFontSize(14);
+    doc.setFontSize(24);
     doc.setFont("helvetica", "bold");
-    doc.text(`${formName}`, 20, 40);
+    doc.text(`${formName}`, 105, 30, { align: "center" });
     
+    // Adjusted timestamp placement
     doc.setFontSize(10);
     doc.setFont("helvetica", "normal");
-    if (formDescription) {
-      doc.text(`Description: ${formDescription}`, 20, 50);
-    }
-    doc.text(`Batch Size: ${batchSizeValue} ${batchUnitValue}`, 20, formDescription ? 60 : 50);
-    doc.text(`Generated: ${new Date().toLocaleDateString()}`, 20, formDescription ? 70 : 60);
-    doc.text(`Total Material Cost: $${totalMaterialCost.toFixed(2)}`, 20, formDescription ? 80 : 70);
+    doc.text(`Generated on: ${new Date().toLocaleString()}`, 105, 40, { align: "center" });
 
     // Prepare table data
     const tableData = ingredients.map((ingredient, index) => {
@@ -324,13 +320,19 @@ export default function FormulationForm({ formulation, onSuccess }: FormulationF
     doc.text(`Markup Eligible Cost: $${markupEligibleCost.toFixed(2)}`, 20, finalY + 45);
     doc.text(`Cost per Unit: $${unitCost.toFixed(4)}`, 20, finalY + 55);
 
+    // Footer message
+    const pageHeight = doc.internal.pageSize.getHeight();
+    doc.setFontSize(10);
+    doc.setFont("helvetica", "italic");
+    doc.text("Powered by PIPPS Smart Apps by J.C Epiphany", 105, pageHeight - 10, { align: "center" });
+
     // Save the PDF
-    const fileName = `${formName.replace(/[^a-z0-9]/gi, '_').toLowerCase()}_ingredients_${new Date().getTime()}.pdf`;
-    doc.save(fileName);
-    
+    const pdfUrl = doc.output('bloburl');
+    window.open(pdfUrl, '_blank');
+
     toast({ 
       title: "PDF Generated", 
-      description: `Ingredients list saved as ${fileName}`,
+      description: `Ingredients list opened in a new tab.`,
     });
   };
 
