@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Check, CreditCard, Calendar, Building, Users, Zap } from "lucide-react";
+import { Check, CreditCard, Calendar, Building, Users, Zap, ArrowUp, ArrowDown } from "lucide-react";
 
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
@@ -169,6 +169,15 @@ export default function Subscription() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
+  // Helper function to determine plan relationship
+  const getPlanRelationship = (targetPlan: SubscriptionPlan, currentPlan: SubscriptionPlan | null) => {
+    if (!currentPlan) return 'new';
+    if (targetPlan.id === currentPlan.id) return 'current';
+    if (targetPlan.price > currentPlan.price) return 'upgrade';
+    if (targetPlan.price < currentPlan.price) return 'downgrade';
+    return 'change';
+  };
+
   const { data: subscriptionStatus } = useQuery({
     queryKey: ["/api/subscription/status"],
     queryFn: async () => {
@@ -259,41 +268,105 @@ export default function Subscription() {
       </div>
 
       {/* Current Subscription Status */}
-      {isActive && currentPlan && (
-        <Card className="border-green-200 bg-green-50">
+      {subscriptionStatus && (
+        <Card className={`border-2 ${isActive ? 'border-green-200 bg-green-50' : 'border-orange-200 bg-orange-50'}`}>
           <CardHeader>
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-3">
-                <div className="p-2 bg-green-100 rounded-lg">
-                  <Check className="h-5 w-5 text-green-600" />
+                <div className={`p-2 rounded-lg ${isActive ? 'bg-green-100' : 'bg-orange-100'}`}>
+                  {isActive ? (
+                    <Check className="h-5 w-5 text-green-600" />
+                  ) : (
+                    <Calendar className="h-5 w-5 text-orange-600" />
+                  )}
                 </div>
                 <div>
-                  <CardTitle className="text-green-900">Active Subscription</CardTitle>
-                  <p className="text-green-700">You're currently on the {currentPlan.name} plan</p>
+                  <CardTitle className={isActive ? 'text-green-900' : 'text-orange-900'}>
+                    {isActive ? 'Active Subscription' : 'Subscription Status'}
+                  </CardTitle>
+                  <p className={isActive ? 'text-green-700' : 'text-orange-700'}>
+                    {currentPlan ? 
+                      `You're currently on the ${currentPlan.name} plan${!isActive ? ' (inactive)' : ''}` :
+                      'Free plan'
+                    }
+                  </p>
                 </div>
               </div>
-              <Badge className="bg-green-100 text-green-800">Active</Badge>
+              <div className="flex gap-2">
+                <Badge className={isActive ? 'bg-green-100 text-green-800' : 'bg-orange-100 text-orange-800'}>
+                  {subscriptionStatus.status ? subscriptionStatus.status.toUpperCase() : 'FREE'}
+                </Badge>
+                {currentPlan && (
+                  <Badge variant="outline">
+                    ${currentPlan.price}/{currentPlan.interval}
+                  </Badge>
+                )}
+              </div>
             </div>
           </CardHeader>
           <CardContent className="space-y-4">
+            {/* Current Plan Usage */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="flex items-center space-x-2">
                 <Building className="h-4 w-4 text-green-600" />
                 <span className="text-sm text-green-700">
-                  {currentPlan.maxMaterials === -1 ? 'Unlimited' : `${currentPlan.maxMaterials}`} materials
+                  {currentPlan ? 
+                    (currentPlan.maxMaterials === -1 ? 'Unlimited' : `${currentPlan.maxMaterials}`) : '5'
+                  } materials
                 </span>
               </div>
               <div className="flex items-center space-x-2">
                 <Zap className="h-4 w-4 text-green-600" />
                 <span className="text-sm text-green-700">
-                  {currentPlan.maxFormulations === -1 ? 'Unlimited' : `${currentPlan.maxFormulations}`} formulations
+                  {currentPlan ? 
+                    (currentPlan.maxFormulations === -1 ? 'Unlimited' : `${currentPlan.maxFormulations}`) : '1'
+                  } formulations
                 </span>
               </div>
               <div className="flex items-center space-x-2">
                 <Calendar className="h-4 w-4 text-green-600" />
                 <span className="text-sm text-green-700">
-                  Renews {new Date(subscriptionStatus.endDate).toLocaleDateString()}
+                  {subscriptionStatus.endDate ? 
+                    `Renews ${new Date(subscriptionStatus.endDate).toLocaleDateString()}` : 
+                    'No expiration'
+                  }
                 </span>
+              </div>
+            </div>
+
+            {/* Quick Actions for Plan Changes */}
+            <div className="pt-4 border-t border-green-200">
+              <div className="flex flex-wrap gap-2 justify-center">
+                {currentPlan && currentPlan.id !== 'free' && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => document.getElementById('plans-section')?.scrollIntoView({ behavior: 'smooth' })}
+                    className="text-blue-600 hover:text-blue-700"
+                  >
+                    Change Plan
+                  </Button>
+                )}
+                {currentPlan && currentPlan.id !== 'enterprise' && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => document.getElementById('plans-section')?.scrollIntoView({ behavior: 'smooth' })}
+                    className="text-green-600 hover:text-green-700"
+                  >
+                    Upgrade
+                  </Button>
+                )}
+                {currentPlan && currentPlan.id !== 'free' && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => document.getElementById('plans-section')?.scrollIntoView({ behavior: 'smooth' })}
+                    className="text-orange-600 hover:text-orange-700"
+                  >
+                    Downgrade
+                  </Button>
+                )}
               </div>
             </div>
           </CardContent>
@@ -325,7 +398,7 @@ export default function Subscription() {
       )}
 
       {/* Pricing Plans */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div id="plans-section" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {plans.map((plan) => (
           <Card
             key={plan.id}
@@ -368,27 +441,78 @@ export default function Subscription() {
               <div className="pt-4 border-t border-slate-200">
                 {currentPlan?.id === plan.id && isActive ? (
                   <Button className="w-full" disabled>
+                    <Check className="h-4 w-4 mr-2" />
                     Current Plan
                   </Button>
                 ) : (
-                  <Button
-                    className="w-full"
-                    variant={plan.popular ? "default" : "outline"}
-                    onClick={() => handleSubscribe(plan)}
-                    disabled={subscribeMutation.isPending || activateSubscription.isPending}
-                  >
-                    {plan.price === 0 ? (
-                      <>
-                        <Check className="h-4 w-4 mr-2" />
-                        {activateSubscription.isPending ? "Activating..." : "Start Free"}
-                      </>
-                    ) : (
-                      <>
-                        <CreditCard className="h-4 w-4 mr-2" />
-                        {subscribeMutation.isPending ? "Processing..." : `Subscribe for $${plan.price}/${plan.interval}`}
-                      </>
+                  <>
+                    <Button
+                      className="w-full"
+                      variant={plan.popular ? "default" : "outline"}
+                      onClick={() => handleSubscribe(plan)}
+                      disabled={subscribeMutation.isPending || activateSubscription.isPending}
+                    >
+                      {plan.price === 0 ? (
+                        <>
+                          <Check className="h-4 w-4 mr-2" />
+                          {activateSubscription.isPending ? "Activating..." : "Start Free"}
+                        </>
+                      ) : (
+                        <>
+                          {(() => {
+                            const relationship = getPlanRelationship(plan, currentPlan || null);
+                            if (subscribeMutation.isPending) {
+                              return (
+                                <>
+                                  <CreditCard className="h-4 w-4 mr-2" />
+                                  Processing...
+                                </>
+                              );
+                            }
+                            
+                            switch (relationship) {
+                              case 'upgrade':
+                                return (
+                                  <>
+                                    <ArrowUp className="h-4 w-4 mr-2" />
+                                    Upgrade to {plan.name}
+                                  </>
+                                );
+                              case 'downgrade':
+                                return (
+                                  <>
+                                    <ArrowDown className="h-4 w-4 mr-2" />
+                                    Downgrade to {plan.name}
+                                  </>
+                                );
+                              default:
+                                return (
+                                  <>
+                                    <CreditCard className="h-4 w-4 mr-2" />
+                                    Subscribe for ${plan.price}/month
+                                  </>
+                                );
+                            }
+                          })()}
+                        </>
+                      )}
+                    </Button>
+                    
+                    {/* Price Change Information */}
+                    {currentPlan && currentPlan.id !== plan.id && plan.price > 0 && (
+                      <div className="mt-2 text-xs text-center text-slate-500">
+                        {plan.price > currentPlan.price ? (
+                          <span className="text-green-600">
+                            +${(plan.price - currentPlan.price).toFixed(2)}/month more
+                          </span>
+                        ) : plan.price < currentPlan.price ? (
+                          <span className="text-orange-600">
+                            -${(currentPlan.price - plan.price).toFixed(2)}/month savings
+                          </span>
+                        ) : null}
+                      </div>
                     )}
-                  </Button>
+                  </>
                 )}
               </div>
             </CardContent>
@@ -483,22 +607,48 @@ export default function Subscription() {
         <CardHeader>
           <CardTitle>Frequently Asked Questions</CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent className="space-y-6">
           <div>
             <h4 className="font-medium text-slate-900 mb-2">Can I change my plan later?</h4>
-            <p className="text-slate-600">Yes, you can upgrade or downgrade your plan at any time. Changes will be prorated.</p>
+            <p className="text-slate-600 mb-2">Yes, you can upgrade or downgrade your plan at any time. Here's how it works:</p>
+            <ul className="text-slate-600 text-sm space-y-1 ml-4">
+              <li>• <strong>Upgrades:</strong> Take effect immediately with prorated billing</li>
+              <li>• <strong>Downgrades:</strong> Take effect at your next billing cycle</li>
+              <li>• <strong>Data:</strong> All your data is preserved during plan changes</li>
+              <li>• <strong>Features:</strong> New features become available immediately on upgrade</li>
+            </ul>
+          </div>
+          <div>
+            <h4 className="font-medium text-slate-900 mb-2">What happens when I downgrade?</h4>
+            <p className="text-slate-600 mb-2">Your existing data is safe, but you may be limited by the new plan's restrictions:</p>
+            <ul className="text-slate-600 text-sm space-y-1 ml-4">
+              <li>• You can still view all existing materials/formulations</li>
+              <li>• New additions are limited by your new plan's limits</li>
+              <li>• Advanced features become unavailable but data remains</li>
+              <li>• You can upgrade anytime to regain full access</li>
+            </ul>
           </div>
           <div>
             <h4 className="font-medium text-slate-900 mb-2">What payment methods do you accept?</h4>
-            <p className="text-slate-600">We accept all major credit cards through our secure Shopify payment system.</p>
+            <p className="text-slate-600">We accept all major credit cards (Visa, MasterCard, American Express) through our secure Shopify payment system. PayPal is also available.</p>
           </div>
           <div>
             <h4 className="font-medium text-slate-900 mb-2">Is there a free trial?</h4>
-            <p className="text-slate-600">We offer a 14-day money-back guarantee instead. Try any plan risk-free with full refund if you're not satisfied.</p>
+            <p className="text-slate-600">We offer a <strong>14-day money-back guarantee</strong> instead of a free trial. This is better because you get full access immediately and can request a full refund if not satisfied.</p>
           </div>
           <div>
-            <h4 className="font-medium text-slate-900 mb-2">How do refunds work?</h4>
-            <p className="text-slate-600">Contact support within 14 days of payment for a full refund. No questions asked, processed back to your original payment method.</p>
+            <h4 className="font-medium text-slate-900 mb-2">How do billing cycles work for plan changes?</h4>
+            <p className="text-slate-600 mb-2">We make billing simple and fair:</p>
+            <ul className="text-slate-600 text-sm space-y-1 ml-4">
+              <li>• <strong>Upgrades:</strong> Immediate access, prorated charge for the remainder of the cycle</li>
+              <li>• <strong>Downgrades:</strong> Keep current features until next billing date, then switch</li>
+              <li>• <strong>Monthly billing:</strong> Changes apply to your monthly renewal date</li>
+              <li>• <strong>No hidden fees:</strong> Transparent pricing with no setup or cancellation fees</li>
+            </ul>
+          </div>
+          <div>
+            <h4 className="font-medium text-slate-900 mb-2">Can I cancel anytime?</h4>
+            <p className="text-slate-600">Yes! You can cancel your subscription anytime. Your access continues until the end of your paid period, then you'll be moved to the free plan (you keep all your data).</p>
           </div>
         </CardContent>
       </Card>
