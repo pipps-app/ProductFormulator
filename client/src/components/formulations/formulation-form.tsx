@@ -38,6 +38,7 @@ export default function FormulationForm({ formulation, onSuccess }: FormulationF
   const [ingredients, setIngredients] = useState<Ingredient[]>([]);
   const [selectedMaterialId, setSelectedMaterialId] = useState<string>("");
   const [ingredientQuantity, setIngredientQuantity] = useState<string>("");
+  const [materialSearch, setMaterialSearch] = useState<string>("");
   const [sellingPrice, setSellingPrice] = useState<string>("");
   const [editingIngredientId, setEditingIngredientId] = useState<string | null>(null);
   const [unitCost, setUnitCost] = useState<number>(0);
@@ -567,16 +568,96 @@ export default function FormulationForm({ formulation, onSuccess }: FormulationF
                   <div className="grid grid-cols-4 gap-4 items-end">
                     <div className="col-span-2">
                       <label className="text-sm font-medium text-slate-700">Select Material</label>
-                      <Select value={selectedMaterialId} onValueChange={setSelectedMaterialId}>
+                      {/* Searchable, alphabetically-sorted material select */}
+                      <Select
+                        value={selectedMaterialId}
+                        onValueChange={(val) => {
+                          // Ignore the "no results" placeholder value
+                          if (val === "__no_results__") return;
+                          
+                          setSelectedMaterialId(val);
+                          // clear the search when a material is picked
+                          setMaterialSearch("");
+                        }}
+                      >
                         <SelectTrigger>
                           <SelectValue placeholder="Choose material" />
                         </SelectTrigger>
                         <SelectContent>
-                          {materials?.map((material) => (
-                            <SelectItem key={material.id} value={material.id.toString()}>
-                              {material.name} (${material.unitCost}/{material.unit})
-                            </SelectItem>
-                          ))}
+                          {/* Search input inside the dropdown - sticky at top */}
+                          <div className="sticky top-0 z-10 bg-white p-2 border-b border-slate-200">
+                            <Input
+                              placeholder="Search materials..."
+                              value={materialSearch}
+                              onChange={(e) => setMaterialSearch(e.target.value)}
+                              onKeyDown={(e) => {
+                                // Only handle special keys, let normal typing through
+                                if (e.key === 'Enter') {
+                                  e.preventDefault();
+                                  e.stopPropagation();
+                                  // Find first match and select it
+                                  const filtered = (materials || [])
+                                    .slice()
+                                    .sort((a, b) => a.name.localeCompare(b.name, undefined, { sensitivity: 'base' }))
+                                    .filter((m) => {
+                                      const q = materialSearch.trim().toLowerCase();
+                                      return q ? (
+                                        (m.name || '').toLowerCase().includes(q) ||
+                                        (String(m.unitCost) || '').toLowerCase().includes(q) ||
+                                        (m.unit || '').toLowerCase().includes(q)
+                                      ) : true;
+                                    });
+                                  
+                                  if (filtered.length > 0) {
+                                    setSelectedMaterialId(filtered[0].id.toString());
+                                    setMaterialSearch("");
+                                  }
+                                }
+                                if (e.key === 'Escape') {
+                                  e.preventDefault();
+                                  e.stopPropagation();
+                                  setMaterialSearch('');
+                                }
+                                if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+                                  // Let arrow keys work normally for navigation
+                                  e.stopPropagation();
+                                }
+                              }}
+                              className="w-full"
+                              autoComplete="off"
+                            />
+                          </div>
+                          {/* Scrollable results container */}
+                          <div className="max-h-60 overflow-y-auto p-1">
+                          {/* Sort alphabetically, then filter by search query */}
+                          {(() => {
+                            const sorted = (materials || []).slice().sort((a, b) =>
+                              a.name.localeCompare(b.name, undefined, { sensitivity: 'base' })
+                            );
+                            const q = materialSearch.trim().toLowerCase();
+                            const filtered = q
+                              ? sorted.filter((m) =>
+                                  (m.name || '').toLowerCase().includes(q) ||
+                                  (String(m.unitCost) || '').toLowerCase().includes(q) ||
+                                  (m.unit || '').toLowerCase().includes(q)
+                                )
+                              : sorted;
+
+                            if (filtered.length === 0) {
+                              return (
+                                <SelectItem value="__no_results__" disabled>
+                                  No materials found
+                                </SelectItem>
+                              );
+                            }
+
+                            return filtered.map((material) => (
+                              <SelectItem key={material.id} value={material.id.toString()}>
+                                {material.name} (${material.unitCost}/{material.unit})
+                              </SelectItem>
+                            ));
+                          })()}
+                          </div>
                         </SelectContent>
                       </Select>
                     </div>
