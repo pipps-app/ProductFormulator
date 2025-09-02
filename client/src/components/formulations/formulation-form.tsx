@@ -81,7 +81,7 @@ export default function FormulationForm({ formulation, onSuccess }: FormulationF
       return await response.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["formulations"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/formulations"] });
     },
   });
 
@@ -91,7 +91,7 @@ export default function FormulationForm({ formulation, onSuccess }: FormulationF
       return await response.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["formulations"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/formulations"] });
     },
   });
 
@@ -411,12 +411,8 @@ export default function FormulationForm({ formulation, onSuccess }: FormulationF
         onSuccess: (newFormulation: Formulation) => {
           dispatch(addFormulation(newFormulation));
           toast({ title: "Formulation created successfully" });
-          // Navigate to the detail page so user can see the file attachments
-          if (newFormulation?.id) {
-            setLocation(`/formulations/${newFormulation.id}`);
-          } else {
-            onSuccess();
-          }
+          // Close the modal and return to the formulations list
+          onSuccess();
         },
         onError: (error: any) => {
           console.error("Create formulation error:", error);

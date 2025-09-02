@@ -939,24 +939,57 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/raw-materials", requireJWTAuth, checkMaterialsLimit, async (req: AuthenticatedRequest, res) => {
     try {
+      console.log('🔧 MATERIAL CREATE - Raw request body:', JSON.stringify(req.body, null, 2));
+      console.log('🔧 MATERIAL CREATE - User ID:', req.user?.id);
+      
       // Calculate unitCost if not provided
-      const requestData = { ...req.body, userId: 1 };
+      const requestData = { ...req.body };
+      console.log('🔧 MATERIAL CREATE - Raw totalCost:', requestData.totalCost, typeof requestData.totalCost);
+      console.log('🔧 MATERIAL CREATE - Raw quantity:', requestData.quantity, typeof requestData.quantity);
+      
       if (requestData.totalCost && requestData.quantity && !requestData.unitCost) {
         const totalCost = parseFloat(requestData.totalCost);
         const quantity = parseFloat(requestData.quantity);
+        console.log('🔧 MATERIAL CREATE - Parsed totalCost:', totalCost, 'quantity:', quantity);
+        
         if (quantity > 0) {
           requestData.unitCost = (totalCost / quantity).toFixed(4);
+          console.log('🔧 MATERIAL CREATE - Calculated unitCost:', requestData.unitCost);
         } else {
           requestData.unitCost = "0.0000";
         }
       }
       
-      const materialData = insertRawMaterialSchema.parse({ ...requestData, userId: req.user?.id });
+      // Ensure numeric fields are properly formatted
+      if (requestData.totalCost) {
+        requestData.totalCost = parseFloat(requestData.totalCost).toFixed(2);
+      }
+      if (requestData.quantity) {
+        requestData.quantity = parseFloat(requestData.quantity).toFixed(3);
+      }
+      if (requestData.unitCost) {
+        requestData.unitCost = parseFloat(requestData.unitCost).toFixed(4);
+      }
+      
+      console.log('🔧 MATERIAL CREATE - Final processed data:', JSON.stringify(requestData, null, 2));
+      
+      const userId = req.user?.id;
+      if (!userId) {
+        return res.status(401).json({ error: "User not authenticated" });
+      }
+      
+      console.log('🔧 MATERIAL CREATE - Using userId:', userId);
+      
+      const materialData = insertRawMaterialSchema.parse({ ...requestData, userId });
+      console.log('🔧 MATERIAL CREATE - Schema validation passed');
+      console.log('🔧 MATERIAL CREATE - Validated data:', JSON.stringify(materialData, null, 2));
+      
       const material = await storage.createRawMaterial(materialData);
+      console.log('🔧 MATERIAL CREATE - Database insert successful');
       
       // Create audit log
       await storage.createAuditLog({
-        userId: 1,
+        userId: userId,
         action: "create",
         entityType: "material",
         entityId: material.id,
@@ -968,9 +1001,40 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       res.json(material);
     } catch (error) {
+      console.error('🔧 MATERIAL CREATE - Error:', error);
+      console.error('🔧 MATERIAL CREATE - Error details:', error instanceof Error ? error.message : 'Unknown error');
+      
+      let errorMessage = "Invalid material data";
+      let errorDetails = "Unknown error";
+      
+      if (error instanceof Error) {
+        errorDetails = error.message;
+        
+        // Provide more specific error messages
+        if (error.message.includes('userId')) {
+          errorMessage = "Authentication error";
+          errorDetails = "User not authenticated";
+        } else if (error.message.includes('name')) {
+          errorMessage = "Invalid material name";
+          errorDetails = "Material name is required";
+        } else if (error.message.includes('totalCost')) {
+          errorMessage = "Invalid total cost";
+          errorDetails = "Total cost must be a valid number";
+        } else if (error.message.includes('quantity')) {
+          errorMessage = "Invalid quantity";
+          errorDetails = "Quantity must be a valid number";
+        } else if (error.message.includes('unit')) {
+          errorMessage = "Invalid unit";
+          errorDetails = "Unit is required";
+        } else if (error.message.includes('unitCost')) {
+          errorMessage = "Invalid unit cost";
+          errorDetails = "Unit cost must be a valid number";
+        }
+      }
+      
       res.status(400).json({ 
-        error: "Invalid material data",
-        details: error instanceof Error ? error.message : "Unknown error"
+        error: errorMessage,
+        details: errorDetails
       });
     }
   });
@@ -1035,7 +1099,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.delete("/api/raw-materials/:id", async (req, res) => {
+  app.delete("/api/raw-materials/:id", requireJWTAuth, async (req: AuthenticatedRequest, res) => {
     const id = parseInt(req.params.id);
     const material = await storage.getRawMaterial(id);
     if (!material) {
@@ -1071,7 +1135,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     
     // Create audit log
     await storage.createAuditLog({
-      userId: 1,
+      userId: req.user?.id || 1,
       action: "delete",
       entityType: "material",
       entityId: id,

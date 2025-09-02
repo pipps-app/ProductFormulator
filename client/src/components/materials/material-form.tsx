@@ -97,7 +97,9 @@ export default function MaterialForm({ material, onSuccess }: MaterialFormProps)
       onSuccess();
     },
     onError: (error: any) => {
-      const errorMessage = error.message || 'Failed to create material';
+      console.error('Material creation error:', error);
+      const errorMessage = error?.response?.data?.error || error?.response?.data?.details || error?.message || 'Failed to create material';
+      
       if (errorMessage.includes('403') && errorMessage.includes('Plan limit')) {
         const match = errorMessage.match(/Plan limit reached.*?Upgrade to add more/);
         const friendlyMessage = match ? match[0] : 'You\'ve reached your plan limit for materials. Upgrade to add more.';
@@ -116,7 +118,11 @@ export default function MaterialForm({ material, onSuccess }: MaterialFormProps)
           )
         });
       } else {
-        toast({ title: "Failed to create material", variant: "destructive" });
+        toast({ 
+          title: "Failed to create material", 
+          description: errorMessage,
+          variant: "destructive" 
+        });
       }
     },
   });
@@ -149,16 +155,60 @@ export default function MaterialForm({ material, onSuccess }: MaterialFormProps)
   const [unitError, setUnitError] = useState<string>("");
 
   const onSubmit = (data: any) => {
+    console.log('Form data before validation:', data);
+    
+    // Validate required fields
+    if (!data.name || data.name.trim() === "") {
+      toast({ title: "Material name is required", variant: "destructive" });
+      return;
+    }
+    
+    if (!data.totalCost || isNaN(parseFloat(data.totalCost)) || parseFloat(data.totalCost) <= 0) {
+      toast({ title: "Valid total cost is required", variant: "destructive" });
+      return;
+    }
+    
+    if (!data.quantity || isNaN(parseFloat(data.quantity)) || parseFloat(data.quantity) <= 0) {
+      toast({ title: "Valid quantity is required", variant: "destructive" });
+      return;
+    }
+    
     if (!data.unit || data.unit === "") {
       setUnitError("Please select a unit before saving.");
       return;
     } else {
       setUnitError("");
     }
-    if (material) {
-      updateMutation.mutate({ id: material.id, data });
+    
+    // Prepare data for submission
+    const submitData: any = {
+      name: data.name?.trim(),
+      sku: data.sku?.trim() || undefined,
+      categoryId: data.categoryId ? Number(data.categoryId) : undefined,
+      vendorId: data.vendorId ? Number(data.vendorId) : undefined,
+      totalCost: parseFloat(data.totalCost) || 0,
+      quantity: parseFloat(data.quantity) || 0,
+      unit: data.unit,
+      unitCost: parseFloat(unitCost) || 0,
+      notes: data.notes?.trim() || undefined,
+      isActive: data.isActive ?? true,
+    };
+    
+    // Remove undefined values
+    Object.keys(submitData).forEach(key => {
+      if (submitData[key] === undefined) {
+        delete submitData[key];
+      }
+    });
+    
+    console.log('Submitting material data:', submitData);
+    console.log('Data types:', Object.keys(submitData).reduce((acc: any, key) => {
+      acc[key] = typeof submitData[key];
+      return acc;
+    }, {}));    if (material) {
+      updateMutation.mutate({ id: material.id, data: submitData });
     } else {
-      createMutation.mutate(data);
+      createMutation.mutate(submitData);
     }
   };
 

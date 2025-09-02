@@ -25,6 +25,101 @@ interface MaterialListProps {
   onSort: (field: SortField) => void;
 }
 
+interface MaterialRowProps {
+  material: RawMaterial;
+  onEdit: (material: RawMaterial) => void;
+  onDelete: (material: RawMaterial) => void;
+  categoryInfo: { name: string; color: string };
+  vendorName: string;
+}
+
+function MaterialRow({ material, onEdit, onDelete, categoryInfo, vendorName }: MaterialRowProps) {
+  const isReadOnly = useItemReadOnlyStatus('materials', material.id);
+
+  return (
+    <tr className="hover:bg-slate-50">
+      <td className="p-4">
+        <div className="flex items-center space-x-3">
+          <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
+            material.categoryId === 2 ? "bg-purple-100" : "bg-blue-100"
+          }`}>
+            {material.categoryId === 2 ? (
+              <FlaskRound className={`h-4 w-4 ${
+                material.categoryId === 2 ? "text-purple-600" : "text-blue-600"
+              }`} />
+            ) : (
+              <Package className={`h-4 w-4 ${
+                material.categoryId === 2 ? "text-purple-600" : "text-blue-600"
+              }`} />
+            )}
+          </div>
+          <div>
+            <div className="flex items-center gap-2">
+              <p className="font-medium text-slate-900">{material.name}</p>
+              <ReadOnlyBadge resourceType="materials" itemId={material.id} />
+            </div>
+            <p className="text-sm text-slate-500">
+              {material.sku || `MAT-${material.id.toString().padStart(3, '0')}`}
+            </p>
+          </div>
+        </div>
+      </td>
+      <td className="p-4 text-sm text-slate-900">
+        {material.sku ? material.sku : "—"}
+      </td>
+      <td className="p-4">
+        <Badge className={categoryInfo.color}>
+          {categoryInfo.name}
+        </Badge>
+      </td>
+      <td className="p-4">
+        <p className="text-sm text-slate-900">
+          {vendorName}
+        </p>
+      </td>
+      <td className="p-4 text-right">
+        <p className="text-sm font-medium text-slate-900">
+          ${material.unitCost}/{material.unit}
+        </p>
+      </td>
+      <td className="p-4 text-right">
+        <p className="text-sm text-slate-900">
+          {material.quantity}{material.unit}
+        </p>
+      </td>
+      <td className="p-4 text-right">
+        <p className="text-sm font-medium text-slate-900">
+          ${material.totalCost}
+        </p>
+      </td>
+      <td className="p-4 text-center">
+        <div className="flex items-center justify-center space-x-2">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => onEdit(material)}
+            disabled={isReadOnly}
+            title={isReadOnly ? "This material is read-only due to plan limits" : "Edit material"}
+            className={isReadOnly ? "opacity-50 cursor-not-allowed" : ""}
+          >
+            <Edit className="h-4 w-4" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => onDelete(material)}
+            disabled={isReadOnly}
+            title={isReadOnly ? "Cannot delete read-only materials" : "Delete material"}
+            className={isReadOnly ? "opacity-50 cursor-not-allowed" : ""}
+          >
+            <Trash2 className="h-4 w-4" />
+          </Button>
+        </div>
+      </td>
+    </tr>
+  );
+}
+
 export default function MaterialList({ materials, isLoading, onEdit, sortField, sortDirection, onSort }: MaterialListProps) {
   const [deletingMaterial, setDeletingMaterial] = useState<RawMaterial | null>(null);
   const { toast } = useToast();
@@ -186,89 +281,16 @@ export default function MaterialList({ materials, isLoading, onEdit, sortField, 
             {materials.map((material) => {
               const categoryInfo = getCategoryInfo(material.categoryId);
               const vendorName = getVendorName(material.vendorId);
-              const isReadOnly = useItemReadOnlyStatus('materials', material.id);
               
               return (
-                <tr key={material.id} className="hover:bg-slate-50">
-                  <td className="p-4">
-                    <div className="flex items-center space-x-3">
-                      <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
-                        material.categoryId === 2 ? "bg-purple-100" : "bg-blue-100"
-                      }`}>
-                        {material.categoryId === 2 ? (
-                          <FlaskRound className={`h-4 w-4 ${
-                            material.categoryId === 2 ? "text-purple-600" : "text-blue-600"
-                          }`} />
-                        ) : (
-                          <Package className={`h-4 w-4 ${
-                            material.categoryId === 2 ? "text-purple-600" : "text-blue-600"
-                          }`} />
-                        )}
-                      </div>
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <p className="font-medium text-slate-900">{material.name}</p>
-                          <ReadOnlyBadge resourceType="materials" itemId={material.id} />
-                        </div>
-                        <p className="text-sm text-slate-500">
-                          {material.sku || `MAT-${material.id.toString().padStart(3, '0')}`}
-                        </p>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="p-4 text-sm text-slate-900">
-                    {material.sku ? material.sku : "—"}
-                  </td>
-                  <td className="p-4">
-                    <Badge className={categoryInfo.color}>
-                      {categoryInfo.name}
-                    </Badge>
-                  </td>
-                  <td className="p-4">
-                    <p className="text-sm text-slate-900">
-                      {vendorName}
-                    </p>
-                  </td>
-                  <td className="p-4 text-right">
-                    <p className="text-sm font-medium text-slate-900">
-                      ${material.unitCost}/{material.unit}
-                    </p>
-                  </td>
-                  <td className="p-4 text-right">
-                    <p className="text-sm text-slate-900">
-                      {material.quantity}{material.unit}
-                    </p>
-                  </td>
-                  <td className="p-4 text-right">
-                    <p className="text-sm font-medium text-slate-900">
-                      ${material.totalCost}
-                    </p>
-                  </td>
-                  <td className="p-4 text-center">
-                    <div className="flex items-center justify-center space-x-2">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => onEdit(material)}
-                        disabled={isReadOnly}
-                        title={isReadOnly ? "This material is read-only due to plan limits" : "Edit material"}
-                        className={isReadOnly ? "opacity-50 cursor-not-allowed" : ""}
-                      >
-                        <Edit className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleDelete(material)}
-                        disabled={isReadOnly}
-                        title={isReadOnly ? "Cannot delete read-only materials" : "Delete material"}
-                        className={isReadOnly ? "opacity-50 cursor-not-allowed" : ""}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </td>
-                </tr>
+                <MaterialRow
+                  key={material.id}
+                  material={material}
+                  onEdit={onEdit}
+                  onDelete={handleDelete}
+                  categoryInfo={categoryInfo}
+                  vendorName={vendorName}
+                />
               );
             })}
           </tbody>
