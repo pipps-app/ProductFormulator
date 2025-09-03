@@ -12,6 +12,12 @@ import { useQueryClient } from "@tanstack/react-query";
 import { LandscapeNotice } from "@/components/common/mobile-notice";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
+import { 
+  SoftLockAlert, 
+  CreateBlockAlert, 
+  SubscriptionUsage 
+} from "@/components/subscription/subscription-components";
+import { useCanCreateResource } from "@/hooks/use-subscription";
 
 type FormulationSortField = 'name' | 'totalCost' | 'profitMargin' | 'markupPercentage' | 'targetPrice';
 type SortDirection = 'asc' | 'desc';
@@ -27,6 +33,7 @@ export default function Formulations() {
   
   const { data: formulations, isLoading, refetch } = useFormulations(true); // Always fetch all formulations
   const { data: rawMaterials } = useMaterials();
+  const { canCreate: canCreateFormulation } = useCanCreateResource('formulations');
   const queryClient = useQueryClient();
   const { toast } = useToast();
 
@@ -199,6 +206,11 @@ export default function Formulations() {
   return (
     <div className="space-y-6">
       <LandscapeNotice />
+      
+      {/* Subscription Alerts */}
+      <SoftLockAlert resourceType="formulations" className="mb-4" />
+      <CreateBlockAlert resourceType="formulations" className="mb-4" />
+      
       {/* Page Header */}
       <div className="flex items-center justify-between">
         <div>
@@ -214,7 +226,7 @@ export default function Formulations() {
             <RefreshCw className={`h-4 w-4 mr-2 ${isRefreshing || isLoading ? 'animate-spin' : ''}`} />
             Refresh
           </Button>
-          <Button onClick={() => setIsAddModalOpen(true)}>
+          <Button onClick={() => setIsAddModalOpen(true)} disabled={!canCreateFormulation}>
             <Plus className="h-4 w-4 mr-2" />
             New Formulation
           </Button>
@@ -269,6 +281,11 @@ export default function Formulations() {
                 </span>
               </div>
             )}
+          </div>
+          
+          {/* Subscription Usage */}
+          <div className="mt-4 pt-4 border-t border-blue-200">
+            <SubscriptionUsage resourceType="formulations" showProgressBar />
           </div>
         </CardContent>
       </Card>

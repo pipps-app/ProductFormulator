@@ -142,6 +142,16 @@ import passport from "./auth";
 import "./types";
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Health check endpoint for Fly.io monitoring
+  app.get("/api/health", (req, res) => {
+    res.json({ 
+      status: "ok", 
+      timestamp: new Date().toISOString(),
+      uptime: process.uptime(),
+      environment: process.env.NODE_ENV || "development"
+    });
+  });
+
   // Authentication middleware
   // Legacy requireAuth is now replaced with requireJWTAuth from auth-middleware.ts
 

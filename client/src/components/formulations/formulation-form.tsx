@@ -42,6 +42,41 @@ export default function FormulationForm({ formulation, onSuccess }: FormulationF
   const [sellingPrice, setSellingPrice] = useState<string>("");
   const [editingIngredientId, setEditingIngredientId] = useState<string | null>(null);
   const [unitCost, setUnitCost] = useState<number>(0);
+  const [isSelectOpen, setIsSelectOpen] = useState<boolean>(false);
+  const [hasChanges, setHasChanges] = useState<boolean>(false);
+
+  // Helper function to filter materials
+  const getFilteredMaterials = () => {
+    const sorted = (materials || []).slice().sort((a, b) =>
+      a.name.localeCompare(b.name, undefined, { sensitivity: 'base' })
+    );
+    const q = materialSearch.trim().toLowerCase();
+    return q
+      ? sorted.filter((m) =>
+          (m.name || '').toLowerCase().includes(q) ||
+          (String(m.unitCost) || '').toLowerCase().includes(q) ||
+          (m.unit || '').toLowerCase().includes(q)
+        )
+      : sorted;
+  };
+
+  // Track changes for confirmation dialog
+  const checkForChanges = () => {
+    const formName = form.getValues("name");
+    const formDesc = form.getValues("description");
+    return !!(formName || formDesc || ingredients.length > 0 || sellingPrice);
+  };
+
+  // Confirmation dialog helper
+  const handleExitWithConfirmation = (callback: () => void) => {
+    if (checkForChanges()) {
+      if (window.confirm("You have unsaved changes. Are you sure you want to exit without saving?")) {
+        callback();
+      }
+    } else {
+      callback();
+    }
+  };
 
   const form = useForm({
     resolver: zodResolver(insertFormulationSchema.omit({ userId: true })),
@@ -450,7 +485,19 @@ export default function FormulationForm({ formulation, onSuccess }: FormulationF
         {form.watch("name") || "Untitled Formulation"}
       </h1>
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        <form 
+          onSubmit={form.handleSubmit(onSubmit)} 
+          className="space-y-6"
+          onKeyDown={(e) => {
+            // Prevent accidental form submission on Enter
+            if (e.key === 'Enter' && e.target !== e.currentTarget) {
+              // Allow Enter in specific cases (like the search input handling above)
+              if (!e.defaultPrevented) {
+                e.preventDefault();
+              }
+            }
+          }}
+        >
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Left Column: Basic Info & Ingredients */}
             <div className="space-y-6">
@@ -568,98 +615,98 @@ export default function FormulationForm({ formulation, onSuccess }: FormulationF
                   <div className="grid grid-cols-4 gap-4 items-end">
                     <div className="col-span-2">
                       <label className="text-sm font-medium text-slate-700">Select Material</label>
-                      {/* Searchable, alphabetically-sorted material select */}
-                      <Select
-                        value={selectedMaterialId}
-                        onValueChange={(val) => {
-                          // Ignore the "no results" placeholder value
-                          if (val === "__no_results__") return;
-                          
-                          setSelectedMaterialId(val);
-                          // clear the search when a material is picked
-                          setMaterialSearch("");
-                        }}
-                      >
-                        <SelectTrigger>
-                          <SelectValue placeholder="Choose material" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {/* Search input inside the dropdown - sticky at top */}
-                          <div className="sticky top-0 z-10 bg-white p-2 border-b border-slate-200">
-                            <Input
-                              placeholder="Search materials..."
-                              value={materialSearch}
-                              onChange={(e) => setMaterialSearch(e.target.value)}
-                              onKeyDown={(e) => {
-                                // Only handle special keys, let normal typing through
-                                if (e.key === 'Enter') {
-                                  e.preventDefault();
-                                  e.stopPropagation();
-                                  // Find first match and select it
-                                  const filtered = (materials || [])
-                                    .slice()
-                                    .sort((a, b) => a.name.localeCompare(b.name, undefined, { sensitivity: 'base' }))
-                                    .filter((m) => {
-                                      const q = materialSearch.trim().toLowerCase();
-                                      return q ? (
-                                        (m.name || '').toLowerCase().includes(q) ||
-                                        (String(m.unitCost) || '').toLowerCase().includes(q) ||
-                                        (m.unit || '').toLowerCase().includes(q)
-                                      ) : true;
-                                    });
-                                  
-                                  if (filtered.length > 0) {
-                                    setSelectedMaterialId(filtered[0].id.toString());
-                                    setMaterialSearch("");
-                                  }
-                                }
-                                if (e.key === 'Escape') {
-                                  e.preventDefault();
-                                  e.stopPropagation();
-                                  setMaterialSearch('');
-                                }
-                                if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
-                                  // Let arrow keys work normally for navigation
-                                  e.stopPropagation();
-                                }
-                              }}
-                              className="w-full"
-                              autoComplete="off"
-                            />
-                          </div>
-                          {/* Scrollable results container */}
-                          <div className="max-h-60 overflow-y-auto p-1">
-                          {/* Sort alphabetically, then filter by search query */}
-                          {(() => {
-                            const sorted = (materials || []).slice().sort((a, b) =>
-                              a.name.localeCompare(b.name, undefined, { sensitivity: 'base' })
-                            );
-                            const q = materialSearch.trim().toLowerCase();
-                            const filtered = q
-                              ? sorted.filter((m) =>
-                                  (m.name || '').toLowerCase().includes(q) ||
-                                  (String(m.unitCost) || '').toLowerCase().includes(q) ||
-                                  (m.unit || '').toLowerCase().includes(q)
-                                )
-                              : sorted;
-
-                            if (filtered.length === 0) {
-                              return (
-                                <SelectItem value="__no_results__" disabled>
-                                  No materials found
-                                </SelectItem>
-                              );
+                      {/* Custom autocomplete implementation */}
+                      <div className="relative">
+                        <Input
+                          placeholder="Search materials..."
+                          value={materialSearch}
+                          onChange={(e) => {
+                            setMaterialSearch(e.target.value);
+                            setIsSelectOpen(e.target.value.length > 0);
+                          }}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter') {
+                              e.preventDefault();
+                              // Find first match and select it
+                              const filtered = getFilteredMaterials();
+                              if (filtered.length > 0) {
+                                setSelectedMaterialId(filtered[0].id.toString());
+                                setMaterialSearch("");
+                                setIsSelectOpen(false);
+                              }
+                            } else if (e.key === 'Escape') {
+                              setIsSelectOpen(false);
                             }
+                          }}
+                          onFocus={() => {
+                            if (materialSearch) {
+                              setIsSelectOpen(true);
+                            }
+                          }}
+                          className="w-full"
+                          autoComplete="off"
+                        />
+                        
+                        {/* Custom dropdown */}
+                        {isSelectOpen && (
+                          <div className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-md shadow-lg max-h-60 overflow-y-auto">
+                            {(() => {
+                              const filtered = getFilteredMaterials();
+                              
+                              if (filtered.length === 0) {
+                                return (
+                                  <div className="px-3 py-2 text-gray-500 text-sm">
+                                    No materials found
+                                  </div>
+                                );
+                              }
 
-                            return filtered.map((material) => (
-                              <SelectItem key={material.id} value={material.id.toString()}>
-                                {material.name} (${material.unitCost}/{material.unit})
-                              </SelectItem>
-                            ));
-                          })()}
+                              return filtered.map((material) => (
+                                <div
+                                  key={material.id}
+                                  className="px-3 py-2 hover:bg-gray-100 cursor-pointer text-sm border-b border-gray-100 last:border-b-0"
+                                  onClick={() => {
+                                    setSelectedMaterialId(material.id.toString());
+                                    setMaterialSearch("");
+                                    setIsSelectOpen(false);
+                                  }}
+                                >
+                                  <div className="font-medium">{material.name}</div>
+                                  <div className="text-gray-600 text-xs">
+                                    ${material.unitCost}/{material.unit}
+                                  </div>
+                                </div>
+                              ));
+                            })()}
                           </div>
-                        </SelectContent>
-                      </Select>
+                        )}
+                        
+                        {/* Click outside to close */}
+                        {isSelectOpen && (
+                          <div 
+                            className="fixed inset-0 z-40" 
+                            onClick={() => setIsSelectOpen(false)}
+                          />
+                        )}
+                        
+                        {/* Selected material display */}
+                        {selectedMaterialId && (
+                          <div className="mt-2 p-2 bg-blue-50 rounded border text-sm">
+                            <span className="font-medium">Selected: </span>
+                            {(() => {
+                              const selected = materials?.find(m => m.id.toString() === selectedMaterialId);
+                              return selected ? `${selected.name} ($${selected.unitCost}/${selected.unit})` : 'Unknown material';
+                            })()}
+                            <button
+                              type="button"
+                              onClick={() => setSelectedMaterialId('')}
+                              className="ml-2 text-red-600 hover:text-red-800"
+                            >
+                              ×
+                            </button>
+                          </div>
+                        )}
+                      </div>
                     </div>
                     <div>
                       <label className="text-sm font-medium text-slate-700">Quantity</label>
@@ -878,7 +925,11 @@ export default function FormulationForm({ formulation, onSuccess }: FormulationF
           </div>
           {/* Actions always visible */}
           <div className="flex justify-end space-x-3">
-            <Button type="button" variant="outline" onClick={onSuccess}>
+            <Button 
+              type="button" 
+              variant="outline" 
+              onClick={() => handleExitWithConfirmation(onSuccess)}
+            >
               Cancel
             </Button>
             <Button
