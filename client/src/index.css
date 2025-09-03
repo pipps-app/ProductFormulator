@@ -57,3 +57,25 @@
     @apply font-sans antialiased bg-background text-foreground;
   }
 }
+
+/* Scale down content to appear at 90% size while maintaining layout */
+main {
+  transform: scale(0.9);
+  transform-origin: top center;
+  width: calc(100% / 0.9); /* Compensate width for scaling */
+  margin: 0 auto;
+}
+
+/* Additional fine-tuning for table elements to ensure proper scaling */
+table {
+  font-size: 0.95rem; /* Slightly reduce table text size for better fit */
+}
+
+.space-y-6 > * + * {
+  margin-top: calc(1.5rem * 0.9); /* Scale spacing proportionally */
+}
+
+/* Ensure buttons and form elements scale properly */
+.text-2xl {
+  font-size: calc(1.5rem * 0.95); /* Slightly smaller headers */
+}

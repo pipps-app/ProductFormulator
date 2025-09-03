@@ -998,16 +998,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.log('🔧 MATERIAL CREATE - Database insert successful');
       
       // Create audit log
-      await storage.createAuditLog({
-        userId: userId,
-        action: "create",
-        entityType: "material",
-        entityId: material.id,
-        changes: JSON.stringify({
-          description: `Added new raw material "${material.name}" with a total cost of $${material.totalCost} for ${material.quantity} ${material.unit}`,
-          data: material
-        }),
-      });
+      console.log('🔧 MATERIAL CREATE - Creating audit log...');
+      try {
+        await storage.createAuditLog({
+          userId: userId,
+          action: "create",
+          entityType: "material",
+          entityId: material.id,
+          changes: JSON.stringify({
+            description: `Added new raw material "${material.name}" with a total cost of $${material.totalCost} for ${material.quantity} ${material.unit}`,
+            data: material
+          }),
+        });
+        console.log('🔧 MATERIAL CREATE - Audit log created successfully');
+      } catch (auditError) {
+        console.error('🔧 MATERIAL CREATE - Audit log creation failed:', auditError);
+      }
       
       res.json(material);
     } catch (error) {
@@ -1599,6 +1605,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
           
         console.log("Updated formulation costs");
       });
+
+      // Create audit log for formulation creation
+      await storage.createAuditLog({
+        userId: req.userId,
+        action: "create",
+        entityType: "formulation",
+        entityId: formulation.id,
+        changes: JSON.stringify({
+          description: `Created new formulation "${parsedFormulationData.name}" (${parsedFormulationData.batchSize} ${parsedFormulationData.batchUnit} batch)`,
+          data: formulation
+        }),
+      });
+
       // Fetch the full formulation with ingredients
       const fullFormulation = await db.query.formulations.findFirst({
         where: eq(formulations.id, formulation.id),
@@ -1693,6 +1712,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
           })
           .where(eq(formulations.id, id));
       });
+      // Create audit log for formulation update
+      const userId = req.userId;
+      await storage.createAuditLog({
+        userId,
+        action: "update",
+        entityType: "formulation",
+        entityId: id,
+        changes: JSON.stringify({
+          description: `Updated formulation "${formulationData.name || originalFormulation.name}"`,
+          before: originalFormulation,
+          after: formulation
+        }),
+      });
+
       // Fetch the full formulation with ingredients
       const fullFormulation = await db.query.formulations.findFirst({
         where: eq(formulations.id, id),
@@ -2089,6 +2122,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const auditLogs = await storage.getAuditLogs(userId, 10);
       console.log(`🔧 Successfully fetched ${auditLogs.length} audit logs`);
+      
+      // Add debug info about the logs
+      if (auditLogs.length > 0) {
+        const latest = auditLogs[0];
+        const minutesAgo = Math.round((Date.now() - new Date(latest.createdAt).getTime()) / 60000);
+        console.log(`🔧 Latest audit log: ${latest.action} ${latest.entityType} (${minutesAgo} minutes ago)`);
+      }
+      
+      // Add cache control headers to prevent stale data
+      res.set('Cache-Control', 'no-cache, no-store, must-revalidate');
+      res.set('Pragma', 'no-cache');
+      res.set('Expires', '0');
+      
       res.json(auditLogs);
     } catch (error) {
       console.error(`❌ Error fetching audit logs:`, error);

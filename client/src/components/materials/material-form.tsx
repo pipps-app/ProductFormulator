@@ -228,10 +228,8 @@ export default function MaterialForm({ material, onSuccess }: MaterialFormProps)
     if (e.key === "Enter") {
       e.preventDefault();
       if (isLast) {
-        if (window.confirm("Do you want to save this material?")) {
-          submitRef.current?.click();
-        }
-        // else do nothing
+        // For the notes field (last field), just submit the form directly
+        submitRef.current?.click();
       } else if (nextRef && nextRef.current) {
         nextRef.current.focus();
       }
@@ -398,7 +396,14 @@ export default function MaterialForm({ material, onSuccess }: MaterialFormProps)
             <FormItem>
               <FormLabel>Notes (Optional)</FormLabel>
               <FormControl>
-                <Textarea {...field} placeholder="Additional notes about this material" ref={notesRef} onKeyDown={e => handleKeyDown(e, submitRef, true)} />
+                <Textarea {...field} placeholder="Additional notes about this material" ref={notesRef} onKeyDown={(e) => {
+                  // Allow Enter for line breaks, only submit on Ctrl+Enter
+                  if (e.key === 'Enter' && e.ctrlKey) {
+                    e.preventDefault();
+                    submitRef.current?.click();
+                  }
+                  // Allow normal Enter for line breaks
+                }} />
               </FormControl>
               <FormMessage />
             </FormItem>

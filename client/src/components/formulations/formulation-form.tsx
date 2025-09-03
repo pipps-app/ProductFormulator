@@ -489,10 +489,11 @@ export default function FormulationForm({ formulation, onSuccess }: FormulationF
           onSubmit={form.handleSubmit(onSubmit)} 
           className="space-y-6"
           onKeyDown={(e) => {
-            // Prevent accidental form submission on Enter
-            if (e.key === 'Enter' && e.target !== e.currentTarget) {
-              // Allow Enter in specific cases (like the search input handling above)
-              if (!e.defaultPrevented) {
+            // Allow Enter key to work normally in text inputs and textareas
+            if (e.key === 'Enter') {
+              const target = e.target as HTMLElement;
+              // Only prevent default for buttons or other non-input elements
+              if (target.tagName !== 'INPUT' && target.tagName !== 'TEXTAREA') {
                 e.preventDefault();
               }
             }

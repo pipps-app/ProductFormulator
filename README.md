@@ -102,3 +102,18 @@ Your application includes:
 6. **Launch and monitor** subscription conversions
 
 Your SaaS platform is ready to generate recurring revenue through Shopify store integration!
+
+## 🖥️ UI Scaling Customization
+
+As of September 2025, the application supports a global UI scaling feature to make the interface appear more compact (similar to browser zoom at 90%) while maintaining crisp text and proper layout. This is achieved via a CSS transform on the main content area.
+
+**How it works:**
+- The main content area is scaled to 90% using `transform: scale(0.9)` in `client/src/index.css`.
+- The width is compensated with `width: calc(100% / 0.9)` to ensure the layout fills the viewport.
+- Table font sizes and spacing are proportionally reduced for a balanced look.
+- This approach keeps the browser interface at full size and only affects the app content.
+
+**To adjust the scaling:**
+- Edit the `main` selector in `client/src/index.css` and change the `scale(0.9)` value as desired (e.g., `0.85` for 85%, `0.95` for 95%).
+
+This feature improves usability for users who prefer a denser, more information-rich display without using browser zoom.
