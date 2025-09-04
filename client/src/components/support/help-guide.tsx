@@ -295,7 +295,8 @@ const helpTopics: HelpTopic[] = [
     content: "Overview of Free, Pro, Business, and Enterprise reporting features available in PIPPS Maker.",
     steps: [
       "Free Tier: Access to Material Database Value and Basic Cost Analysis",
-      "Pro Tier: All Free reports plus Advanced Analytics and Custom Reports",
+      "Starter Tier: All Free reports plus Basic Cost Summary and Formulation Overview",
+      "Pro Tier: All Starter reports plus Advanced Analytics and Custom Reports",
       "Business Tier: All Pro reports plus Multi-location Analysis and Team Reports",
       "Enterprise Tier: All Business reports plus API Access and Custom Integrations"
     ],
@@ -338,22 +339,154 @@ const helpTopics: HelpTopic[] = [
     ]
   },
   {
-    id: "advanced-analytics", 
-    title: "Advanced Analytics (Pro+)",
+    id: "starter-tier-reports",
+    title: "Starter Tier Reports",
+    category: "Reports",
+    icon: Info,
+    priority: "high",
+    content: "The Starter tier includes all Free reports plus two additional reports to enhance your formulation cost analysis capabilities.",
+    steps: [
+      "Navigate to Reports section in the sidebar",
+      "Access all Free tier reports (Total Database Value, Category Averages, etc.)",
+      "Basic Cost Summary: Simple cost calculations and material usage overview - provides streamlined insights into your overall material costs and usage patterns",
+      "Formulation Overview: Basic formulation cost breakdown and analysis - offers detailed cost breakdown for each of your formulations with clear profitability insights"
+    ],
+    tips: [
+      "Basic Cost Summary gives you a quick snapshot of your material spending patterns",
+      "Formulation Overview helps you identify which recipes are most cost-effective",
+      "Use these reports to make informed decisions about recipe optimization",
+      "Compare formulation costs to determine which products offer the best profit margins",
+      "Track material usage trends to optimize your purchasing decisions",
+      "Export reports for sharing with business partners or financial planning",
+      "Starter tier bridges the gap between basic free reports and advanced analytics"
+    ],
+    warnings: [
+      "Advanced trend analysis and historical data tracking require Pro+ subscriptions",
+      "Detailed vendor analysis and custom reporting filters are available in higher tiers",
+      "Multi-formulation comparison features are unlocked with Pro+ plans"
+    ]
+  },
+  {
+    id: "pro-tier-reports",
+    title: "Pro Tier Reports",
     category: "Reports",
     icon: FileText,
     priority: "medium",
-    content: "Pro, Business, and Enterprise reporting capabilities and insights for detailed business analysis.",
+    content: "The Pro tier includes all Free and Starter reports plus seven advanced analytical reports for comprehensive formulation analysis.",
     steps: [
-      "Upgrade to Pro tier or higher to access advanced reports",
-      "View detailed cost breakdowns by category and vendor",
-      "Analyze trends in material costs over time",
-      "Generate custom reports based on specific criteria"
+      "Navigate to Reports section in the sidebar",
+      "Access all Free and Starter tier reports",
+      "Complete Material Cost Listing: Comprehensive list of all materials with detailed cost information - full database overview with complete pricing details",
+      "Cost Per Unit by Category: Unit cost analysis grouped by material categories - understand which categories are most expensive",
+      "Top 5 Most Expensive Materials Per Unit: Highest cost materials ranked by unit price - quickly identify your costliest ingredients",
+      "Materials Ranked by Usage Frequency: Materials sorted by how often they're used in formulations - see which ingredients you rely on most",
+      "Number of Formulations Using Each Material: Count of formulations that use each material - understand ingredient popularity",
+      "Total Cost Contribution Across All Formulations: How much each material contributes to total formulation costs - identify biggest cost drivers",
+      "Unused Materials Identification: Materials in database not used in any formulations - find redundant or forgotten ingredients"
     ],
     tips: [
-      "Advanced reports help optimize purchasing decisions",
-      "Trend analysis identifies cost-saving opportunities",
-      "Custom filters allow targeted analysis of specific materials or formulations"
+      "Use the Complete Material Cost Listing for comprehensive cost audits and budget planning",
+      "Category cost analysis helps optimize material selection by category type",
+      "Top expensive materials report guides substitution and cost reduction strategies",
+      "Usage frequency data helps with inventory planning and vendor negotiations",
+      "Cost contribution analysis reveals which materials have the biggest impact on your bottom line",
+      "Unused materials identification helps clean up your database and reduce clutter",
+      "These reports are perfect for medium-sized operations needing detailed analytics"
+    ],
+    warnings: [
+      "Historical trend analysis and advanced forecasting require Professional+ subscriptions",
+      "Vendor comparison features are available in Business+ tiers",
+      "Multi-location analysis requires Business+ plans"
+    ]
+  },
+  {
+    id: "professional-tier-reports", 
+    title: "Professional Tier Reports",
+    category: "Reports",
+    icon: FileText,
+    priority: "medium",
+    content: "The Professional tier includes all previous reports plus four advanced business intelligence reports for strategic decision making.",
+    steps: [
+      "Navigate to Reports section in the sidebar",
+      "Access all Free, Starter, and Pro tier reports",
+      "Advanced Cost Analytics: Enhanced cost modeling and trend analysis for formulations - sophisticated financial modeling tools",
+      "Batch Optimization Report: Batch size and efficiency optimization insights - determine optimal production quantities for cost efficiency",
+      "Margin Analysis: Detailed profit margin tracking and forecasting - comprehensive profitability analysis with projections",
+      "Vendor Performance Analysis: Analysis of vendor pricing and cost efficiency - evaluate vendor relationships and pricing strategies"
+    ],
+    tips: [
+      "Advanced Cost Analytics provides sophisticated forecasting for strategic planning",
+      "Batch optimization helps determine the most cost-effective production scales",
+      "Margin analysis guides pricing strategies and profitability optimization",
+      "Vendor performance analysis helps negotiate better pricing and evaluate supplier relationships",
+      "Professional tier is ideal for established businesses needing strategic insights",
+      "Use these reports for board presentations and investor meetings"
+    ],
+    warnings: [
+      "Historical cost tracking and volatility analysis require Business+ subscriptions",
+      "Multi-vendor comparison features are available in Business+ tiers",
+      "Enterprise-level optimization recommendations require Enterprise subscription"
+    ]
+  },
+  {
+    id: "business-tier-reports",
+    title: "Business Tier Reports", 
+    category: "Reports",
+    icon: FileText,
+    priority: "medium",
+    content: "The Business tier includes all previous reports plus five historical analysis and vendor comparison reports for enterprise-level insights.",
+    steps: [
+      "Navigate to Reports section in the sidebar",
+      "Access all Free, Starter, Pro, and Professional tier reports",
+      "Historical Cost Changes for Materials: Track how material costs have changed over time - complete historical cost tracking",
+      "Cost Update Frequency Tracking: How often material costs are updated - monitor data freshness and update patterns",
+      "Biggest Cost Changes Identification: Materials with the largest cost fluctuations - identify volatile pricing patterns",
+      "Price Volatility Indicators: Materials with highest price volatility patterns - risk assessment for cost planning",
+      "Side-by-Side Vendor Price Comparisons: Compare material prices across different vendors - comprehensive vendor analysis"
+    ],
+    tips: [
+      "Historical cost tracking helps predict future pricing trends and budget accordingly",
+      "Update frequency analysis ensures you're maintaining current pricing data",
+      "Cost change identification helps prepare for market volatility and adjust strategies",
+      "Volatility indicators guide risk management and supplier diversification decisions",
+      "Vendor price comparisons optimize purchasing decisions and supplier negotiations",
+      "Business tier is perfect for large operations with multiple suppliers and complex supply chains"
+    ],
+    warnings: [
+      "Advanced cost optimization recommendations require Enterprise subscription",
+      "Automated savings identification features are Enterprise-only",
+      "API access and custom integrations require Enterprise tier"
+    ]
+  },
+  {
+    id: "enterprise-tier-reports",
+    title: "Enterprise Tier Reports",
+    category: "Reports", 
+    icon: FileText,
+    priority: "medium",
+    content: "The Enterprise tier includes all previous reports plus five advanced optimization and strategic analysis reports with automated recommendations.",
+    steps: [
+      "Navigate to Reports section in the sidebar",
+      "Access all reports from Free through Business tiers",
+      "Cost Savings Opportunities Identification: Automated recommendations for reducing formulation costs - AI-powered cost optimization",
+      "Spending Distribution Across Categories: How spending is distributed across material categories - comprehensive spend analysis",
+      "Category Cost Trends: Cost trend analysis by material category - strategic category planning insights",
+      "High-Impact Category Identification: Categories with highest cost impact on formulations - focus areas for optimization",
+      "Cost Per Unit Analysis by Category: Detailed unit cost analysis for each category - granular category-level insights"
+    ],
+    tips: [
+      "Automated cost savings recommendations provide actionable optimization strategies",
+      "Spending distribution analysis guides budget allocation and category management",
+      "Category trend analysis supports long-term strategic planning and forecasting",
+      "High-impact category identification helps prioritize optimization efforts",
+      "Granular cost analysis enables precise category-level decision making",
+      "Enterprise tier provides the most comprehensive analytics for large-scale operations",
+      "Perfect for corporations, manufacturers, and businesses with complex formulation portfolios"
+    ],
+    warnings: [
+      "Enterprise features require the highest subscription tier",
+      "Some recommendations may require minimum data volumes to be effective",
+      "Advanced features work best with consistent, high-quality data input"
     ]
   },
   {
