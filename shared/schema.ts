@@ -152,6 +152,30 @@ export const auditLog = pgTable("audit_log", {
   timestamp: timestamp("timestamp").defaultNow(),
 });
 
+// Waiting list for soft launch
+export const waitingList = pgTable("waiting_list", {
+  id: serial("id").primaryKey(),
+  email: text("email").notNull(),
+  name: text("name"),
+  company: text("company"),
+  planInterest: text("plan_interest").notNull(), // starter, pro, professional, business, enterprise
+  message: text("message"),
+  currentUsageEstimate: text("current_usage_estimate"), // e.g., "50 materials, 10 formulations"
+  phone: text("phone"),
+  createdAt: timestamp("created_at").defaultNow(),
+  notifiedAt: timestamp("notified_at"),
+  priorityLevel: integer("priority_level").default(1), // 1=normal, 2=high, 3=urgent
+  status: text("status").default("pending"), // pending, contacted, converted, declined
+});
+
+// App settings for configuration
+export const appSettings = pgTable("app_settings", {
+  id: serial("id").primaryKey(),
+  settingKey: text("setting_key").notNull().unique(),
+  settingValue: text("setting_value").notNull(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
 // Insert schemas
 export const insertUserSchema = createInsertSchema(users).omit({
   id: true,
@@ -234,6 +258,20 @@ export const insertPaymentSchema = createInsertSchema(payments).omit({
   createdAt: true,
 });
 
+export const insertWaitingListSchema = createInsertSchema(waitingList).omit({
+  id: true,
+  createdAt: true,
+  notifiedAt: true,
+}).extend({
+  email: z.string().email("Valid email address required"),
+  planInterest: z.enum(["starter", "pro", "professional", "business", "enterprise"]),
+});
+
+export const insertAppSettingSchema = createInsertSchema(appSettings).omit({
+  id: true,
+  updatedAt: true,
+});
+
 // Types
 export type User = typeof users.$inferSelect;
 export type InsertUser = z.infer<typeof insertUserSchema>;
@@ -270,6 +308,12 @@ export type InsertPasswordResetToken = z.infer<typeof insertPasswordResetTokenSc
 
 export type Payment = typeof payments.$inferSelect;
 export type InsertPayment = z.infer<typeof insertPaymentSchema>;
+
+export type WaitingListEntry = typeof waitingList.$inferSelect;
+export type InsertWaitingListEntry = z.infer<typeof insertWaitingListSchema>;
+
+export type AppSetting = typeof appSettings.$inferSelect;
+export type InsertAppSetting = z.infer<typeof insertAppSettingSchema>;
 
 // Relations
 export const formulationRelations = relations(formulations, ({ many, one }) => ({

@@ -134,6 +134,13 @@ import { checkMaterialsLimit, checkFormulationsLimit, checkVendorsLimit, checkCa
          getUserSubscriptionInfo } from "./subscription-middleware";
 import { getUserSoftLockStatus, checkSoftLockUsage } from "./subscription-soft-lock";
 import { 
+  joinWaitingList, 
+  getWaitingListStats, 
+  getWaitingListEntries, 
+  updateWaitingListStatus, 
+  getSoftLaunchStatus 
+} from "./waiting-list";
+import { 
   insertVendorSchema, insertMaterialCategorySchema, insertRawMaterialSchema,
   insertFormulationSchema, insertFormulationIngredientSchema, insertUserSchema,
   insertFileSchema, insertFileAttachmentSchema
@@ -3161,6 +3168,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ error: "Failed to cleanup formulations" });
     }
   });
+
+  // Waiting List Routes for Soft Launch
+  app.post("/api/waiting-list", joinWaitingList);
+  app.get("/api/soft-launch-status", getSoftLaunchStatus);
+  
+  // Admin-only waiting list routes
+  app.get("/api/admin/waiting-list/stats", requireJWTAuth, getWaitingListStats);
+  app.get("/api/admin/waiting-list/entries", requireJWTAuth, getWaitingListEntries);
+  app.put("/api/admin/waiting-list/:id/status", requireJWTAuth, updateWaitingListStatus);
 
   // Serve template files for download
   app.use("/templates", express.static(path.join(__dirname, "..")));

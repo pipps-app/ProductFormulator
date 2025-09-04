@@ -6,7 +6,8 @@ import type {
   User, InsertUser, Vendor, InsertVendor, MaterialCategory, InsertMaterialCategory,
   RawMaterial, InsertRawMaterial, Formulation, InsertFormulation, FormulationIngredient, InsertFormulationIngredient,
   File, InsertFile, FileAttachment, InsertFileAttachment, MaterialFile, InsertMaterialFile,
-  AuditLog, InsertAuditLog, PasswordResetToken, InsertPasswordResetToken
+  AuditLog, InsertAuditLog, PasswordResetToken, InsertPasswordResetToken,
+  Payment, InsertPayment, WaitingListEntry, InsertWaitingListEntry, AppSetting, InsertAppSetting
 } from "@shared/schema";
 import type { IStorage } from "./storage";
 
@@ -353,5 +354,125 @@ export class DatabaseStorage implements IStorage {
       .set(updateData)
       .where(eq(schema.payments.id, id));
     return results.rowCount > 0;
+  }
+
+  // Waiting list management
+  async addToWaitingList(entry: InsertWaitingListEntry): Promise<WaitingListEntry> {
+    const results = await db.insert(schema.waitingList).values(entry).returning();
+    return results[0];
+  }
+
+  async getWaitingListByEmail(email: string, planInterest: string): Promise<WaitingListEntry | undefined> {
+    const results = await db.select().from(schema.waitingList)
+      .where(and(
+        eq(schema.waitingList.email, email),
+        eq(schema.waitingList.planInterest, planInterest)
+      ));
+    return results[0];
+  }
+
+  async getWaitingListEntries(filters: {
+    plan?: string;
+    status?: string;
+    page?: number;
+    limit?: number;
+  }): Promise<{
+    entries: WaitingListEntry[];
+    total: number;
+    page: number;
+    limit: number;
+  }> {
+    const page = filters.page || 1;
+    const limit = filters.limit || 50;
+    const offset = (page - 1) * limit;
+
+    let query = db.select().from(schema.waitingList);
+    let countQuery = db.select().from(schema.waitingList);
+
+    const conditions = [];
+    if (filters.plan) {
+      conditions.push(eq(schema.waitingList.planInterest, filters.plan));
+    }
+    if (filters.status) {
+      conditions.push(eq(schema.waitingList.status, filters.status));
+    }
+
+    if (conditions.length > 0) {
+      query = query.where(and(...conditions));
+      countQuery = countQuery.where(and(...conditions));
+    }
+
+    const [entries, totalResult] = await Promise.all([
+      query.orderBy(schema.waitingList.createdAt).limit(limit).offset(offset),
+      countQuery
+    ]);
+
+    return {
+      entries,
+      total: totalResult.length,
+      page,
+      limit
+    };
+  }
+
+  async getWaitingListStats(): Promise<{
+    totalEntries: number;
+    byPlan: Record<string, number>;
+    byStatus: Record<string, number>;
+    recentEntries: number;
+  }> {
+    const allEntries = await db.select().from(schema.waitingList);
+    
+    const stats = {
+      totalEntries: allEntries.length,
+      byPlan: {} as Record<string, number>,
+      byStatus: {} as Record<string, number>,
+      recentEntries: 0
+    };
+
+    const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+
+    allEntries.forEach(entry => {
+      // Count by plan
+      stats.byPlan[entry.planInterest] = (stats.byPlan[entry.planInterest] || 0) + 1;
+      
+      // Count by status
+      stats.byStatus[entry.status || 'pending'] = (stats.byStatus[entry.status || 'pending'] || 0) + 1;
+      
+      // Count recent entries
+      if (entry.createdAt && entry.createdAt > sevenDaysAgo) {
+        stats.recentEntries++;
+      }
+    });
+
+    return stats;
+  }
+
+  async updateWaitingListStatus(id: number, status: string, notes?: string): Promise<boolean> {
+    const updateData: any = { status };
+    if (status === 'contacted') {
+      updateData.notifiedAt = new Date();
+    }
+
+    const results = await db.update(schema.waitingList)
+      .set(updateData)
+      .where(eq(schema.waitingList.id, id));
+    return results.rowCount > 0;
+  }
+
+  // App settings
+  async getAppSetting(key: string): Promise<string | undefined> {
+    const results = await db.select().from(schema.appSettings)
+      .where(eq(schema.appSettings.settingKey, key));
+    return results[0]?.settingValue;
+  }
+
+  async setAppSetting(key: string, value: string): Promise<void> {
+    await db.insert(schema.appSettings)
+      .values({ settingKey: key, settingValue: value })
+      .onConflictDoUpdate({
+        target: schema.appSettings.settingKey,
+        set: { settingValue: value, updatedAt: new Date() }
+      });
   }
 }

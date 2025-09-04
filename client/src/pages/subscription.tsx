@@ -4,11 +4,13 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Check, Calendar, Building, Zap, CreditCard, ArrowUp, ArrowDown, HelpCircle, AlertCircle } from "lucide-react";
+import { Check, Calendar, Building, Zap, CreditCard, ArrowUp, ArrowDown, HelpCircle, AlertCircle, Bell } from "lucide-react";
 import { useLocation } from "wouter";
 
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
+import { useSoftLaunchStatus } from "@/hooks/use-soft-launch";
+import { WaitingListModal } from "@/components/WaitingListModal";
 
 interface SubscriptionPlan {
   id: string;
@@ -173,6 +175,9 @@ export default function Subscription() {
   const queryClient = useQueryClient();
   const [location] = useLocation();
 
+  // Fetch soft launch status
+  const { data: softLaunchStatus, isLoading: isLoadingSoftLaunch } = useSoftLaunchStatus();
+
   // Parse URL parameters to highlight specific plan
   React.useEffect(() => {
     const urlParams = new URLSearchParams(location.split('?')[1] || '');
@@ -312,6 +317,12 @@ export default function Subscription() {
       activateSubscription.isPending || 
       pendingDowngradeRequests.size > 0
     );
+  };
+
+  // Check if a plan is available in current launch mode
+  const isPlanAvailable = (planId: string) => {
+    if (isLoadingSoftLaunch || !softLaunchStatus) return true; // Default to available while loading
+    return softLaunchStatus.availablePlans.includes(planId);
   };
 
   return (
@@ -535,81 +546,94 @@ export default function Subscription() {
                   </Button>
                 ) : (
                   <>
-                    <Button
-                      className="w-full"
-                      variant={plan.popular ? "default" : "outline"}
-                      onClick={() => handleSubscribe(plan)}
-                      disabled={isAnyActionInProgress()}
-                    >
-                      {plan.price === 0 ? (
-                        <>
-                          <Check className="h-4 w-4 mr-2" />
-                          {(() => {
-                            if (activateSubscription.isPending) return "Activating...";
-                            if (isAnyActionInProgress()) return "Please wait...";
-                            return "Start Free";
-                          })()}
-                        </>
-                      ) : (
-                        <>
-                          {(() => {
-                            const relationship = getPlanRelationship(plan, currentPlan || null);
-                            
-                            // Show processing state for the active action
-                            if (subscribeMutation.isPending) {
-                              return (
-                                <>
-                                  <CreditCard className="h-4 w-4 mr-2" />
-                                  Processing...
-                                </>
-                              );
-                            }
-                            
-                            // Show disabled state if other actions are in progress
-                            if (isAnyActionInProgress() && !pendingDowngradeRequests.has(plan.id)) {
-                              return (
-                                <>
-                                  <HelpCircle className="h-4 w-4 mr-2" />
-                                  Please wait...
-                                </>
-                              );
-                            }
-                            
-                            switch (relationship) {
-                              case 'upgrade':
-                                return (
-                                  <>
-                                    <ArrowUp className="h-4 w-4 mr-2" />
-                                    Upgrade to {plan.name}
-                                  </>
-                                );
-                              case 'downgrade':
-                                if (pendingDowngradeRequests.has(plan.id)) {
-                                  return (
-                                    <>
-                                      <Check className="h-4 w-4 mr-2" />
-                                      Downgrade Requested
-                                    </>
-                                  );
-                                }
-                                return (
-                                  <>
-                                    <ArrowDown className="h-4 w-4 mr-2" />
-                                    Downgrade to {plan.name}
-                                  </>
-                                );
-                              default:
+                    {/* Check if plan is available based on soft launch mode */}
+                    {!isPlanAvailable(plan.id) ? (
+                      <WaitingListModal plan={plan}>
+                        <Button
+                          className="w-full bg-orange-600 hover:bg-orange-700 text-white"
+                          variant="default"
+                        >
+                          <Bell className="h-4 w-4 mr-2" />
+                          Join Waiting List
+                        </Button>
+                      </WaitingListModal>
+                    ) : (
+                      <Button
+                        className="w-full"
+                        variant={plan.popular ? "default" : "outline"}
+                        onClick={() => handleSubscribe(plan)}
+                        disabled={isAnyActionInProgress()}
+                      >
+                        {plan.price === 0 ? (
+                          <>
+                            <Check className="h-4 w-4 mr-2" />
+                            {(() => {
+                              if (activateSubscription.isPending) return "Activating...";
+                              if (isAnyActionInProgress()) return "Please wait...";
+                              return "Start Free";
+                            })()}
+                          </>
+                        ) : (
+                          <>
+                            {(() => {
+                              const relationship = getPlanRelationship(plan, currentPlan || null);
+                              
+                              // Show processing state for the active action
+                              if (subscribeMutation.isPending) {
                                 return (
                                   <>
                                     <CreditCard className="h-4 w-4 mr-2" />
-                                    Subscribe for ${plan.price}/month
+                                    Processing...
                                   </>
                                 );
-                            }
-                          })()}
-                        </>
-                      )}
-                    </Button>
+                              }
+                              
+                              // Show disabled state if other actions are in progress
+                              if (isAnyActionInProgress() && !pendingDowngradeRequests.has(plan.id)) {
+                                return (
+                                  <>
+                                    <HelpCircle className="h-4 w-4 mr-2" />
+                                    Please wait...
+                                  </>
+                                );
+                              }
+                              
+                              switch (relationship) {
+                                case 'upgrade':
+                                  return (
+                                    <>
+                                      <ArrowUp className="h-4 w-4 mr-2" />
+                                      Upgrade to {plan.name}
+                                    </>
+                                  );
+                                case 'downgrade':
+                                  if (pendingDowngradeRequests.has(plan.id)) {
+                                    return (
+                                      <>
+                                        <Check className="h-4 w-4 mr-2" />
+                                        Downgrade Requested
+                                      </>
+                                    );
+                                  }
+                                  return (
+                                    <>
+                                      <ArrowDown className="h-4 w-4 mr-2" />
+                                      Downgrade to {plan.name}
+                                    </>
+                                  );
+                                default:
+                                  return (
+                                    <>
+                                      <CreditCard className="h-4 w-4 mr-2" />
+                                      Subscribe for ${plan.price}/month
+                                    </>
+                                  );
+                              }
+                            })()}
+                          </>
+                        )}
+                      </Button>
+                    )}
                     
                     {/* Pending Downgrade Request Notice */}
                     {pendingDowngradeRequests.has(plan.id) && (

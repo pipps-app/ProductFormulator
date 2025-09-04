@@ -9,7 +9,9 @@ import {
   type FileAttachment, type InsertFileAttachment,
   type AuditLog, type InsertAuditLog,
   type PasswordResetToken, type InsertPasswordResetToken,
-  type Payment, type InsertPayment
+  type Payment, type InsertPayment,
+  type WaitingListEntry, type InsertWaitingListEntry,
+  type AppSetting, type InsertAppSetting
 } from "@shared/schema";
 
 export interface IStorage {
@@ -72,6 +74,32 @@ export interface IStorage {
   getUserPayments(userId: number): Promise<Payment[]>;
   getAllPayments(): Promise<Payment[]>;
   updatePaymentStatus(id: number, status: string, refundAmount?: string): Promise<boolean>;
+  
+  // Waiting list management
+  addToWaitingList(entry: InsertWaitingListEntry): Promise<WaitingListEntry>;
+  getWaitingListByEmail(email: string, planInterest: string): Promise<WaitingListEntry | undefined>;
+  getWaitingListEntries(filters: {
+    plan?: string;
+    status?: string;
+    page?: number;
+    limit?: number;
+  }): Promise<{
+    entries: WaitingListEntry[];
+    total: number;
+    page: number;
+    limit: number;
+  }>;
+  getWaitingListStats(): Promise<{
+    totalEntries: number;
+    byPlan: Record<string, number>;
+    byStatus: Record<string, number>;
+    recentEntries: number;
+  }>;
+  updateWaitingListStatus(id: number, status: string, notes?: string): Promise<boolean>;
+  
+  // App settings
+  getAppSetting(key: string): Promise<string | undefined>;
+  setAppSetting(key: string, value: string): Promise<void>;
 }
 
 class MemoryStorage implements IStorage {
