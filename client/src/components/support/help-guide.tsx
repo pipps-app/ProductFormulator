@@ -311,17 +311,30 @@ const helpTopics: HelpTopic[] = [
     category: "Reports",
     icon: Info,
     priority: "high",
-    content: "Material database value and basic cost analysis available to all users at no cost.",
+    content: "The Free tier includes six essential reports to help you analyze your formulation costs and material data without requiring a paid subscription.",
     steps: [
       "Navigate to Reports section in the sidebar",
-      "View Total Material Database Value showing your inventory worth",
-      "Access Basic Cost Analysis for formulation costs",
-      "Export reports as PDF for record keeping"
+      "Total Material Database Value: Shows the total value of all material unit costs in your database - useful for understanding your material cost database worth",
+      "Average Cost Per Material Category: Displays average unit cost for materials in each category - helps identify which categories tend to be more expensive",
+      "Most vs Least Expensive Materials: Comparison of highest and lowest cost materials - quickly identify cost outliers in your material database",
+      "Unit Cost Calculations Based on Batch Size: Cost analysis for different batch sizes - essential for understanding how scaling affects per-unit costs",
+      "Basic Profit Margin Calculations: Profit margins for all your formulations - critical for pricing strategy and understanding formulation profitability",
+      "Cost Per Ingredient Breakdown: Detailed cost breakdown for each formulation ingredient - identifies which materials contribute most to your recipe costs"
     ],
     tips: [
-      "Free reports update automatically as you add materials",
-      "Database value calculation includes all active materials",
-      "Cost analysis helps identify most expensive formulation components"
+      "Material Database Value helps you understand the scope and worth of your cost database",
+      "Category averages help you anticipate costs when selecting materials for new formulations",
+      "Use expensive vs cheap materials report to make informed ingredient substitution decisions",
+      "Batch size calculations help you understand optimal production scales for cost efficiency",
+      "Profit margin reports guide your product pricing decisions and show which formulations are most profitable",
+      "Ingredient breakdowns reveal which materials drive up your formulation costs most significantly",
+      "All reports update automatically when you modify material costs or formulation recipes",
+      "Export any report as PDF for sharing with business partners or for record keeping"
+    ],
+    warnings: [
+      "Advanced analytics with trend analysis and detailed breakdowns require Pro+ subscriptions",
+      "Free reports provide current cost analysis - upgrade for historical tracking and advanced insights",
+      "Multi-location analysis and team collaboration features are available in higher tiers"
     ]
   },
   {
