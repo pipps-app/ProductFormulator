@@ -243,7 +243,7 @@ export default function FormulationDetail() {
                       <p className="font-medium">{formatCurrency(formulation.targetPrice)}</p>
                     </div>
                     <div>
-                      <p className="text-muted-foreground">Profit Margin</p>
+                      <p className="text-muted-foreground">Net Profit Margin</p>
                       <p className={`font-medium ${calculateProfitMargin() > 0 ? 'text-green-600' : 'text-red-600'}`}>
                         {calculateProfitMargin().toFixed(1)}%
                       </p>

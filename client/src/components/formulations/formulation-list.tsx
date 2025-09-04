@@ -235,7 +235,7 @@ export default function FormulationList({ formulations, isLoading, sortField, so
               <th className="text-center p-4 text-sm font-medium text-slate-600">Ingredients</th>
               <SortableHeader field="targetPrice" className="text-right">Target Price</SortableHeader>
               <SortableHeader field="markupPercentage" className="text-right">Markup %</SortableHeader>
-              <SortableHeader field="profitMargin" className="text-right">Profit Margin</SortableHeader>
+              <SortableHeader field="profitMargin" className="text-right">Net Profit Margin</SortableHeader>
               <th className="text-center p-4 text-sm font-medium text-slate-600">Status</th>
               <th className="text-center p-4 text-sm font-medium text-slate-600">Actions</th>
             </tr>

@@ -886,7 +886,7 @@ export default function FormulationForm({ formulation, onSuccess }: FormulationF
                         <div className="text-xl font-bold text-green-700">${profit.toFixed(2)}</div>
                       </div>
                       <div className="space-y-2">
-                        <div className="text-sm text-green-600">Profit Margin</div>
+                        <div className="text-sm text-green-600">Net Profit Margin</div>
                         <div className="text-lg font-bold text-green-700">{profitMargin.toFixed(1)}%</div>
                         <div className="text-xs text-green-600">% of selling price</div>
                       </div>
