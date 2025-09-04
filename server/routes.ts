@@ -2761,25 +2761,87 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const newPrice = planPrices[planId as string] || 0;
 
       if (newPrice > currentPrice) {
-        // UPGRADE - redirect to Shopify
-        const shopifyUrls: Record<string, string> = {
-          "starter": "https://pipps-maker-calc-store.myshopify.com/products/starter-plan-monthly",
-          "pro": "https://pipps-maker-calc-store.myshopify.com/products/pro-plan-monthly",
-          "professional": "https://pipps-maker-calc-store.myshopify.com/products/professional-plan-monthly", 
-          "business": "https://pipps-maker-calc-store.myshopify.com/products/business-plan-monthly",
-          "enterprise": "https://pipps-maker-calc-store.myshopify.com/products/enterprise-plan-monthly"
-        };
+        // UPGRADE - create upgrade request for manual processing
+        const newPlanName = (planId as string).charAt(0).toUpperCase() + (planId as string).slice(1);
+        const currentPlanName = currentPlan.charAt(0).toUpperCase() + currentPlan.slice(1);
 
-        const redirectUrl = shopifyUrls[planId as string];
-        if (!redirectUrl) {
-          return res.status(400).json({ error: "Invalid plan for upgrade" });
+        try {
+          // Send email to admin with upgrade request
+          await emailService.sendEmail({
+            to: process.env.GMAIL_FORGOT_EMAIL || "admin@pipps.com",
+            subject: "🔼 Upgrade Request - PIPPS Maker Calc",
+            html: `
+              <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+                <h2 style="color: #059669;">Upgrade Request</h2>
+                <div style="background: #ecfdf5; padding: 15px; border-radius: 8px; margin: 20px 0;">
+                  <p><strong>Customer:</strong> ${user.email}</p>
+                  <p><strong>Company:</strong> ${user.company || 'Not specified'}</p>
+                  <p><strong>Current Plan:</strong> ${currentPlanName} ($${currentPrice}/month)</p>
+                  <p><strong>Requested Plan:</strong> ${newPlanName} ($${newPrice}/month)</p>
+                  <p><strong>Upgrade Amount:</strong> $${(newPrice - currentPrice).toFixed(2)}/month additional</p>
+                  <p><strong>Request Date:</strong> ${new Date().toLocaleDateString()}</p>
+                </div>
+                <p><strong>Action Required:</strong> Process this upgrade request and collect payment.</p>
+                <div style="background: #fef3c7; padding: 15px; border-radius: 8px; margin: 20px 0;">
+                  <h3 style="color: #f59e0b; margin-top: 0;">Proration Instructions:</h3>
+                  <p>Use the admin proration calculator to determine the exact amount to charge for the remainder of this billing cycle.</p>
+                  <p>Once payment is confirmed, update the user's plan immediately.</p>
+                </div>
+              </div>
+            `
+          });
+
+          // Send confirmation email to customer
+          await emailService.sendEmail({
+            to: user.email,
+            subject: "Upgrade Request Received - PIPPS Maker Calc",
+            html: `
+              <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+                <h2 style="color: #059669;">Upgrade Request Confirmed</h2>
+                <p>Hello,</p>
+                <p>We've received your request to upgrade from <strong>${currentPlanName}</strong> to <strong>${newPlanName}</strong>.</p>
+                
+                <div style="background: #ecfdf5; padding: 15px; border-radius: 8px; margin: 20px 0;">
+                  <h3 style="color: #059669; margin-top: 0;">What happens next:</h3>
+                  <ul style="margin: 10px 0;">
+                    <li>✅ Your upgrade request has been submitted</li>
+                    <li>💰 Our team will calculate the prorated upgrade cost</li>
+                    <li>📧 You'll receive payment instructions within 24 hours</li>
+                    <li>🚀 Your upgrade will be activated immediately after payment</li>
+                  </ul>
+                </div>
+
+                <p>The upgrade will include:</p>
+                <ul>
+                  <li>Immediate access to ${newPlanName} features</li>
+                  <li>Prorated billing for the remainder of your current cycle</li>
+                  <li>Full ${newPlanName} billing starting next cycle</li>
+                </ul>
+
+                <p>If you have any questions, please contact our support team.</p>
+                <p>Thank you for upgrading with PIPPS Maker Calc!</p>
+              </div>
+            `
+          });
+
+          return res.json({ 
+            type: "upgrade_request",
+            success: true,
+            message: `Upgrade request submitted successfully! You'll receive payment instructions within 24 hours. Your ${newPlanName} features will be activated immediately after payment confirmation.`,
+            requestedPlan: newPlanName,
+            currentPlan: currentPlanName,
+            additionalCost: (newPrice - currentPrice).toFixed(2)
+          });
+
+        } catch (emailError) {
+          console.error("Email sending failed:", emailError);
+          return res.json({ 
+            type: "upgrade_request",
+            success: true,
+            message: `Upgrade request submitted successfully! Our team will contact you within 24 hours with payment instructions for your ${newPlanName} upgrade.`,
+            warning: "Email notification may be delayed"
+          });
         }
-
-        return res.json({ 
-          type: "upgrade",
-          redirectUrl,
-          message: "Complete your purchase on Shopify. We'll apply the upgrade once payment is confirmed."
-        });
 
       } else if (newPrice < currentPrice) {
         // DOWNGRADE - send email notifications for manual processing

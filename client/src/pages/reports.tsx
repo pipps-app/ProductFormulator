@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -21,9 +21,13 @@ import {
   Crown,
   Zap,
   ChevronDown,
-  ChevronRight
+  ChevronRight,
+  ArrowUp,
+  CreditCard
 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
+import { apiRequest } from "@/lib/queryClient";
+import { useLocation } from "wouter";
 
 interface ReportData {
   title: string;
@@ -37,6 +41,8 @@ interface ReportData {
 export default function Reports() {
   const [selectedTier, setSelectedTier] = useState("free");
   const [refreshing, setRefreshing] = useState(false);
+  const [location, setLocation] = useLocation();
+  const queryClient = useQueryClient();
 
   const { data: userInfo } = useQuery({
     queryKey: ["/api/user"]
@@ -48,6 +54,32 @@ export default function Reports() {
   });
 
   const reports = reportsData?.reports || [];
+  const currentIsPreview = reportsData?.preview || false;
+
+  // Helper function to get next recommended tier
+  const getRecommendedUpgrade = (currentTier: string, targetTier: string) => {
+    const tiers = ['free', 'starter', 'pro', 'professional', 'business', 'enterprise'];
+    const currentIndex = tiers.indexOf(currentTier);
+    const targetIndex = tiers.indexOf(targetTier);
+    
+    if (targetIndex > currentIndex) {
+      return targetTier;
+    }
+    return tiers[currentIndex + 1] || 'enterprise';
+  };
+
+  const handleUpgrade = (targetTier?: string) => {
+    const userTier = userInfo?.subscriptionPlan || 'free';
+    const upgradeTarget = targetTier || getRecommendedUpgrade(userTier, selectedTier);
+    
+    // Navigate to subscription page with the target plan highlighted
+    setLocation(`/subscription?plan=${upgradeTarget}&source=reports`);
+    
+    toast({
+      title: "Redirecting to Plans",
+      description: `Review ${upgradeTarget} plan details and contact admin for activation.`,
+    });
+  };
   const isPreview = reportsData?.preview || false;
 
   const handleRefresh = async () => {
@@ -294,10 +326,15 @@ export default function Reports() {
             </Collapsible>
           ) : (
             <div className="bg-gray-100 rounded-lg p-3 text-center">
-              <p className="text-sm text-gray-500">
+              <p className="text-sm text-gray-500 mb-2">
                 Upgrade to {report.tier.charAt(0).toUpperCase() + report.tier.slice(1)} to view this report
               </p>
-              <Button size="sm" className="mt-2">
+              <Button 
+                size="sm" 
+                onClick={() => handleUpgrade(report.tier)}
+                className="bg-blue-600 hover:bg-blue-700"
+              >
+                <ArrowUp className="h-4 w-4 mr-2" />
                 Upgrade Now
               </Button>
             </div>
@@ -421,7 +458,11 @@ export default function Reports() {
             <p className="font-medium text-orange-800">Upgrade to unlock these reports</p>
             <p className="text-sm text-orange-600">Get detailed insights and analytics for your business</p>
           </div>
-          <Button className="bg-orange-500 hover:bg-orange-600 text-white">
+          <Button 
+            className="bg-orange-500 hover:bg-orange-600 text-white"
+            onClick={() => handleUpgrade()}
+          >
+            <Crown className="h-4 w-4 mr-2" />
             Upgrade Plan
           </Button>
         </div>

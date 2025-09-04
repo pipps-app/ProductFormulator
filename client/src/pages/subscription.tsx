@@ -1,9 +1,11 @@
 import { useState } from "react";
+import React from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Check, Calendar, Building, Zap, CreditCard, ArrowUp, ArrowDown, HelpCircle, AlertCircle } from "lucide-react";
+import { useLocation } from "wouter";
 
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
@@ -169,6 +171,30 @@ export default function Subscription() {
   const [pendingDowngradeRequests, setPendingDowngradeRequests] = useState<Set<string>>(new Set());
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const [location] = useLocation();
+
+  // Parse URL parameters to highlight specific plan
+  React.useEffect(() => {
+    const urlParams = new URLSearchParams(location.split('?')[1] || '');
+    const planParam = urlParams.get('plan');
+    const sourceParam = urlParams.get('source');
+    
+    if (planParam && sourceParam === 'reports') {
+      const targetPlan = plans.find(plan => plan.id === planParam);
+      if (targetPlan) {
+        // Scroll to plans section and highlight the target plan
+        setTimeout(() => {
+          document.getElementById('plans-section')?.scrollIntoView({ behavior: 'smooth' });
+          // Optional: show a toast about the recommended upgrade
+          toast({
+            title: `${targetPlan.name} Plan Recommended`,
+            description: `This plan will unlock the reports you were viewing.`,
+            duration: 5000
+          });
+        }, 500);
+      }
+    }
+  }, [location, toast]);
 
   // Helper function to determine plan relationship
   const getPlanRelationship = (targetPlan: SubscriptionPlan, currentPlan: SubscriptionPlan | null) => {
@@ -206,13 +232,14 @@ export default function Subscription() {
       return response.json();
     },
     onSuccess: (data, plan) => {
-      if (data.type === 'upgrade' && data.redirectUrl) {
-        // Upgrade - redirect to Shopify store
-        window.open(data.redirectUrl, '_blank');
+      if (data.type === 'upgrade_request' && data.success) {
+        // Upgrade request submitted - show confirmation
         toast({
-          title: "Redirecting to Shopify",
-          description: "Complete your purchase in the new tab. We'll apply the upgrade once payment is confirmed."
+          title: "Upgrade Request Submitted",
+          description: data.message,
+          duration: 8000
         });
+        // Don't redirect or invalidate queries - just show success message
       } else if (data.type === 'downgrade' && data.success) {
         // Downgrade - show confirmation message and keep request marked as pending
         toast({
