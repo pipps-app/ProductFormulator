@@ -12,9 +12,10 @@ import type { IStorage } from "./storage";
 
 const connectionString = process.env.DATABASE_URL!;
 const client = postgres(connectionString, {
-  max: 5,
-  idle_timeout: 10,
-  connect_timeout: 5,
+  max: 10,                // Increased connection pool size
+  idle_timeout: 300,      // Keep connections alive for 5 minutes instead of 10 seconds
+  connect_timeout: 30,    // Increased connection timeout to 30 seconds
+  max_lifetime: 1800,     // Connection lifetime of 30 minutes
   prepare: false
 });
 const db = drizzle(client, { schema });

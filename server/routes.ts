@@ -66,7 +66,7 @@ async function sendVerificationEmail(email: string, token: string): Promise<void
 }
 
 function hasAccessToTier(userTier: string, requiredTier: string): boolean {
-  const tierHierarchy = ['free', 'pro', 'business', 'enterprise'];
+  const tierHierarchy = ['free', 'starter', 'pro', 'professional', 'business', 'enterprise'];
   const userTierIndex = tierHierarchy.indexOf(userTier);
   const requiredTierIndex = tierHierarchy.indexOf(requiredTier);
   

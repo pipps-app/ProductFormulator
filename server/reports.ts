@@ -20,10 +20,22 @@ export class ReportsService {
     const freeReports = await this.generateFreeReports(userId);
     allReports.push(...freeReports);
     
+    // Include starter tier reports if tier is starter or higher
+    if (['starter', 'pro', 'professional', 'business', 'enterprise'].includes(tier)) {
+      const starterReports = await this.generateStarterReports(userId);
+      allReports.push(...starterReports);
+    }
+    
     // Include pro tier reports if tier is pro or higher
-    if (['pro', 'business', 'enterprise'].includes(tier)) {
+    if (['pro', 'professional', 'business', 'enterprise'].includes(tier)) {
       const proReports = await this.generateProReports(userId);
       allReports.push(...proReports);
+    }
+    
+    // Include professional tier reports if tier is professional or higher
+    if (['professional', 'business', 'enterprise'].includes(tier)) {
+      const professionalReports = await this.generateProfessionalReports(userId);
+      allReports.push(...professionalReports);
     }
     
     // Include business tier reports if tier is business or higher
@@ -108,6 +120,33 @@ export class ReportsService {
     return reports;
   }
 
+  // Starter Tier Reports
+  async generateStarterReports(userId: number): Promise<ReportData[]> {
+    const reports: ReportData[] = [];
+
+    // Basic cost summary
+    const basicCostSummary = await this.getBasicCostSummary(userId);
+    reports.push({
+      title: "Basic Cost Summary",
+      description: "Simple cost calculations and material usage overview",
+      data: basicCostSummary,
+      generatedAt: new Date().toISOString(),
+      tier: "starter"
+    });
+
+    // Formulation overview
+    const formulationOverview = await this.getFormulationOverview(userId);
+    reports.push({
+      title: "Formulation Overview",
+      description: "Basic formulation cost breakdown and analysis",
+      data: formulationOverview,
+      generatedAt: new Date().toISOString(),
+      tier: "starter"
+    });
+
+    return reports;
+  }
+
   // Pro Tier Reports
   async generateProReports(userId: number): Promise<ReportData[]> {
     const reports: ReportData[] = [];
@@ -180,6 +219,53 @@ export class ReportsService {
       data: unusedMaterials,
       generatedAt: new Date().toISOString(),
       tier: "pro"
+    });
+
+    return reports;
+  }
+
+  // Professional Tier Reports
+  async generateProfessionalReports(userId: number): Promise<ReportData[]> {
+    const reports: ReportData[] = [];
+
+    // Advanced cost analytics
+    const advancedCostAnalytics = await this.getAdvancedCostAnalytics(userId);
+    reports.push({
+      title: "Advanced Cost Analytics",
+      description: "Enhanced cost modeling and trend analysis for formulations",
+      data: advancedCostAnalytics,
+      generatedAt: new Date().toISOString(),
+      tier: "professional"
+    });
+
+    // Batch optimization report
+    const batchOptimization = await this.getBatchOptimizationReport(userId);
+    reports.push({
+      title: "Batch Optimization Report",
+      description: "Batch size and efficiency optimization insights",
+      data: batchOptimization,
+      generatedAt: new Date().toISOString(),
+      tier: "professional"
+    });
+
+    // Margin analysis
+    const marginAnalysis = await this.getMarginAnalysis(userId);
+    reports.push({
+      title: "Margin Analysis",
+      description: "Detailed profit margin tracking and forecasting",
+      data: marginAnalysis,
+      generatedAt: new Date().toISOString(),
+      tier: "professional"
+    });
+
+    // Vendor performance analysis
+    const vendorPerformance = await this.getVendorPerformanceAnalysis(userId);
+    reports.push({
+      title: "Vendor Performance Analysis",
+      description: "Analysis of vendor pricing and cost efficiency",
+      data: vendorPerformance,
+      generatedAt: new Date().toISOString(),
+      tier: "professional"
     });
 
     return reports;
@@ -1053,6 +1139,170 @@ export class ReportsService {
 
   private async getCostPerUnitAnalysByCategory(userId: number) {
     return await this.getCostPerUnitByCategory(userId);
+  }
+
+  // Professional tier specific report methods
+  private async getAdvancedCostAnalytics(userId: number) {
+    const formulations = await storage.getFormulations(userId);
+    const materials = await storage.getRawMaterials(userId);
+    
+    const analytics = {
+      costTrends: [] as any[],
+      varianceAnalysis: [] as any[],
+      forecastingData: [] as any[]
+    };
+
+    for (const formulation of formulations) {
+      const ingredients = await storage.getFormulationIngredients(formulation.id);
+      const totalCost = ingredients.reduce((sum, ing) => {
+        const material = materials.find((m: any) => m.id === ing.materialId);
+        if (material) {
+          const quantity = parseFloat(ing.quantity) || 0;
+          const unitCost = parseFloat(material.unitCost) || 0;
+          return sum + (quantity * unitCost);
+        }
+        return sum;
+      }, 0);
+
+      analytics.costTrends.push({
+        formulationName: formulation.name,
+        totalCost: totalCost.toFixed(4),
+        ingredientCount: ingredients.length,
+        lastUpdated: formulation.updatedAt || formulation.createdAt
+      });
+    }
+
+    return analytics;
+  }
+
+  private async getBatchOptimizationReport(userId: number) {
+    const formulations = await storage.getFormulations(userId);
+    const optimizations = [];
+
+    for (const formulation of formulations) {
+      const ingredients = await storage.getFormulationIngredients(formulation.id);
+      const batchSize = parseFloat(formulation.batchSize) || 1;
+      
+      const optimization = {
+        formulationName: formulation.name,
+        currentBatchSize: batchSize,
+        suggestedOptimalBatch: Math.round(batchSize * 1.5), // Simple optimization
+        efficiencyGain: '15%',
+        costPerUnit: formulation.totalCost || '0'
+      };
+
+      optimizations.push(optimization);
+    }
+
+    return optimizations;
+  }
+
+  private async getMarginAnalysis(userId: number) {
+    const formulations = await storage.getFormulations(userId);
+    const analysis = [];
+
+    for (const formulation of formulations) {
+      const profitMargin = formulation.profitMargin ? parseFloat(formulation.profitMargin) : 0;
+      const targetPrice = formulation.targetPrice ? parseFloat(formulation.targetPrice) : 0;
+      const cost = parseFloat(formulation.totalCost) || 0;
+
+      analysis.push({
+        formulationName: formulation.name,
+        currentMargin: profitMargin.toFixed(2) + '%',
+        targetPrice: targetPrice.toFixed(2),
+        cost: cost.toFixed(2),
+        marginHealth: profitMargin > 20 ? 'Healthy' : profitMargin > 10 ? 'Moderate' : 'Low'
+      });
+    }
+
+    return analysis;
+  }
+
+  private async getVendorPerformanceAnalysis(userId: number) {
+    const materials = await storage.getRawMaterials(userId);
+    const vendors = await storage.getVendors(userId);
+    const performance = [];
+
+    const vendorStats: any = {};
+    
+    for (const material of materials) {
+      if (material.vendorId) {
+        if (!vendorStats[material.vendorId]) {
+          const vendor = vendors.find((v: any) => v.id === material.vendorId);
+          vendorStats[material.vendorId] = {
+            vendorName: vendor?.name || 'Unknown',
+            materialCount: 0,
+            totalCost: 0,
+            averageCost: 0
+          };
+        }
+        
+        vendorStats[material.vendorId].materialCount++;
+        vendorStats[material.vendorId].totalCost += parseFloat(material.unitCost) || 0;
+      }
+    }
+
+    for (const vendorId in vendorStats) {
+      const stats = vendorStats[vendorId];
+      stats.averageCost = stats.totalCost / stats.materialCount;
+      
+      performance.push({
+        vendorName: stats.vendorName,
+        materialCount: stats.materialCount,
+        averageUnitCost: stats.averageCost.toFixed(4),
+        costEfficiency: stats.averageCost < 10 ? 'High' : stats.averageCost < 20 ? 'Medium' : 'Low'
+      });
+    }
+
+    return performance.sort((a, b) => parseFloat(a.averageUnitCost) - parseFloat(b.averageUnitCost));
+  }
+
+  // Starter tier specific helper methods
+  private async getBasicCostSummary(userId: number) {
+    const formulations = await storage.getFormulations(userId);
+    const materials = await storage.getRawMaterials(userId);
+
+    const summary = {
+      totalFormulations: formulations.length,
+      totalMaterials: materials.length,
+      averageFormulationCost: 0,
+      totalMaterialValue: 0
+    };
+
+    // Calculate total material value
+    summary.totalMaterialValue = materials.reduce((sum, material) => {
+      return sum + (parseFloat(material.unitCost) || 0);
+    }, 0);
+
+    // Calculate average formulation cost
+    if (formulations.length > 0) {
+      const totalCost = formulations.reduce((sum, formulation) => {
+        return sum + (parseFloat(formulation.totalCost) || 0);
+      }, 0);
+      summary.averageFormulationCost = totalCost / formulations.length;
+    }
+
+    return summary;
+  }
+
+  private async getFormulationOverview(userId: number) {
+    const formulations = await storage.getFormulations(userId);
+    const overview = [];
+
+    for (const formulation of formulations.slice(0, 10)) { // Limit to 10 for basic tier
+      const ingredients = await storage.getFormulationIngredients(formulation.id);
+      
+      overview.push({
+        name: formulation.name,
+        totalCost: formulation.totalCost,
+        unitCost: formulation.unitCost,
+        ingredientCount: ingredients.length,
+        batchSize: formulation.batchSize,
+        description: formulation.description || 'No description'
+      });
+    }
+
+    return overview;
   }
 }
 

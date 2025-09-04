@@ -451,14 +451,22 @@ export default function Reports() {
       </div>
 
       <Tabs value={selectedTier} onValueChange={setSelectedTier}>
-        <TabsList className="grid w-full grid-cols-4">
+        <TabsList className="grid w-full grid-cols-6">
           <TabsTrigger value="free" className="flex items-center space-x-2">
             <Package className="h-4 w-4" />
             <span>Free</span>
           </TabsTrigger>
+          <TabsTrigger value="starter" className="flex items-center space-x-2">
+            <CheckCircle className="h-4 w-4" />
+            <span>Starter</span>
+          </TabsTrigger>
           <TabsTrigger value="pro" className="flex items-center space-x-2">
             <Zap className="h-4 w-4" />
             <span>Pro</span>
+          </TabsTrigger>
+          <TabsTrigger value="professional" className="flex items-center space-x-2">
+            <BarChart3 className="h-4 w-4" />
+            <span>Professional</span>
           </TabsTrigger>
           <TabsTrigger value="business" className="flex items-center space-x-2">
             <TrendingUp className="h-4 w-4" />
@@ -494,7 +502,55 @@ export default function Reports() {
           </div>
         </TabsContent>
 
+        <TabsContent value="starter">
+          <div className="space-y-4">
+            {isLoading ? (
+              <div className="text-center py-8">
+                <RefreshCw className="h-8 w-8 animate-spin mx-auto mb-4 text-gray-400" />
+                <p className="text-gray-600">Generating reports...</p>
+              </div>
+            ) : isPreview ? (
+              <PreviewCard 
+                title={reportsData.title}
+                description={reportsData.description}
+                reports={reportsData.reports}
+              />
+            ) : reports && reports.length > 0 ? (
+              reports.map((report: ReportData, index) => renderReportItem(report, index))
+            ) : (
+              <div className="text-center py-8">
+                <FileText className="h-12 w-12 mx-auto mb-4 text-gray-400" />
+                <p className="text-gray-600">No reports available</p>
+              </div>
+            )}
+          </div>
+        </TabsContent>
+
         <TabsContent value="pro">
+          <div className="space-y-4">
+            {isLoading ? (
+              <div className="text-center py-8">
+                <RefreshCw className="h-8 w-8 animate-spin mx-auto mb-4 text-gray-400" />
+                <p className="text-gray-600">Generating reports...</p>
+              </div>
+            ) : isPreview ? (
+              <PreviewCard 
+                title={reportsData.title}
+                description={reportsData.description}
+                reports={reportsData.reports}
+              />
+            ) : reports && reports.length > 0 ? (
+              reports.map((report: ReportData, index) => renderReportItem(report, index))
+            ) : (
+              <div className="text-center py-8">
+                <FileText className="h-12 w-12 mx-auto mb-4 text-gray-400" />
+                <p className="text-gray-600">No reports available</p>
+              </div>
+            )}
+          </div>
+        </TabsContent>
+
+        <TabsContent value="professional">
           <div className="space-y-4">
             {isLoading ? (
               <div className="text-center py-8">
